@@ -48,7 +48,7 @@ public class SecurityConfig {
                         // ✅ "/oauth2/**" 패턴을 permitAll()에서 제거한 상태 유지.
                         // Spring Security의 oauth2Login()이 이 경로를 처리하도록 맡깁니다.
                         // 또한, OAuth2 콜백 경로도 permitAll()에서 제외하여 oauth2Login()이 처리하도록 합니다.
-                        .requestMatchers("/", "/login", "/register", "/auth/**", "/auth/register","/auth/login", "/css/**", "/js/**", "/images/**", "/home", "/main", "/api/companies").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/auth/**", "/auth/register","/auth/login", "/css/**", "/js/**", "/images/**", "/home", "/main", "/api/companies","/api/**").permitAll()
                         .requestMatchers("/auth/check-auth").authenticated()
                         .anyRequest().authenticated()
                 )

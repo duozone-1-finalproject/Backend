@@ -39,7 +39,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/main",
             "/error",         // 에러 페이지
             "/favicon.ico",    // 파비콘 요청 등
-            "/api/companies"
+            "/api/companies",
+            "/api/**",
+            "/companies"
     );
 
 

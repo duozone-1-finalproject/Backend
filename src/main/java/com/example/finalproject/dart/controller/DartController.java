@@ -5,7 +5,6 @@ import com.example.finalproject.dart.dto.dart.DartApiListResponseDto;
 import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
 import com.example.finalproject.dart.service.DartApiService;
-import com.example.finalproject.dart.service.DartService;
 import com.example.finalproject.dart.service.impl.DartApiServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -17,7 +16,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping("/api/dart")
 public class DartController {
-    private final DartService dartService;
     private final DartApiService dartApiService; // ✅ 여기서 생성자 주입 받기
 
     // [DartDocumentListRequestDto 내용]
@@ -27,13 +25,15 @@ public class DartController {
         private Integer bgnDe; //시작날짜
         private Integer endDe; //종료날짜
     */
+    // 문서 검색(보고서이름,기업코드,기간을 이용)
     @GetMapping("/reports")
     public Mono<DartApiListResponseDto> searchReports(@ModelAttribute DartDocumentListRequestDto dto){
         return dartApiService.findByCorpCodeAndReportName(dto);
     }
 
-    @GetMapping("/download")
-    public Mono<ResponseEntity<Resource>> downloadDocumentByCode(@RequestParam String rceptNo){
+    // 보고서접수번호(rceptNo)를 통해 압축 해제된 보고서 다운로드
+    @GetMapping("/documents/{rceptNo}/download")
+    public Mono<ResponseEntity<Resource>> downloadDocumentByCode(@PathVariable String rceptNo){
         return dartApiService.downloadDocumentByCode(rceptNo);
     }
 
