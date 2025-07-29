@@ -6,6 +6,8 @@ import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
+// dart 오픈api 사용을 위한 WebClient
+
 @Configuration
 public class WebClientConfig {
 
@@ -17,18 +19,6 @@ public class WebClientConfig {
 
         return WebClient.builder()
                 .baseUrl("https://opendart.fss.or.kr")
-                .exchangeStrategies(strategies)
-                .build();
-    }
-
-    @Bean
-    public WebClient myWebClient() {
-        ExchangeStrategies strategies = ExchangeStrategies.builder()
-                .codecs(this::customizeCodecs)
-                .build();
-
-        return WebClient.builder()
-                .baseUrl("http://localhost:8080")
                 .exchangeStrategies(strategies)
                 .build();
     }
