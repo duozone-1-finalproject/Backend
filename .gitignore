@@ -40,4 +40,5 @@ Thumbs.db
 # 환경 변수
 .env
 
+.gradle/
 
