@@ -1,0 +1,25 @@
+<!-- templates/loginSuccess.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인 성공</title>
+</head>
+<body>
+<h2>구글 로그인 성공! 토큰 저장 중...</h2>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+
+  if (token) {
+    localStorage.setItem('jwtToken', token);
+    alert('JWT 저장 완료! 홈으로 이동합니다.');
+    window.location.href = "/"; // 또는 대시보드 등으로 이동
+  } else {
+    alert("토큰이 전달되지 않았습니다.");
+  }
+</script>
+
+</body>
+</html>

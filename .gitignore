@@ -1,0 +1,26 @@
+# Gradle files
+.gradle/
+/build/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.yml
+
+# Java compiled output
+*.class
+
+# Package Files
+*.jar
+*.war
+*.zip
+*.tar.gz
+
+# Log files
+*.log
+logs/
+
+# Optional: if you have local environment specific files
+.env
+.DS_Store
