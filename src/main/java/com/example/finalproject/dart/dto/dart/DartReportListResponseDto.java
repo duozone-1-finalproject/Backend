@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DartApiListResponseDto {
+public class DartReportListResponseDto {
     private String status;
     private String message;
 
@@ -28,13 +28,13 @@ public class DartApiListResponseDto {
     @JsonProperty("total_page")
     private Integer totalPage;
 
-    private List<DartApiDto> list;
+    private List<ReportSummary> list;
 
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DartApiDto {
+    public static class ReportSummary {
         @JsonProperty("corp_code")
         private String corpCode;
 

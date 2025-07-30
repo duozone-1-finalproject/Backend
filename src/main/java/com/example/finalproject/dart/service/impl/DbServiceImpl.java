@@ -15,6 +15,7 @@ import java.util.List;
 public class DbServiceImpl implements DbService {
     private final CompanyOverviewRepository companyOverviewRepository;
 
+    // db에서 기업들의 정보(기업이름,기업코드) 가져오기
     @Override
     public CompanyOverviewListResponseDto getAllCompanyOverviews(){
         // 컴퍼니 정보 전부 조회하기

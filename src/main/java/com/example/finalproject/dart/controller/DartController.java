@@ -1,11 +1,10 @@
 package com.example.finalproject.dart.controller;
 
 
-import com.example.finalproject.dart.dto.dart.DartApiListResponseDto;
+import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
 import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
 import com.example.finalproject.dart.service.DartApiService;
-import com.example.finalproject.dart.service.impl.DartApiServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class DartController {
     */
     // 문서 검색(보고서이름,기업코드,기간을 이용)
     @GetMapping("/reports")
-    public Mono<DartApiListResponseDto> searchReports(@ModelAttribute DartDocumentListRequestDto dto){
+    public Mono<DartReportListResponseDto> searchReports(@ModelAttribute DartDocumentListRequestDto dto){
         return dartApiService.findByCorpCodeAndReportName(dto);
     }
 
