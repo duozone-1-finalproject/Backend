@@ -1,8 +1,7 @@
 package com.example.finalproject.dart.service.impl;
 
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListResponseDto;
-import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewResponseDto;
-import com.example.finalproject.dart.dto.dart.DartApiListResponseDto;
+import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
 import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
 import com.example.finalproject.dart.service.DartApiService;
@@ -15,11 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Value;
-import reactor.core.scheduler.Schedulers;
 
 import java.io.*;
 import java.util.Collections;
@@ -47,7 +44,7 @@ public class DartApiServiceImpl implements DartApiService {
 
     // 기업코드와 문서제목으로 보고서 검색
     @Override
-    public Mono<DartApiListResponseDto> findByCorpCodeAndReportName(DartDocumentListRequestDto dto) {
+    public Mono<DartReportListResponseDto> findByCorpCodeAndReportName(DartDocumentListRequestDto dto) {
         // 보고서 리스트 가져오는 api
         //http://localhost:8080/api/dart/reports?corpCode=00172291&reportNm=보고서&bgnDe=20200101&endDe=20241111
         // 참고 링크 https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019001
@@ -60,10 +57,10 @@ public class DartApiServiceImpl implements DartApiService {
 
                         "&page_count="+"100")               // 페이지 로드의 최대 수
                 .retrieve()
-                .bodyToMono(DartApiListResponseDto.class)   // 여기까지가 dart 응답의 원본
+                .bodyToMono(DartReportListResponseDto.class)   // 여기까지가 dart 응답의 원본
                 .map(resDto -> {         // 검색어를 이용하여 가져온 보고서리스트 서치
                     // "검색 키워드"가 포함된 항목만 필터링
-                    List<DartApiListResponseDto.DartApiDto> filtered = resDto.getList().stream()
+                    List<DartReportListResponseDto.ReportSummary> filtered = resDto.getList().stream()
                             .filter(doc -> doc.getReportNm().contains(dto.getReportNm())) // 여기에 검색 키워드 넣기
                             .collect(Collectors.toList());
 
@@ -154,15 +151,15 @@ public class DartApiServiceImpl implements DartApiService {
     }
 
     // 해당 회사 보고서의 접수번호리스트 반환
-    public List<String> getRceptNos(DartApiListResponseDto dto) {
+    public List<String> getRceptNos(DartReportListResponseDto dto) {
         return dto.getList().stream()
-                .map(DartApiListResponseDto.DartApiDto::getRceptNo)
+                .map(DartReportListResponseDto.ReportSummary::getRceptNo)
                 .collect(Collectors.toList());
     }
 
     // 회사코드(corpCode)를 통해서 api로 (회사정보,(보고서리스트))를 가져옴
-    public DartApiListResponseDto getCompanyInfoByCorpCode(String corpCode, DownloadAllRequestDto dto){
-        DartApiListResponseDto result = dartWebClient.get()
+    public DartReportListResponseDto getCompanyInfoByCorpCode(String corpCode, DownloadAllRequestDto dto){
+        DartReportListResponseDto result = dartWebClient.get()
                 .uri("/api/list.json?" +
                         "crtfc_key=" + dartApiKey +
                         "&corp_code=" + corpCode +
@@ -170,11 +167,11 @@ public class DartApiServiceImpl implements DartApiService {
                         "&end_de=" + dto.getEndDe() +
                         "&page_count=100")
                 .retrieve()
-                .bodyToMono(DartApiListResponseDto.class)
+                .bodyToMono(DartReportListResponseDto.class)
                 .map(resDto -> {
                     System.out.println("응답 메시지: " + resDto.getMessage()); // 응답 메시지 출력 (성공 시)
 
-                    List<DartApiListResponseDto.DartApiDto> filtered = Optional.ofNullable(resDto.getList())
+                    List<DartReportListResponseDto.ReportSummary> filtered = Optional.ofNullable(resDto.getList())
                             .orElse(Collections.emptyList())
                             .stream()
                             .filter(doc -> {
@@ -304,20 +301,6 @@ public class DartApiServiceImpl implements DartApiService {
                                     fileOutputStream.write(buffer, 0, len);
                                 }
                             }
-
-
-                            /*
-
-                             2. 콘솔 출력 인코딩 설정
-같은 메뉴에서 Build, Execution, Deployment > Compiler > Java Compiler
-
-아래쪽 Additional command line parameters 입력란에 다음 추가:
-
-ini
-복사
-편집
--Dfile.encoding=UTF-8
-                             */
                         }
                     }
                     rceptNosCount++;
@@ -347,7 +330,7 @@ ini
         for (String corpCode : corpCodes) {
             try {
                 // 회사정보 + 보고서리스트 가져오기
-                DartApiListResponseDto companyInfo = getCompanyInfoByCorpCode(corpCode, dto);
+                DartReportListResponseDto companyInfo = getCompanyInfoByCorpCode(corpCode, dto);
 
                 if (companyInfo == null || companyInfo.getList() == null || companyInfo.getList().isEmpty()) {
                     System.out.println("[" + corpCode + "] 관련 보고서 없음");
