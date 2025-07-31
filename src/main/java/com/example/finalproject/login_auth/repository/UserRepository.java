@@ -2,11 +2,11 @@
 package com.example.finalproject.login_auth.repository;
 
 import com.example.finalproject.login_auth.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends ElasticsearchRepository<User, String> {
 
     // 로컬 로그인용
     Optional<User> findByUsername(String username);
