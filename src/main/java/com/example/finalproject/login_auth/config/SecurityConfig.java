@@ -1,4 +1,3 @@
-// SecurityConfig.java
 package com.example.finalproject.login_auth.config;
 
 import com.example.finalproject.login_auth.handler.LocalLoginSuccessHandler;
@@ -39,17 +38,28 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // ✅ oauth2Login 설정을 authorizeHttpRequests보다 먼저 명시합니다.
                 .oauth2Login(oauth -> oauth
-                        .loginPage("/login") // OAuth2 로그인 시작 시 인증되지 않은 상태면 이 페이지로 리다이렉트
+                        .loginPage("/login")
                         .successHandler(oAuthHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ "/oauth2/**" 패턴을 permitAll()에서 제거한 상태 유지.
-                        // Spring Security의 oauth2Login()이 이 경로를 처리하도록 맡깁니다.
-                        // 또한, OAuth2 콜백 경로도 permitAll()에서 제외하여 oauth2Login()이 처리하도록 합니다.
-                        .requestMatchers("/", "/login", "/register", "/auth/**", "/auth/register","/auth/login", "/css/**", "/js/**", "/images/**", "/home", "/main", "/api/companies","/api/**").permitAll()
-                        .requestMatchers("/auth/check-auth").authenticated()
+                        // RESTful 규칙에 맞춰 변경된 경로들
+                        .requestMatchers(
+                                "/",
+                                "/login",
+                                "/users", // 회원가입: POST /users
+                                "/auth/login", // 기존 로그인
+                                "/auth/oauth/tokens", // OAuth 성공 후 토큰 처리
+                                "/tokens/refresh", // 토큰 갱신
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/home",
+                                "/main",
+                                "/api/companies",
+                                "/api/**"
+                        ).permitAll()
+                        .requestMatchers("/auth/status").authenticated() // 인증 상태 확인
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

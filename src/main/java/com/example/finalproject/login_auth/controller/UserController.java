@@ -2,7 +2,7 @@
 package com.example.finalproject.login_auth.controller;
 
 import com.example.finalproject.login_auth.dto.UserDto; // UserDto import
-import com.example.finalproject.login_auth.model.User;
+import com.example.finalproject.login_auth.entity.User;
 import com.example.finalproject.login_auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

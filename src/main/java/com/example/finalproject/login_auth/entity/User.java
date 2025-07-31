@@ -1,4 +1,4 @@
-package com.example.finalproject.login_auth.model;
+package com.example.finalproject.login_auth.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
