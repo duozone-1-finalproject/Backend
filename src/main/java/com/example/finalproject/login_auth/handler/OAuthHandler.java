@@ -1,7 +1,7 @@
 // src/main/java/com/example/test_02/handler/OAuthHandler.java
 package com.example.finalproject.login_auth.handler;
 
-import com.example.finalproject.login_auth.model.User;
+import com.example.finalproject.login_auth.entity.User;
 import com.example.finalproject.login_auth.repository.UserRepository;
 import com.example.finalproject.login_auth.security.JwtTokenProvider;
 import jakarta.servlet.ServletException;

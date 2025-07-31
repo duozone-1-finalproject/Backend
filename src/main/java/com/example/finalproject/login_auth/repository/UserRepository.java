@@ -1,7 +1,7 @@
 // UserRepository.java
 package com.example.finalproject.login_auth.repository;
 
-import com.example.finalproject.login_auth.model.User;
+import com.example.finalproject.login_auth.entity.User;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.Optional;
