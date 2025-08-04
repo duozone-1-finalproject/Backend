@@ -10,8 +10,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class CompanyOverviewListResponseDto {
-    private List<CompanyOverviewResponseDto> companies;
     private String resultMeg;
+    private List<CompanyOverviewResponseDto> companies;
+
 
     public static CompanyOverviewListResponseDto from(List<CompanyOverviewResponseDto> dtoList) {
         return CompanyOverviewListResponseDto.builder()
