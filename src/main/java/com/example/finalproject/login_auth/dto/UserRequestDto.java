@@ -1,7 +1,6 @@
 package com.example.finalproject.login_auth.dto;
 
 import jakarta.validation.constraints.*;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,4 +21,7 @@ public class UserRequestDto {
 
     @NotBlank
     private String name;
+
+    @NotBlank
+    private String provider;  // ✅ 추가된 부분
 }

@@ -1,10 +1,13 @@
 package com.example.finalproject.dart.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import lombok.*;
 
-@Entity
-@Table(name = "company_overview")
+@Document(indexName = "company_overview") // Elasticsearch 인덱스명
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,33 +16,32 @@ import lombok.*;
 public class CompanyOverview {
 
     @Id
-    @Column(name = "corp_code", length = 8, nullable = false)
     private String corpCode;
 
-    @Column(name = "corp_name", length = 100, nullable = false)
+    @Field(type = FieldType.Keyword)
     private String corpName;
 
-    @Column(name = "corp_cls", length = 1)
+    @Field(type = FieldType.Keyword)
     private String corpCls;
 
-    @Column(name = "adres", length = 255)
+    @Field(type = FieldType.Text)
     private String adres;
 
-    @Column(name = "hm_url", length = 200)
+    @Field(type = FieldType.Keyword)
     private String hmUrl;
 
-    @Column(name = "induty_code", length = 10)
+    @Field(type = FieldType.Keyword)
     private String indutyCode;
 
-    @Column(name = "induty_name", length = 100)
+    @Field(type = FieldType.Keyword)
     private String indutyName;
 
-    @Column(name = "est_dt", length = 8)
+    @Field(type = FieldType.Keyword)
     private String estDt;
 
-    @Column(name = "favorite_count")
+    @Field(type = FieldType.Integer)
     private Integer favoriteCount;
 
-    @Column(name = "logo", length = 300)
+    @Field(type = FieldType.Keyword)
     private String logo;
 }
