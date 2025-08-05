@@ -15,23 +15,8 @@ import java.util.List;
 public class DbServiceImpl implements DbService {
     private final CompanyOverviewRepository companyOverviewRepository;
 
-    // db에서 기업들의 정보(기업이름,기업코드) 가져오기
-    @Override
-    public CompanyOverviewListResponseDto getAllCompanyOverviews(){
-        // 컴퍼니 정보 전부 조회하기
-        // http://localhost:8080/api/companies
-        List<CompanyOverview> companyOverviewList = companyOverviewRepository.findAll();
-
-        List<CompanyOverviewResponseDto> responseDtoList = companyOverviewList.stream()
-                .map(company -> CompanyOverviewResponseDto.builder()
-                        .corpCode(company.getCorpCode())
-                        .corpName(company.getCorpName())
-                        .build())
-                .toList();
-
-        return CompanyOverviewListResponseDto.builder()
-                .companies(responseDtoList)
-                .build();
-
+    public void saveCompanies(List<CompanyOverview> companies) {
+        companyOverviewRepository.saveAll(companies);
     }
+
 }
