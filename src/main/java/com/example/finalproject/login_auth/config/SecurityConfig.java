@@ -22,7 +22,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -43,13 +42,15 @@ public class SecurityConfig {
                         .successHandler(oAuthHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // RESTful 규칙에 맞춰 변경된 경로들
+                        // REST API 규칙에 맞춰 업데이트된 경로들
                         .requestMatchers(
                                 "/",
                                 "/login",
-                                "/users", // 회원가입: POST /users
-                                "/auth/login", // 기존 로그인
-                                "/auth/oauth/tokens", // OAuth 성공 후 토큰 처리
+                                "/users", // 사용자 리소스 생성 (회원가입)
+                                "/users/check", // 사용자명 중복 체크
+                                "/auth/sessions", // 로그인 세션 생성
+                                "/auth/login", // 기존 로그인 (하위 호환성)
+                                "/auth/oauth/tokens", // OAuth 토큰 획득
                                 "/tokens/refresh", // 토큰 갱신
                                 "/css/**",
                                 "/js/**",
@@ -60,6 +61,8 @@ public class SecurityConfig {
                                 "/api/**"
                         ).permitAll()
                         .requestMatchers("/auth/status").authenticated() // 인증 상태 확인
+                        .requestMatchers("/users/me").authenticated() // 현재 사용자 정보 조회
+                        .requestMatchers("/auth/sessions").authenticated() // 로그아웃 (DELETE)
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -74,7 +77,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

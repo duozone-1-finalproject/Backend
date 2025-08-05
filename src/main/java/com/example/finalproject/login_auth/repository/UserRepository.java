@@ -1,4 +1,3 @@
-// UserRepository.java
 package com.example.finalproject.login_auth.repository;
 
 import com.example.finalproject.login_auth.entity.User;
@@ -21,4 +20,7 @@ public interface UserRepository extends ElasticsearchRepository<User, String> {
 
     // 인증된 사용자 이름으로 전체 정보 조회 (필요한 경우)
     Optional<User> findByEmailOrUsername(String email, String username);
+
+    // 리프레시 토큰으로 사용자 조회 (새로 추가)
+    Optional<User> findByRefreshToken(String refreshToken);
 }

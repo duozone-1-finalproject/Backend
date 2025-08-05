@@ -1,4 +1,3 @@
-// src/main/java/com/example/test_02/handler/OAuthHandler.java
 package com.example.finalproject.login_auth.handler;
 
 import com.example.finalproject.login_auth.entity.User;
@@ -16,6 +15,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Component
@@ -111,8 +111,11 @@ public class OAuthHandler implements AuthenticationSuccessHandler {
             log.info("✅ 처리된 사용자: Email={}, Username={}, Name={}", user.getEmail(), user.getUsername(), user.getName());
         }
 
-        // Access Token은 프론트에서 호출함.
+        // 리프레시 토큰 생성 및 DB 저장
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
+        user.setRefreshToken(refreshToken);
+        user.setRefreshTokenExpiryDate(LocalDateTime.now().plusDays(7));
+        userRepository.save(user);
 
         Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
         refreshCookie.setHttpOnly(true);
@@ -120,7 +123,7 @@ public class OAuthHandler implements AuthenticationSuccessHandler {
         refreshCookie.setMaxAge(7 * 24 * 60 * 60);
         refreshCookie.setSecure(false);
         response.addCookie(refreshCookie);
-        log.info("🍪 Refresh Token HttpOnly 쿠키 설정 완료.");
+        log.info("🍪 Refresh Token HttpOnly 쿠키 설정 및 DB 저장 완료.");
 
         response.sendRedirect("http://localhost:3000/oauth-success");
         log.info("🚀 프론트엔드 리다이렉트 (HttpOnly 쿠키 설정 후): http://localhost:3000/oauth-success");
