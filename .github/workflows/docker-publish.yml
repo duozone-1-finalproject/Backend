@@ -41,4 +41,4 @@ jobs:
             # 빌드 후 바로 푸시
             push: true
 
-            tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend-image:latest
+            tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-image:latest
