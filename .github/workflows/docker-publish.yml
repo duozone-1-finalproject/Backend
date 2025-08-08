@@ -38,3 +38,7 @@ jobs:
           file: ./Backend/Dockerfile       # Dockerfile 경로 지정
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest
+
+      - name: Check workspace files
+        run: ls -R
+
