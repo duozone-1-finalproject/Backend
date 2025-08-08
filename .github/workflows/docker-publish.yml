@@ -19,7 +19,7 @@ jobs:
           java-version: 21
 
       - name: Grant execute permission for gradlew
-        working-directory: Backend  # 실제 gradlew가 있는 경로
+        working-directory: Backend
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
@@ -33,12 +33,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        working-directory: Backend  # Dockerfile이 있는 경로
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./Backend
+          file: ./Backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-image:latest
-
-
