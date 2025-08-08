@@ -1,3 +1,10 @@
+name: CI/CD - Build and Push backend Docker Image
+
+on:
+  push:
+    branches:
+      - feature/infra
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
