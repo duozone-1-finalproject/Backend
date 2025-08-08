@@ -20,22 +20,16 @@ jobs:
           java-version: '21'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ../../gradlew
-        working-directory: Backend/Backend
+        run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ../../gradlew build -x test
-        working-directory: Backend/Backend
-
-      - name: Rename JAR to app.jar
-        run: cp build/libs/*.jar build/libs/app.jar
-        working-directory: Backend/Backend
+        run: ./gradlew build -x test
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
         with:
           name: backend-jar
-          path: Backend/Backend/build/libs/app.jar
+          path: build/libs/test_02-0.0.1-SNAPSHOT.jar
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -45,5 +39,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest Backend/Backend
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest
