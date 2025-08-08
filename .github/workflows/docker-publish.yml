@@ -20,19 +20,19 @@ jobs:
           java-version: '21'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew   # 루트 경로의 gradlew에 실행 권한 부여
+        run: chmod +x ./gradlew
 
       - name: Build with Gradle
         run: ./gradlew build -x test
 
       - name: Rename JAR to app.jar
-        run: cp build/libs/*.jar build/libs/app.jar   # 빌드된 JAR 이름을 app.jar로 통일
+        run: cp build/libs/*.jar build/libs/app.jar
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
         with:
           name: backend-jar
-          path: Backend/build/libs/app.jar
+          path: build/libs/app.jar
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -42,5 +42,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest Backend
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest
