@@ -1,4 +1,4 @@
-name: CI/CD - Build and Push backend Docker Image
+name: CI/CD - Build and Push Backend Docker Image
 
 on:
   push:
@@ -20,10 +20,10 @@ jobs:
           java-version: '21'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+        run: chmod +x ./Backend/gradlew
 
       - name: Build with Gradle
-        run: ./Backend/gradlew build -x test
+        run: cd Backend && ./gradlew build -x test
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -34,7 +34,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .              # 저장소 루트 기준
-          file: ./Dockerfile  # Dockerfile 경로 명시
+          context: ./Backend               # Backend 폴더를 빌드 컨텍스트로 지정
+          file: ./Backend/Dockerfile       # Dockerfile 경로 지정
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest
