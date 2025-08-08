@@ -3,11 +3,12 @@ name: CI/CD - Build and Push backend Docker Image
 on:
   push:
     branches:
-      - feature/infra
+      - feature/infra  # 또는 main, dev 등 원하는 브랜치
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -18,11 +19,13 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
       - name: Build with Gradle
-        working-directory: Backend
         run: ./gradlew build
 
-      - name: Login to Docker Hub
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -31,7 +34,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: .                     # 현재 디렉토리 기준
+          file: ./Dockerfile            # Dockerfile 경로
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-image:latest
