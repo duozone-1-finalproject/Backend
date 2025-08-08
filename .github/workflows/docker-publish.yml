@@ -19,12 +19,13 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      # 'Backend' 디렉토리에서 gradlew 권한 부여 및 빌드를 한 번에 실행
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        # working-directory: Backend  <-- 이 줄을 제거하거나 주석 처리하세요.
+
       - name: Build with Gradle
-        run: |
-          chmod +x ./gradlew
-          ./gradlew build
-        working-directory: Backend # working-directory를 지정하여 해당 폴더에서 명령어 실행
+        run: ./gradlew build
+        # working-directory: Backend  <-- 이 줄도 제거하거나 주석 처리하세요.
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
