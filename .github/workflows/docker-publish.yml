@@ -20,11 +20,10 @@ jobs:
           java-version: '21'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-        # working-directory: Backend  <-- 이 줄을 제거하거나 주석 처리하세요.
+        run: chmod +x ./Backend/gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build -x test
+        run: ./Backend/gradlew build -x test
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -32,10 +31,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Docker Hub 사용자 이름을 secrets에서 가져와 이미지 빌드 및 푸시
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./Backend # Dockerfile이 있는 경로
+          context: .              # 저장소 루트 기준
+          file: ./Backend/Dockerfile  # Dockerfile 경로 명시
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest # 실제 사용자 이름과 태그 사용
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest
