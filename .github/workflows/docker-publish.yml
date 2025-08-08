@@ -13,17 +13,17 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Check workspace files
-        run: ls -R
-
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew   # 루트에 있는 gradlew 실행 권한 부여
+
       - name: Build with Gradle
-        run: cd Backend && ./gradlew build -x test
+        run: ./gradlew build -x test   # 루트에서 빌드
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -34,7 +34,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./Backend
-          file: ./Backend/Dockerfile
+          context: .                 # 루트 기준
+          file: ./Dockerfile          # Dockerfile이 루트에 있어야 함
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest
