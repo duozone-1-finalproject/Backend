@@ -22,9 +22,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./Backend/gradlew  # ls 결과 보고 여기 수정
-
       - name: Build with Gradle
         run: cd Backend && ./gradlew build -x test
 
