@@ -23,13 +23,14 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
+        working-directory: Backend/Backend
         run: ./gradlew build -x test
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
         with:
           name: backend-jar
-          path: build/libs/test_02-0.0.1-SNAPSHOT.jar
+          path: Backend/Backend/build/libs/test_02-0.0.1-SNAPSHOT.jar
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -39,5 +40,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest .
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest Backend/Backend
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest
