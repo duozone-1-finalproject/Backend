@@ -1,5 +1,0 @@
-- name: List files in root directory
-  run: ls -la
-
-- name: List files in Backend directory
-  run: ls -la Backend || echo "Backend folder not found"
