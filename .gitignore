@@ -31,7 +31,7 @@ build/
 *.iml
 .idea/
 *.log
-*.yml
+
 
 # OS별 캐시파일
 .DS_Store
