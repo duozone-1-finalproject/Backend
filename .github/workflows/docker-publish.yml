@@ -23,11 +23,9 @@ jobs:
         run: chmod +x ./gradlew   # 루트 경로의 gradlew에 실행 권한 부여
 
       - name: Build with Gradle
-        working-directory: Backend
-        run: ../gradlew build -x test   # Backend 폴더에서 gradlew를 한 단계 위로 올라가 실행
+        run: ./gradlew build -x test
 
       - name: Rename JAR to app.jar
-        working-directory: Backend
         run: cp build/libs/*.jar build/libs/app.jar   # 빌드된 JAR 이름을 app.jar로 통일
 
       - name: Upload JAR as artifact
