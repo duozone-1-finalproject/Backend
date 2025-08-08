@@ -3,7 +3,7 @@ name: CI/CD - Build and Push backend Docker Image
 on:
   push:
     branches:
-      - feature/infra  # 또는 main, dev 등 원하는 브랜치
+      - feature/infra
 
 jobs:
   build-and-push:
@@ -20,9 +20,11 @@ jobs:
           java-version: 21
 
       - name: Grant execute permission for gradlew
+        working-directory: ..
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
+        working-directory: ..
         run: ./gradlew build
 
       - name: Log in to Docker Hub
@@ -34,7 +36,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .                     # 현재 디렉토리 기준
-          file: ./Dockerfile            # Dockerfile 경로
+          context: ..
+          file: ../Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-image:latest
