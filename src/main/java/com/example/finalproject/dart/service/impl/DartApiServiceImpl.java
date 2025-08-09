@@ -7,6 +7,7 @@ import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
 import com.example.finalproject.dart.service.DartApiService;
 import com.example.finalproject.dart.service.DbService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-
+@Primary// 이거 최우선 ㅋ
 @Service
 public class DartApiServiceImpl implements DartApiService {
 
@@ -68,25 +69,18 @@ public class DartApiServiceImpl implements DartApiService {
                     return resDto;
                 });
     }
-/*
-    public Mono<ResponseEntity<Resource>> downloadDocumentByCode(String rceptNo){
-        return dartWebClient.get()
-                .uri("/api/document.xml?"+
-                        "crtfc_key="+dartApiKey+
-                        "&rcept_no="+rceptNo)       // 다운로드할 문서의 고유코드(문서의 접수번호)
-                .retrieve()
-                .bodyToMono(ByteArrayResource.class)
-                .map(resource -> {
-                    String fakeZipFileName = "report.zip";
 
-                    return ResponseEntity.ok()
-                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fakeZipFileName + "\"")
-                            .header(HttpHeaders.CONTENT_TYPE, "application/zip")  // 실제 내용은 xml이지만 이름만 zip
-                            .body(resource);
-                });
+
+    public void getDARTInformation(){
+        /* 가져올 정보는 기업코드 하나
+           반환값
+           기업 영어명
+           설립일
+           본사주소
+           전화번호
+           홈페이지 주소
+         */
     }
-
- */
 
     // 보고서.xml 다운로드
     public Mono<ResponseEntity<Resource>> downloadDocumentByCode(String rceptNo) {
@@ -156,6 +150,8 @@ public class DartApiServiceImpl implements DartApiService {
                 .map(DartReportListResponseDto.ReportSummary::getRceptNo)
                 .collect(Collectors.toList());
     }
+
+
 
     // 회사코드(corpCode)를 통해서 api로 (회사정보,(보고서리스트))를 가져옴
     public DartReportListResponseDto getCompanyInfoByCorpCode(String corpCode, DownloadAllRequestDto dto){
@@ -365,11 +361,6 @@ public class DartApiServiceImpl implements DartApiService {
     }
 // ----------------------------------------------------------------------------
 
-
-/*
-    1. xml 1개 다운하던걸 폴더 만들어서 내부 파일 전부 바꾸는걸로 전환
-    2.
-*/
 
 
 }
