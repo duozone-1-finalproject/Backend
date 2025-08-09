@@ -25,7 +25,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
-      # JAR 파일 GitHub Actions Artifacts로 업로드
+      # 빌드된 JAR 파일을 GitHub Actions Artifacts로 업로드
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
