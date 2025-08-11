@@ -1,6 +1,7 @@
+// src/main/java/com/example/finalproject/login_auth/config/SecurityConfig.java
+
 package com.example.finalproject.login_auth.config;
 
-import com.example.finalproject.login_auth.handler.LocalLoginSuccessHandler;
 import com.example.finalproject.login_auth.handler.OAuthHandler;
 import com.example.finalproject.login_auth.security.JwtAuthenticationFilter;
 import com.example.finalproject.login_auth.security.JwtTokenProvider;
@@ -30,7 +31,7 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
-    private final LocalLoginSuccessHandler localLoginSuccessHandler;
+    // LocalLoginSuccessHandler 필드 제거
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, OAuthHandler oAuthHandler) throws Exception {
@@ -49,8 +50,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/users", // 회원가입: POST /users
                                 "/auth/login", // 기존 로그인
-                                "/auth/oauth/tokens", // OAuth 성공 후 토큰 처리
-                                "/tokens/refresh", // 토큰 갱신
+                                "/auth/refresh", // 통합된 토큰 갱신 엔드포인트
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
@@ -62,10 +62,10 @@ public class SecurityConfig {
                         .requestMatchers("/auth/status").authenticated() // 인증 상태 확인
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .successHandler(localLoginSuccessHandler)
-                        .permitAll()
+                .formLogin(form -> form // 이 부분은 OAuth2 로그인을 시작하는 페이지를 위해 남겨둘 수 있습니다.
+                                .loginPage("/login")
+                                .permitAll()
+                        // .successHandler(...) 설정 제거
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider),

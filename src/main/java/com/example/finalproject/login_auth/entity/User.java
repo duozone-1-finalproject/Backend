@@ -1,31 +1,34 @@
+// entity/User.java
 package com.example.finalproject.login_auth.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
+import lombok.*;
 
-@Data
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Document(indexName = "users")
 public class User {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @Column(unique = true, nullable = false)
     private String username;
 
-    private String password;
-
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String name;
 
+    private String password;
+
     private String role;
 
-    private String provider;
+    private String provider; // local, google, naver, kakao
 }
