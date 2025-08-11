@@ -55,6 +55,8 @@ dependencies {
 
 	// elasticsearch 의존성 추가
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	runtimeOnly 'me.paulschwarz:spring-dotenv:4.0.0'
+
 
 
 }
