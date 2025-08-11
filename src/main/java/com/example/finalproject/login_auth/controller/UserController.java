@@ -4,6 +4,8 @@ package com.example.finalproject.login_auth.controller;
 import com.example.finalproject.login_auth.dto.UserDto; // UserDto import
 import com.example.finalproject.login_auth.entity.User;
 import com.example.finalproject.login_auth.service.UserService;
+import com.example.finalproject.login_auth.dto.UserRequestDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,17 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @PostMapping
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRequestDto requestDto) {
+        try {
+            userService.register(requestDto);
+            return ResponseEntity.ok("회원가입이 성공적으로 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 중복된 아이디 등 서비스 레벨에서 발생한 예외 처리
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @GetMapping("/check")
     public ResponseEntity<?> checkUsername(@RequestParam String username) {
