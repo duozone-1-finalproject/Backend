@@ -19,11 +19,9 @@ spring:
 
   data:
     elasticsearch:
-      client:
-        reactive:
-          endpoints: ${ELASTICSEARCH_ENDPOINTS}
-      repositories:
-        enabled: true
+      cluster-nodes: localhost:9200 # 오픈서치 주소
+      username: admin
+      password: admin
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
@@ -98,4 +96,5 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.boot.autoconfigure.security: DEBUG
-    org.springframework.data.elasticsearch: DEBUG
+    org.springframework.data.opensearch: DEBUG
+    # org.springframework.data.elasticsearch: DEBUG
