@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +43,8 @@ public class DbServiceImpl implements DbService {
         }catch (NullPointerException exception){
             log.error("error : package com.example.finalproject.dart.service.impl.DbServiceImpl.saveCorpCode() ");
             return "error : NullPointerException";
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -49,7 +52,11 @@ public class DbServiceImpl implements DbService {
 
     // 테스트
     public List<CompanyOverview> test(String word){
-        return companyOverviewRepository.findByCorpNameContaining(word);
+        try {
+            return companyOverviewRepository.findByCorpNameContaining(word);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -58,7 +65,12 @@ public class DbServiceImpl implements DbService {
     public CompanyOverviewListResponseDto getAllCompanyOverviews(){
         // 컴퍼니 정보 전부 조회하기
         // http://localhost:8080/api/companies
-        List<CompanyOverview> companyOverviewList = companyOverviewRepository.findAll();
+        List<CompanyOverview> companyOverviewList = null;
+        try {
+            companyOverviewList = companyOverviewRepository.findAll();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         List<CompanyOverviewResponseDto> responseDtoList = companyOverviewList.stream()
                 .map(company -> CompanyOverviewResponseDto.builder()
