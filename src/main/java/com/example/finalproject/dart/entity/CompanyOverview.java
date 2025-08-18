@@ -1,25 +1,45 @@
 package com.example.finalproject.dart.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.*;
 
+@Entity
+@Table(name = "company_overview")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CompanyOverview {
-// private static final String INDEX_NAME = "company_overview";
-    @JsonProperty("corp_code")
+
+    @Id
+    @Column(name = "corp_code", length = 8, nullable = false)
     private String corpCode;
 
-    @JsonProperty("corp_name")
+    @Column(name = "corp_name", length = 100, nullable = false)
     private String corpName;
 
-    @JsonProperty("corp_eng_name")
-    private String corpEngName;
+    @Column(name = "corp_cls", length = 1)
+    private String corpCls;
 
-    @JsonProperty("stock_code")
-    private String stockCode;
+    @Column(name = "adres", length = 255)
+    private String adres;
 
+    @Column(name = "hm_url", length = 200)
+    private String hmUrl;
+
+    @Column(name = "induty_code", length = 10)
+    private String indutyCode;
+
+    @Column(name = "induty_name", length = 100)
+    private String indutyName;
+
+    @Column(name = "est_dt", length = 8)
+    private String estDt;
+
+    @Column(name = "favorite_count")
+    private Integer favoriteCount;
+
+    @Column(name = "logo", length = 300)
+    private String logo;
 }

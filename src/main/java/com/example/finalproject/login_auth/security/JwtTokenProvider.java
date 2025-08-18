@@ -1,76 +1,70 @@
-// jwt/JwtTokenProvider.java
 package com.example.finalproject.login_auth.security;
 
+import com.example.finalproject.login_auth.config.JwtProperties;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 
 @Component
-@Slf4j
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final Key secretKey;
-    private final long accessTokenValidityMs;
-    private final long refreshTokenValidityMs;
+    private final JwtProperties jwtProperties;
+    private Key key;
 
-    public JwtTokenProvider(
-            @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration:3600000}") long accessTokenValidityMs, // 1시간 (기본값)
-            @Value("${jwt.refresh-expiration:604800000}") long refreshTokenValidityMs) { // 7일 (기본값)
-
-        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
-        this.accessTokenValidityMs = accessTokenValidityMs;
-        this.refreshTokenValidityMs = refreshTokenValidityMs;
+    // ✅ key 초기화
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
     }
 
+    // ✅ 토큰 생성
     public String generateToken(String username) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + accessTokenValidityMs);
+        Date expiry = new Date(now.getTime() + jwtProperties.getExpiration());
 
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public String generateRefreshToken(String username) {
-        Date now = new Date();
-        Date expiry = new Date(now.getTime() + refreshTokenValidityMs);
-
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(now)
-                .setExpiration(expiry)
-                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+        return parseClaims(token).getBody().getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
+            parseClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            log.warn("토큰 검증 실패: {}", e.getMessage());
             return false;
         }
+    }
+
+    private Jws<Claims> parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
+    }
+
+    public String generateRefreshToken(String username) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + 1000L * 60 * 60 * 24 * 7); // 7일
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 }
