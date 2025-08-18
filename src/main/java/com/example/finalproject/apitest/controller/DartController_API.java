@@ -1,7 +1,7 @@
-package com.example.apitest.controller;
+package com.example.finalproject.apitest.controller;
 
-import com.example.apitest.service.DartFetchUseCase;
-import com.example.apitest.service.DartQueryUseCase;
+import com.example.finalproject.apitest.service.DartFetchUseCase;
+import com.example.finalproject.apitest.service.DartQueryUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/dart")
 @RequiredArgsConstructor
-public class DartController {
+public class DartController_API {
 
     private final DartFetchUseCase fetchUseCase;
     private final DartQueryUseCase queryUseCase;

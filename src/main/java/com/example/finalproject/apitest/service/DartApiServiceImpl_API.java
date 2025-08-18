@@ -1,7 +1,7 @@
-package com.example.apitest.service;
+package com.example.finalproject.apitest.service;
 
-import com.example.apitest.entity.*;
-import com.example.apitest.repository.*;
+import com.example.finalproject.apitest.entity.*;
+import com.example.finalproject.apitest.repository.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
+public class DartApiServiceImpl_API implements DartFetchUseCase, DartQueryUseCase {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -164,18 +164,34 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
     private void processGroupData(String groupTitle, JsonNode listNode) {
         log.info("그룹 처리: {} ({}건)", groupTitle, listNode.size());
         switch (groupTitle) {
-            case "일반사항" -> saveGeneralInfo(listNode);
-            case "증권의종류" -> saveSecuritiesInfo(listNode);
-            case "인수인정보" -> saveUnderwriterInfo(listNode);
-            case "자금의사용목적" -> saveFundUsage(listNode);
-            case "매출인에관한사항" -> saveSellerInfo(listNode);
-            case "일반청약자환매청구권" -> saveRedemptionRights(listNode);
+            case "일반사항" -> saveGeneralInfo(listNode, groupTitle);
+            case "증권의종류" -> saveSecuritiesInfo(listNode, groupTitle);
+            case "인수인정보" -> saveUnderwriterInfo(listNode, groupTitle);
+            case "자금의사용목적" -> saveFundUsage(listNode, groupTitle);
+            case "매출인에관한사항" -> saveSellerInfo(listNode, groupTitle);
+            case "일반청약자환매청구권" -> saveRedemptionRights(listNode, groupTitle);
             default -> log.warn("미지원 그룹: {}", groupTitle);
         }
     }
 
-    /** 일반사항 */
-    private void saveGeneralInfo(JsonNode listNode) {
+    private void saveFundUsage(JsonNode listNode, String groupTitle) {
+        List<DartFundUsage> list = new ArrayList<>();
+        for (JsonNode item : listNode) {
+            DartFundUsage e = new DartFundUsage();
+            e.setRceptNo(item.path("rcept_no").asText(null));
+            e.setCorpCls(item.path("corp_cls").asText(null));
+            e.setCorpCode(item.path("corp_code").asText(null));
+            e.setCorpName(item.path("corp_name").asText(null));
+            e.setGroupTitle(groupTitle); // ✅ 그룹 타이틀 저장
+            e.setSe(item.path("se").asText(null));
+            e.setAmt(parseLong(item.path("amt").asText(null)));
+            list.add(e);
+        }
+        fundUsageRepository.saveAll(list);
+        log.info("자금의사용목적 저장: {}건 (groupTitle={})", list.size(), groupTitle);
+    }
+
+    private void saveGeneralInfo(JsonNode listNode, String groupTitle) {
         List<DartGeneralInfo> list = new ArrayList<>();
         for (JsonNode item : listNode) {
             DartGeneralInfo e = new DartGeneralInfo();
@@ -183,6 +199,7 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             e.setCorpCls(item.path("corp_cls").asText(null));
             e.setCorpCode(item.path("corp_code").asText(null));
             e.setCorpName(item.path("corp_name").asText(null));
+            e.setGroupTitle(groupTitle); // ★
             e.setSbd(parseDate(item.path("sbd").asText(null)));
             e.setPymd(parseDate(item.path("pymd").asText(null)));
             e.setSband(parseDate(item.path("sband").asText(null)));
@@ -194,16 +211,12 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             e.setRptRcpn(item.path("rpt_rcpn").asText(null));
             list.add(e);
         }
-        for (DartGeneralInfo e : list) {
-            if (e.getRceptNo() != null && !generalInfoRepository.existsByRceptNo(e.getRceptNo())) {
-                generalInfoRepository.save(e);
-            }
-        }
-        log.info("일반사항 저장: {}건", list.size());
+        // (중복 방지 로직 유지/추가는 선택)
+        generalInfoRepository.saveAll(list);
+        log.info("일반사항 저장: {}건 (groupTitle={})", list.size(), groupTitle);
     }
 
-    /** 증권의종류 */
-    private void saveSecuritiesInfo(JsonNode listNode) {
+    private void saveSecuritiesInfo(JsonNode listNode, String groupTitle) {
         List<DartSecuritiesInfo> list = new ArrayList<>();
         for (JsonNode item : listNode) {
             DartSecuritiesInfo e = new DartSecuritiesInfo();
@@ -211,6 +224,7 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             e.setCorpCls(item.path("corp_cls").asText(null));
             e.setCorpCode(item.path("corp_code").asText(null));
             e.setCorpName(item.path("corp_name").asText(null));
+            e.setGroupTitle(groupTitle); // ★
             e.setStksen(item.path("stksen").asText(null));
             e.setStkcnt(parseLong(item.path("stkcnt").asText(null)));
             e.setFv(parseLong(item.path("fv").asText(null)));
@@ -220,11 +234,10 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             list.add(e);
         }
         securitiesInfoRepository.saveAll(list);
-        log.info("증권의종류 저장: {}건", list.size());
+        log.info("증권의종류 저장: {}건 (groupTitle={})", list.size(), groupTitle);
     }
 
-    /** 인수인정보 */
-    private void saveUnderwriterInfo(JsonNode listNode) {
+    private void saveUnderwriterInfo(JsonNode listNode, String groupTitle) {
         List<DartUnderwriterInfo> list = new ArrayList<>();
         for (JsonNode item : listNode) {
             DartUnderwriterInfo e = new DartUnderwriterInfo();
@@ -232,6 +245,7 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             e.setCorpCls(item.path("corp_cls").asText(null));
             e.setCorpCode(item.path("corp_code").asText(null));
             e.setCorpName(item.path("corp_name").asText(null));
+            e.setGroupTitle(groupTitle); // ★
             e.setActsen(item.path("actsen").asText(null));
             e.setActnmn(item.path("actnmn").asText(null));
             e.setStksen(item.path("stksen").asText(null));
@@ -242,28 +256,10 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             list.add(e);
         }
         underwriterInfoRepository.saveAll(list);
-        log.info("인수인정보 저장: {}건", list.size());
+        log.info("인수인정보 저장: {}건 (groupTitle={})", list.size(), groupTitle);
     }
 
-    /** 자금의사용목적 */
-    private void saveFundUsage(JsonNode listNode) {
-        List<DartFundUsage> list = new ArrayList<>();
-        for (JsonNode item : listNode) {
-            DartFundUsage e = new DartFundUsage();
-            e.setRceptNo(item.path("rcept_no").asText(null));
-            e.setCorpCls(item.path("corp_cls").asText(null));
-            e.setCorpCode(item.path("corp_code").asText(null));
-            e.setCorpName(item.path("corp_name").asText(null));
-            e.setSe(item.path("se").asText(null));
-            e.setAmt(parseLong(item.path("amt").asText(null)));
-            list.add(e);
-        }
-        fundUsageRepository.saveAll(list);
-        log.info("자금의사용목적 저장: {}건", list.size());
-    }
-
-    /** 매출인에관한사항 */
-    private void saveSellerInfo(JsonNode listNode) {
+    private void saveSellerInfo(JsonNode listNode, String groupTitle) {
         List<DartSellerInfo> list = new ArrayList<>();
         for (JsonNode item : listNode) {
             DartSellerInfo e = new DartSellerInfo();
@@ -271,6 +267,7 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             e.setCorpCls(item.path("corp_cls").asText(null));
             e.setCorpCode(item.path("corp_code").asText(null));
             e.setCorpName(item.path("corp_name").asText(null));
+            e.setGroupTitle(groupTitle); // ★
             e.setHdr(item.path("hdr").asText(null));
             e.setRlCmp(item.path("rl_cmp").asText(null));
             e.setBfslHdstk(parseLong(item.path("bfsl_hdstk").asText(null)));
@@ -279,11 +276,10 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             list.add(e);
         }
         sellerInfoRepository.saveAll(list);
-        log.info("매출인에관한사항 저장: {}건", list.size());
+        log.info("매출인에관한사항 저장: {}건 (groupTitle={})", list.size(), groupTitle);
     }
 
-    /** 일반청약자환매청구권 */
-    private void saveRedemptionRights(JsonNode listNode) {
+    private void saveRedemptionRights(JsonNode listNode, String groupTitle) {
         List<DartRedemptionRights> list = new ArrayList<>();
         for (JsonNode item : listNode) {
             DartRedemptionRights e = new DartRedemptionRights();
@@ -291,6 +287,7 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             e.setCorpCls(item.path("corp_cls").asText(null));
             e.setCorpCode(item.path("corp_code").asText(null));
             e.setCorpName(item.path("corp_name").asText(null));
+            e.setGroupTitle(groupTitle); // ★
             e.setGrtrs(item.path("grtrs").asText(null));
             e.setExavivr(item.path("exavivr").asText(null));
             e.setGrtcnt(parseLong(item.path("grtcnt").asText(null)));
@@ -299,7 +296,7 @@ public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
             list.add(e);
         }
         redemptionRightsRepository.saveAll(list);
-        log.info("일반청약자환매청구권 저장: {}건", list.size());
+        log.info("일반청약자환매청구권 저장: {}건 (groupTitle={})", list.size(), groupTitle);
     }
 
     /** QUERY 계열 */

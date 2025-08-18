@@ -1,4 +1,4 @@
-package com.example.apitest.dto;
+package com.example.finalproject.apitest.dto;
 
 public class CompanyOverviewResponse {
     private Company company;

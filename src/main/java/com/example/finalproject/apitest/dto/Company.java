@@ -1,6 +1,4 @@
-package com.example.apitest.dto;
-
-import com.example.apitest.dto.Headquarters;
+package com.example.finalproject.apitest.dto;
 
 public class Company {
     private Headquarters hq;

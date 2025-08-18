@@ -1,4 +1,4 @@
-package com.example.apitest.config;
+package com.example.finalproject.apitest.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

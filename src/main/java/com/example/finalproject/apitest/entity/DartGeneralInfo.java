@@ -1,5 +1,5 @@
 // 1. 일반사항 Entity
-package com.example.apitest.entity;
+package com.example.finalproject.apitest.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,6 +18,9 @@ public class DartGeneralInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "group_title", length = 100)
+    private String groupTitle;
 
     @Column(name = "rcept_no", length = 14, nullable = false)
     private String rceptNo;
