@@ -41,5 +41,12 @@ public class DartController {
         return dartApiService.saveDownloadedReports(dto);
     }
 
+    // 기업코드로 최근 1년간의 사업/1분기/3분기/반기/감사 보고서의 리스트 반환
+    @GetMapping("reports/core")
+    public DartReportListResponseDto test(@RequestParam String corp_code){
+        return dartApiService.getRceptNosByCorpCode(corp_code); // "01571107"
+    }
+
+
 
 }
