@@ -40,6 +40,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.mysql:mysql-connector-j:8.2.0'
 	implementation 'com.mysql:mysql-connector-j'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 
 	// ✅ Lombok 의존성
 	compileOnly 'org.projectlombok:lombok'

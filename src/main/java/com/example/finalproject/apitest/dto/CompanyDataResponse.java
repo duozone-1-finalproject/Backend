@@ -1,0 +1,18 @@
+package com.example.apitest.dto;
+import com.example.apitest.entity.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CompanyDataResponse {
+    private String corpCode;
+    private List<DartGeneralInfo> generalInfo;
+    private List<DartSecuritiesInfo> securitiesInfo;
+    private List<DartUnderwriterInfo> underwriterInfo;
+    private List<DartFundUsage> fundUsage;
+    private List<DartSellerInfo> sellerInfo;
+    private List<DartRedemptionRights> redemptionRights; }
