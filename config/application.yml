@@ -14,6 +14,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    dialect: org.hibernate.dialect.MariaDBDialect
     open-in-view: false
 
   data:
@@ -87,7 +88,6 @@ dart:
     key: ${DART_API_KEY}
     obj: ${DART_API_OBJ_KEY}
     ljh: ${DART_API_LJH_KEY}
-    base-url: https://opendart.fss.or.kr/api
 
 frontend:
   url: ${FRONTEND_URL}
