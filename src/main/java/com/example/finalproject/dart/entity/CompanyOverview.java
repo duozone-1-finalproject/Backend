@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CompanyOverview {
-
+// private static final String INDEX_NAME = "company_overview";
     @JsonProperty("corp_code")
     private String corpCode;
 
