@@ -1,5 +1,6 @@
-package com.example.apitest.config;
+package com.example.finalproject.apitest.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,5 +26,10 @@ public class DartConfig {
         return builder
                 .requestFactory(() -> requestFactory)
                 .build();
+    }
+
+    @Bean // 이 ObjectMapper 빈 생성 코드를 추가하면 에러가 해결됩니다.
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }

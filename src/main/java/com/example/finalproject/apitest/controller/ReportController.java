@@ -1,7 +1,7 @@
-package com.example.apitest.controller;
+package com.example.finalproject.apitest.controller;
 
-import com.example.apitest.dto.CompanyOverviewResponse;
-import com.example.apitest.service.DartService;
+import com.example.finalproject.apitest.dto.CompanyOverviewResponse;
+import com.example.finalproject.apitest.service.DartService2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -11,10 +11,10 @@ import java.util.Map;
 @CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173"}, allowCredentials = "true")
 public class ReportController {
 
-    private final DartService dartService;
+    private final DartService2 dartService2;
 
-    public ReportController(DartService dartService) {
-        this.dartService = dartService;
+    public ReportController(DartService2 dartService2) {
+        this.dartService2 = dartService2;
     }
 
     // rceptNo → corpCode 임시 매핑 (없으면 기본값 사용)
@@ -32,6 +32,6 @@ public class ReportController {
                         ? corpCode
                         : RNO_TO_CORP.getOrDefault(rceptNo, "01571107");
 
-        return dartService.getCompanyOverviewByCorpCode(useCorp);
+        return dartService2.getCompanyOverviewByCorpCode(useCorp);
     }
 }

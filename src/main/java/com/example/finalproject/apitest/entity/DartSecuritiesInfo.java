@@ -1,5 +1,5 @@
 // 2. 증권의종류 Entity
-package com.example.apitest.entity;
+package com.example.finalproject.apitest.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

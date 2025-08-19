@@ -1,20 +1,20 @@
-package com.example.apitest.service;
+package com.example.finalproject.apitest.service;
 
-import com.example.apitest.dto.DartCompanyResponse;
-import com.example.apitest.dto.Company;
-import com.example.apitest.dto.CompanyOverviewResponse;
-import com.example.apitest.dto.Headquarters;
-import com.example.apitest.config.DartApiProperties;
+import com.example.finalproject.apitest.dto.DartCompanyResponse;
+import com.example.finalproject.apitest.dto.Company;
+import com.example.finalproject.apitest.dto.CompanyOverviewResponse;
+import com.example.finalproject.apitest.dto.Headquarters;
+import com.example.finalproject.apitest.config.DartApiProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class DartService {
+public class DartService2 {
 
     private final RestClient client;
     private final String apiKey;
 
-    public DartService(DartApiProperties dartApiProperties) {
+    public DartService2(DartApiProperties dartApiProperties) {
         this.client = RestClient.builder()
                 .baseUrl(dartApiProperties.getBaseUrl())
                 .build();

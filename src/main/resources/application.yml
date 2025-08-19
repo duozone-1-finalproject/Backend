@@ -87,6 +87,7 @@ dart:
     key: ${DART_API_KEY}
     obj: ${DART_API_OBJ_KEY}
     ljh: ${DART_API_LJH_KEY}
+    base-url: https://opendart.fss.or.kr/api
 
 frontend:
   url: ${FRONTEND_URL}

@@ -1,5 +1,5 @@
-package com.example.apitest.dto;
-import com.example.apitest.entity.*;
+package com.example.finalproject.apitest.dto;
+import com.example.finalproject.apitest.entity.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
