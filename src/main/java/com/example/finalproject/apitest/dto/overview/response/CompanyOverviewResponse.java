@@ -1,4 +1,6 @@
-package com.example.finalproject.apitest.dto;
+package com.example.finalproject.apitest.dto.overview.response;
+
+import com.example.finalproject.apitest.dto.common.Company;
 
 public class CompanyOverviewResponse {
     private Company company;
