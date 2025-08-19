@@ -1,4 +1,4 @@
-package com.example.apitest.service;
+package com.example.finalproject.apitest.service;
 
 import java.util.Map;
 

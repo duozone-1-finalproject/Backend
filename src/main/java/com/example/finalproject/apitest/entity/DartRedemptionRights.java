@@ -1,4 +1,4 @@
-package com.example.apitest.entity;
+package com.example.finalproject.apitest.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

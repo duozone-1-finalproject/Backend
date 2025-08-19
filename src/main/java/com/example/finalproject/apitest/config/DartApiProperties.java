@@ -1,11 +1,12 @@
-package com.example.apitest.config;
+package com.example.finalproject.apitest.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 @Component
 @ConfigurationProperties(prefix = "dart.api")
 public class DartApiProperties {

@@ -1,5 +1,5 @@
 // 1. 일반사항 Entity
-package com.example.apitest.entity;
+package com.example.finalproject.apitest.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

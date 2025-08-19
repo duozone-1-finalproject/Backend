@@ -1,7 +1,7 @@
-package com.example.apitest.service;
+package com.example.finalproject.apitest.service;
 
-import com.example.apitest.entity.*;
-import com.example.apitest.repository.*;
+import com.example.finalproject.apitest.entity.*;
+import com.example.finalproject.apitest.repository.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DartApiServiceImpl implements DartFetchUseCase, DartQueryUseCase {
+public class DartApiServiceImpl2 implements DartFetchUseCase, DartQueryUseCase {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;

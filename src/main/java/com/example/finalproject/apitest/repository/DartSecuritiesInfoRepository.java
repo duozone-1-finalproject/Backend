@@ -1,7 +1,7 @@
 // 2. DartSecuritiesInfoRepository
-package com.example.apitest.repository;
+package com.example.finalproject.apitest.repository;
 
-import com.example.apitest.entity.DartSecuritiesInfo;
+import com.example.finalproject.apitest.entity.DartSecuritiesInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
