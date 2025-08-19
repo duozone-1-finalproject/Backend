@@ -1,19 +1,18 @@
-package com.example.finalproject.apitest.entity;
+package com.example.finalproject.apitest.entity.equity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 
-// 5. 매출인에관한사항 Entity
+// 3. 인수인정보 Entity
 @Entity
-@Table(name = "dart_seller_info")
+@Table(name = "dart_underwriter_info")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DartSellerInfo {
+public class DartUnderwriterInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,20 +30,26 @@ public class DartSellerInfo {
     @Column(name = "corp_name", length = 200)
     private String corpName;
 
-    @Column(name = "hdr", length = 200)
-    private String hdr; // 보유자
+    @Column(name = "actsen", length = 100)
+    private String actsen; // 인수인구분
 
-    @Column(name = "rl_cmp", length = 200)
-    private String rlCmp; // 회사와의관계
+    @Column(name = "actnmn", length = 200)
+    private String actnmn; // 인수인명
 
-    @Column(name = "bfsl_hdstk")
-    private Long bfslHdstk; // 매출전보유증권수
+    @Column(name = "stksen", length = 100)
+    private String stksen; // 증권의종류
 
-    @Column(name = "slstk")
-    private Long slstk; // 매출증권수
+    @Column(name = "udtcnt")
+    private Long udtcnt; // 인수수량
 
-    @Column(name = "atsl_hdstk")
-    private Long atslHdstk; // 매출후보유증권수
+    @Column(name = "udtamt")
+    private Long udtamt; // 인수금액
+
+    @Column(name = "udtprc")
+    private Long udtprc; // 인수대가
+
+    @Column(name = "udtmth", length = 100)
+    private String udtmth; // 인수방법
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

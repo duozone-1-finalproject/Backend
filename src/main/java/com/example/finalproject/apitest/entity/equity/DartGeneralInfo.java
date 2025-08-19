@@ -1,4 +1,5 @@
-package com.example.finalproject.apitest.entity;
+// 1. 일반사항 Entity
+package com.example.finalproject.apitest.entity.equity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,13 +8,12 @@ import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
-// 3. 인수인정보 Entity
 @Entity
-@Table(name = "dart_underwriter_info")
+@Table(name = "dart_general_info")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DartUnderwriterInfo {
+public class DartGeneralInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,26 +31,32 @@ public class DartUnderwriterInfo {
     @Column(name = "corp_name", length = 200)
     private String corpName;
 
-    @Column(name = "actsen", length = 100)
-    private String actsen; // 인수인구분
+    @Column(name = "sbd")
+    private LocalDate sbd; // 청약기일
 
-    @Column(name = "actnmn", length = 200)
-    private String actnmn; // 인수인명
+    @Column(name = "pymd")
+    private LocalDate pymd; // 납입기일
 
-    @Column(name = "stksen", length = 100)
-    private String stksen; // 증권의종류
+    @Column(name = "sband")
+    private LocalDate sband; // 청약공고일
 
-    @Column(name = "udtcnt")
-    private Long udtcnt; // 인수수량
+    @Column(name = "asand")
+    private LocalDate asand; // 배정공고일
 
-    @Column(name = "udtamt")
-    private Long udtamt; // 인수금액
+    @Column(name = "asstd")
+    private LocalDate asstd; // 배정기준일
 
-    @Column(name = "udtprc")
-    private Long udtprc; // 인수대가
+    @Column(name = "exstk", columnDefinition = "TEXT")
+    private String exstk; // 신주인수권 행사대상증권
 
-    @Column(name = "udtmth", length = 100)
-    private String udtmth; // 인수방법
+    @Column(name = "exprc")
+    private Long exprc; // 신주인수권 행사가격
+
+    @Column(name = "expd", columnDefinition = "TEXT")
+    private String expd; // 신주인수권 행사기간
+
+    @Column(name = "rpt_rcpn", length = 14)
+    private String rptRcpn; // 주요사항보고서 접수번호
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

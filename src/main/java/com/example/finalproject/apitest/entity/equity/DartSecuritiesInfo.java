@@ -1,19 +1,19 @@
-package com.example.finalproject.apitest.entity;
+// 2. 증권의종류 Entity
+package com.example.finalproject.apitest.entity.equity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 
-// 6. 일반청약자환매청구권 Entity
+
 @Entity
-@Table(name = "dart_redemption_rights")
+@Table(name = "dart_securities_info")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DartRedemptionRights {
+public class DartSecuritiesInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,20 +31,23 @@ public class DartRedemptionRights {
     @Column(name = "corp_name", length = 200)
     private String corpName;
 
-    @Column(name = "grtrs", length = 200)
-    private String grtrs; // 부여사유
+    @Column(name = "stksen", length = 100)
+    private String stksen; // 증권의종류
 
-    @Column(name = "exavivr", length = 200)
-    private String exavivr; // 행사가능 투자자
+    @Column(name = "stkcnt")
+    private Long stkcnt; // 증권수량
 
-    @Column(name = "grtcnt")
-    private Long grtcnt; // 부여수량
+    @Column(name = "fv")
+    private Long fv; // 액면가액
 
-    @Column(name = "expd", columnDefinition = "TEXT")
-    private String expd; // 행사기간
+    @Column(name = "slprc")
+    private Long slprc; // 모집(매출)가액
 
-    @Column(name = "exprc")
-    private Long exprc; // 행사가격
+    @Column(name = "slta")
+    private Long slta; // 모집(매출)총액
+
+    @Column(name = "slmthn", length = 100)
+    private String slmthn; // 모집(매출)방법
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

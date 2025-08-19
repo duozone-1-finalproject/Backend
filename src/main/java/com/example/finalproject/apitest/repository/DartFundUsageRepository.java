@@ -1,10 +1,9 @@
 // 4. DartFundUsageRepository
 package com.example.finalproject.apitest.repository;
 
-import com.example.finalproject.apitest.entity.DartFundUsage;
+import com.example.finalproject.apitest.entity.equity.DartFundUsage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
