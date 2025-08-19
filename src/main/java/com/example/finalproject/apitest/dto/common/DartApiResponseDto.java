@@ -1,4 +1,4 @@
-package com.example.finalproject.apitest.dto;
+package com.example.finalproject.apitest.dto.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

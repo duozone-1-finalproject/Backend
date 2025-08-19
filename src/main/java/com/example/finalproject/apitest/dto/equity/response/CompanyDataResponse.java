@@ -1,4 +1,4 @@
-package com.example.finalproject.apitest.dto;
+package com.example.finalproject.apitest.dto.equity.response;
 import com.example.finalproject.apitest.entity.equity.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

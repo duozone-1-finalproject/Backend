@@ -1,5 +1,5 @@
 // 1. DartGeneralInfoRepository
-package com.example.finalproject.apitest.repository;
+package com.example.finalproject.apitest.repository.equity;
 
 import com.example.finalproject.apitest.entity.equity.DartGeneralInfo;
 import org.springframework.data.jpa.repository.JpaRepository;

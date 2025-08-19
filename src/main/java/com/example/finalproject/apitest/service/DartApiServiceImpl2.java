@@ -1,7 +1,7 @@
 package com.example.finalproject.apitest.service;
 
 import com.example.finalproject.apitest.entity.equity.*;
-import com.example.finalproject.apitest.repository.*;
+import com.example.finalproject.apitest.repository.equity.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.finalproject.apitest.dto;
+package com.example.finalproject.apitest.dto.equity.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DartGroupDataDto {
+public class DartGroupDataResponse {
     @JsonProperty("grouptitle") // 실제 키가 "title"이면 여기를 "title"로 바꾸세요.
     private String groupTitle;
 

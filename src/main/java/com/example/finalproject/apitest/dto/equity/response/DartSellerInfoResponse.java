@@ -1,4 +1,4 @@
-package com.example.finalproject.apitest.dto;
+package com.example.finalproject.apitest.dto.equity.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DartFundUsageDto {
+public class DartSellerInfoResponse {
     @JsonProperty("rcept_no")
     private String rceptNo;
 
@@ -19,9 +19,18 @@ public class DartFundUsageDto {
     @JsonProperty("corp_name")
     private String corpName;
 
-    @JsonProperty("se")
-    private String se;
+    @JsonProperty("hdr")
+    private String hdr;
 
-    @JsonProperty("amt")
-    private String amt;
+    @JsonProperty("rl_cmp")
+    private String rlCmp;
+
+    @JsonProperty("bfsl_hdstk")
+    private String bfslHdstk;
+
+    @JsonProperty("slstk")
+    private String slstk;
+
+    @JsonProperty("atsl_hdstk")
+    private String atslHdstk;
 }

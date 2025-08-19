@@ -1,5 +1,5 @@
 // 6. DartRedemptionRightsRepository
-package com.example.finalproject.apitest.repository;
+package com.example.finalproject.apitest.repository.equity;
 
 import com.example.finalproject.apitest.entity.equity.DartRedemptionRights;
 import org.springframework.data.jpa.repository.JpaRepository;
