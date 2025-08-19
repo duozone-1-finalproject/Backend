@@ -1,9 +1,9 @@
 package com.example.finalproject.apitest.service;
 
-import com.example.finalproject.apitest.dto.DartCompanyResponse;
-import com.example.finalproject.apitest.dto.Company;
-import com.example.finalproject.apitest.dto.CompanyOverviewResponse;
-import com.example.finalproject.apitest.dto.Headquarters;
+import com.example.finalproject.apitest.dto.equity.response.DartCompanyResponse;
+import com.example.finalproject.apitest.dto.common.Company;
+import com.example.finalproject.apitest.dto.overview.response.CompanyOverviewResponse;
+import com.example.finalproject.apitest.dto.common.Headquarters;
 import com.example.finalproject.apitest.config.DartApiProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;

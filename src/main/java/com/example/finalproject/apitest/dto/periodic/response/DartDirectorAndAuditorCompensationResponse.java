@@ -1,6 +1,6 @@
-package com.example.finalproject.apitest.dto;
+package com.example.finalproject.apitest.dto.periodic.response;
 // 이사·감사 전체의 보수현황(보수지급금액 - 유형별)
-import com.example.finalproject.apitest.entity.DartDirectorAndAuditorCompensation;
+import com.example.finalproject.apitest.entity.periodic.DartDirectorAndAuditorCompensation;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.example.finalproject.apitest.dto;
+package com.example.finalproject.apitest.dto.equity.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DartGeneralInfoDto {
+public class DartGeneralInfoResponse {
     @JsonProperty("rcept_no")
     private String rceptNo;
 
