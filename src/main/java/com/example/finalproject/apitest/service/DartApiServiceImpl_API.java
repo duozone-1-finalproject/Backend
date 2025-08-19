@@ -23,7 +23,6 @@ public class DartApiServiceImpl_API implements DartFetchUseCase, DartQueryUseCas
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-
     private final DartGeneralInfoRepository generalInfoRepository;
     private final DartSecuritiesInfoRepository securitiesInfoRepository;
     private final DartUnderwriterInfoRepository underwriterInfoRepository;
