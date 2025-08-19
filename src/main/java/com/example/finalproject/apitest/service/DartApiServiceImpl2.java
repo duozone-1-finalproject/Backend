@@ -1,6 +1,6 @@
 package com.example.finalproject.apitest.service;
 
-import com.example.finalproject.apitest.entity.*;
+import com.example.finalproject.apitest.entity.equity.*;
 import com.example.finalproject.apitest.repository.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
