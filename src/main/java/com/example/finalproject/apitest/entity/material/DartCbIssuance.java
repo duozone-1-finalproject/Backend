@@ -1,4 +1,4 @@
-package com.example.finalproject.apitest.entity.periodic;
+package com.example.finalproject.apitest.entity.material;
 
 // 전환사채권 발행결정
 import jakarta.persistence.*;

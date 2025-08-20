@@ -1,6 +1,6 @@
-package com.example.finalproject.apitest.repository.periodic;
+package com.example.finalproject.apitest.repository.material;
 
-import com.example.finalproject.apitest.entity.periodic.DartCbIssuance;
+import com.example.finalproject.apitest.entity.material.DartCbIssuance;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

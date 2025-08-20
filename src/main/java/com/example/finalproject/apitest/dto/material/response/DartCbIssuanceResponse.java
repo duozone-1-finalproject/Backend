@@ -1,7 +1,7 @@
-package com.example.finalproject.apitest.dto.periodic.response;
+package com.example.finalproject.apitest.dto.material.response;
 
 // 전환사채권 발행결정
-import com.example.finalproject.apitest.entity.periodic.DartCbIssuance;
+import com.example.finalproject.apitest.entity.material.DartCbIssuance;
 import lombok.Builder;
 import lombok.Getter;
 
