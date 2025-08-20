@@ -49,6 +49,6 @@ public class UserController {
         // UserService를 통해 User 조회 로직 위임
         User user = userService.findUserByUsername(username);
 
-        return new UserDto(user.getUsername(), user.getEmail(), user.getRole());
+        return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 }
