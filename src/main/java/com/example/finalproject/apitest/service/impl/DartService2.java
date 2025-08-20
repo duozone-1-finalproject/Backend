@@ -1,4 +1,4 @@
-package com.example.finalproject.apitest.service;
+package com.example.finalproject.apitest.service.impl;
 
 import com.example.finalproject.apitest.dto.equity.response.DartCompanyResponse;
 import com.example.finalproject.apitest.dto.common.Company;

@@ -1,14 +1,14 @@
 package com.example.finalproject.apitest.controller;
 
 import com.example.finalproject.apitest.dto.overview.response.CompanyOverviewResponse;
-import com.example.finalproject.apitest.service.DartService2;
+import com.example.finalproject.apitest.service.impl.DartService2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/dart/reports")
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173"}, allowCredentials = "true")
+// @CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173"}, allowCredentials = "true")
 public class ReportController {
 
     private final DartService2 dartService2;
