@@ -1,4 +1,4 @@
-package com.example.finalproject.apitest.dto.material;
+package com.example.finalproject.apitest.dto.material.response;
 
 // 상각형 조건부자본증권 발행결정
 import com.example.finalproject.apitest.entity.material.DartCocoBondIssuance;
