@@ -1,7 +1,9 @@
-package com.example.finalproject.apitest.service;
+package com.example.finalproject.apitest.service.impl;
 
 import com.example.finalproject.apitest.entity.equity.*;
 import com.example.finalproject.apitest.repository.equity.*;
+import com.example.finalproject.apitest.service.DartFetchUseCase;
+import com.example.finalproject.apitest.service.DartQueryUseCase;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
