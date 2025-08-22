@@ -12,7 +12,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/versions")
-@CrossOrigin(origins = "http://localhost:3000") // React 앱 주소
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true") // React 앱 주소
 public class ViewerController {
     private final UserVersionService userVersionService;
 
