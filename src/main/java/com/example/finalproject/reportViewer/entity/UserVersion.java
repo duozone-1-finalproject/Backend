@@ -1,10 +1,9 @@
 package com.example.finalproject.reportViewer.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "user_versions")
 @Getter
 @Setter
 @Builder
@@ -13,50 +12,48 @@ import lombok.*;
 public class UserVersion {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
     private Long id;
 
     // user_id
-    @Column(name = "user_id", nullable = false)
+    @JsonProperty("user_id")
     private Long userId;
 
     // version
-    @Column(length = 100)
+    @JsonProperty("version")
     private String version;
 
+    @JsonProperty("version_number")
+    private Long versionNumber;
+
     // sections
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
+    @JsonProperty("section1")
     private String section1;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
+    @JsonProperty("section2")
     private String section2;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
+    @JsonProperty("section3")
     private String section3;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
+    @JsonProperty("section4")
     private String section4;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
+    @JsonProperty("section5")
     private String section5;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
+    @JsonProperty("section6")
     private String section6;
 
-    @Column(columnDefinition = "TEXT")
+    @JsonProperty("description")
     private String description;
 
-    @Column(length = 100)
+    @JsonProperty("created_at")
     private String createdAt;
 
     // modifiedSections (json 타입)
-    @Column(columnDefinition = "JSON")
+    @JsonProperty("modified_sections")
     private String modifiedSections;
+
 
 }

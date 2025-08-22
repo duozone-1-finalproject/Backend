@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public class UserVersionServiceImpl implements UserVersionService {
 
     @Override
     // 1. 모든 버전 조회
-    public Map<String, VersionResponseDto> getVersions(Long userId) {
+    public Map<String, VersionResponseDto> getVersions(Long userId) throws IOException {
         return userVersionRepository.findByUserId(userId).stream()
                 .collect(Collectors.toMap(
                         UserVersion::getVersion,
@@ -66,10 +67,11 @@ public class UserVersionServiceImpl implements UserVersionService {
     }
 
     @Override
-    public UserVersion createVersion(CreateVersionRequestDto request) {
+    public UserVersion createVersion(CreateVersionRequestDto request) throws IOException {
         UserVersion newEntry = new UserVersion();
         newEntry.setUserId(request.getUserId());
         newEntry.setVersion(request.getVersion());
+        newEntry.setVersionNumber(request.getVersionNumber());
         newEntry.setDescription(request.getDescription());
         newEntry.setCreatedAt(request.getCreatedAt());
 
@@ -86,7 +88,7 @@ public class UserVersionServiceImpl implements UserVersionService {
     }
 
     @Override
-    public UserVersion saveEditingVersion(SaveEditingVersionRequestDto request) {
+    public UserVersion saveEditingVersion(SaveEditingVersionRequestDto request) throws IOException {
         UserVersion editing = userVersionRepository.findByUserIdAndVersion(request.getUserId(), "editing")
                 .orElseGet(() -> {
                     UserVersion u = new UserVersion();
@@ -122,20 +124,20 @@ public class UserVersionServiceImpl implements UserVersionService {
                 .orElseThrow(() -> new RuntimeException("편집중인 버전이 없습니다."));
 
         // List<String> → JSON 문자열
-        System.out.println("request.getModifiedSections()" + request.getModifiedSections());
         String json = mapper.writeValueAsString(request.getModifiedSections());
-        System.out.println("json" + json);
         editing.setModifiedSections(json);
 
         return userVersionRepository.save(editing);
     }
 
     @Override
-    public UserVersion finalizeVersion(FinalizeVersionRequestDto request) {
+    public UserVersion finalizeVersion(FinalizeVersionRequestDto request) throws IOException {
         UserVersion editing = userVersionRepository.findByUserIdAndVersion(request.getUserId(), "editing")
                 .orElseThrow(() -> new RuntimeException("편집중인 버전이 없습니다."));
 
+        // 현재 이 코드에서 계속 v0를 리턴하고 있음 -> 그래서 계속 v1만 업데이트 되는 현상 발생.
         Optional<UserVersion> lastOpt = userVersionRepository.findTopByUserIdAndVersionNotOrderByIdDesc(request.getUserId(), "editing");
+
         int newNum = 0;
         if (lastOpt.isPresent() && lastOpt.get().getVersion().startsWith("v")) {
             newNum = Integer.parseInt(lastOpt.get().getVersion().replace("v", "")) + 1;
@@ -145,6 +147,7 @@ public class UserVersionServiceImpl implements UserVersionService {
         UserVersion newEntry = UserVersion.builder()
                 .userId(request.getUserId())
                 .version(newVersion)
+                .versionNumber((long) newNum)
                 .description(request.getDescription())
                 .createdAt(request.getCreatedAt())
                 .section1(editing.getSection1())
@@ -154,16 +157,14 @@ public class UserVersionServiceImpl implements UserVersionService {
                 .section5(editing.getSection5())
                 .section6(editing.getSection6())
                 .build();
-        userVersionRepository.delete(editing);
+        userVersionRepository.delete(request.getUserId());
 
         return userVersionRepository.save(newEntry);
     }
 
     @Override
     @Transactional
-    public void deleteEditingVersion(DeleteEditingRequestDto request) {
-        UserVersion editing = userVersionRepository.findByUserIdAndVersion(request.getUserId(), "editing")
-                .orElseThrow(() -> new RuntimeException("편집중인 버전이 없습니다."));
-        userVersionRepository.delete(editing);
+    public void deleteEditingVersion(DeleteEditingRequestDto request) throws IOException {
+        userVersionRepository.delete(request.getUserId());
     }
 }

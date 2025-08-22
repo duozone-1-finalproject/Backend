@@ -13,6 +13,7 @@ public class CreateVersionRequestDto {
     @JsonProperty("user_id")
     private Long userId;
     private String version;
+    private Long versionNumber;
     private String description; //null 가능
     private final Map<String, String> sectionsData = new HashMap<>();
     private String createdAt;
