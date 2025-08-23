@@ -28,38 +28,21 @@ public class DartClientConfig {
     @Bean
     public RestClient dartApiClient() {
 
-        // <<< 1. 타임아웃 설정을 위한 RequestFactory 생성 (RestTemplate 예제와 동일)
-        // JDK HttpClient에 연결 타임아웃 설정
+        // 1. 타임아웃 설정을 위한 RequestFactory 생성
         var jdkHttpClient = java.net.http.HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(30)) //  30초 연결 타임아웃
+                .connectTimeout(Duration.ofSeconds(30)) // 30초 연결 타임아웃
                 .build();
 
-        // 읽기 타임아웃은 RequestFactory에 설정
         var requestFactory = new JdkClientHttpRequestFactory(jdkHttpClient);
-        requestFactory.setReadTimeout(Duration.ofSeconds(60)); //  60초 읽기 타임아웃
+        requestFactory.setReadTimeout(Duration.ofSeconds(60)); // 60초 읽기 타임아웃
 
-        // 2. 모든 요청에 API 키를 쿼리 파라미터로 자동 추가하는 인터셉터 생성
-        ClientHttpRequestInterceptor apiKeyInterceptor = (request, body, execution) -> {
-            URI newUri = UriComponentsBuilder.fromUri(request.getURI())
-                    .queryParam("crtfc_key", dartApiKey) // 헤더가 아닌 쿼리 파라미터로 추가
-                    .build(true)
-                    .toUri();
-
-            // URI가 변경된 새로운 요청(request) 객체를 생성
-            HttpRequestWrapper modifiedRequest = new HttpRequestWrapper(request) {
-                @Override
-                public URI getURI() {
-                    return newUri;
-                }
-            };
-            // 변경된 요청으로 나머지 작업을 계속 진행
-            return execution.execute(modifiedRequest, body);
-        };
+        // 2. User-Agent 헤더 설정 (API 서버 차단을 피하기 위해 중요)
+        String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36";
 
         return RestClient.builder()
                 .requestFactory(requestFactory)
-                .baseUrl(baseUrl) // API 서버의 기본 주소
-                .requestInterceptor(apiKeyInterceptor)
+                .baseUrl(baseUrl)
+                .defaultHeader("User-Agent", userAgent) // 모든 요청에 User-Agent 헤더 추가
                 .build();
     }
 }
