@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -26,6 +27,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,9 +59,13 @@ public class TestServiceImpl implements TestService {
     @Transactional
     public List<DartMajorShareholderStatusResponse> testServ(String corpCode, String bsnsYear, String reprtCode) {
 
-        DartApiResponseDto responseDto;
+        // 1. 반환받을 정확한 제네릭 타입을 정의합니다.
+        ParameterizedTypeReference<DartApiResponseDto<DartMajorShareholderStatusItem>> responseType =
+                new ParameterizedTypeReference<>() {};
+
+        DartApiResponseDto<DartMajorShareholderStatusItem> responseDto;
         try {
-            // 1. API 호출 결과를 범용 DTO 객체로 바로 받습니다.
+            // 2. API 호출 시 body()에 정의한 타입을 넘겨줍니다.
             responseDto = client.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/hyslrSttus.json")
@@ -69,34 +75,31 @@ public class TestServiceImpl implements TestService {
                             .queryParam("reprt_code", reprtCode)
                             .build())
                     .retrieve()
-                    .body(DartApiResponseDto.class);
+                    .body(responseType); // ⬅️ ParameterizedTypeReference 사용
         } catch (Exception e) {
             log.error("DART API 호출 중 에러 발생", e);
-            return Collections.emptyList(); // API 호출 실패 시 빈 리스트 반환
+            return Collections.emptyList();
         }
 
-        // 2. 응답 DTO의 상태를 확인합니다.
+        // 3. 응답 DTO의 상태를 확인합니다.
         if (responseDto == null || !"000".equals(responseDto.getStatus())) {
             log.warn("DART API 에러: status={}, message={}",
                     responseDto != null ? responseDto.getStatus() : "null",
                     responseDto != null ? responseDto.getMessage() : "null response");
-            return Collections.emptyList(); // API가 에러를 반환하면 빈 리스트 반환
-        }
-
-        // 3. Map에서 'list' 데이터를 추출하고, 타입 변환을 수행합니다.
-        Object listObject = responseDto.getData().get("list");
-        if (!(listObject instanceof List)) {
             return Collections.emptyList();
         }
 
-        // ObjectMapper를 사용해 List<Map>을 List<MajorShareholderItemDto>로 안전하게 변환
-        List<DartMajorShareholderStatusItem> items = objectMapper.convertValue(listObject, new TypeReference<>() {});
+        // 4. DTO에서 직접 'list'를 가져옵니다.
+        List<DartMajorShareholderStatusItem> items = responseDto.getList();
+        if (items == null || items.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        List<DartMajorShareholderStatus> shareholdersToSave = new ArrayList<>();
+        List<DartMajorShareholderStatus> entitiesToSave = new ArrayList<>();
         for (DartMajorShareholderStatusItem item : items) {
             if ("계".equals(item.getNm())) continue;
-
-            // 4. API DTO를 DB Entity로 변환합니다.
+            log.info("stlmDt : {}", item.getStlmDt());
+            // 5. API DTO를 DB Entity로 변환합니다.
             DartMajorShareholderStatus shareholder = DartMajorShareholderStatus.builder()
                     .rceptNo(item.getRceptNo())
                     .corpCls(item.getCorpCls())
@@ -112,16 +115,18 @@ public class TestServiceImpl implements TestService {
                     .rm(item.getRm())
                     .stlmDt(safeParseLocalDate(item.getStlmDt()))
                     .build();
-            shareholdersToSave.add(shareholder);
+            entitiesToSave.add(shareholder);
         }
+        log.info("123");
 
-        // 5. 변환된 Entity를 DB에 저장하고, 저장된 결과를 받습니다.
-        if (!shareholdersToSave.isEmpty()) {
-            List<DartMajorShareholderStatus> savedEntities = dartMajorShareholderStatusRepository.saveAll(shareholdersToSave);
-
-            // 6. 저장된 Entity 리스트를 Response DTO 리스트로 변환하여 반환합니다.
+        // 6. 변환된 Entity를 DB에 저장하고, 저장된 결과를 받습니다.
+        if (!entitiesToSave.isEmpty()) {
+            log.info("4");
+            List<DartMajorShareholderStatus> savedEntities = dartMajorShareholderStatusRepository.saveAll(entitiesToSave);
+            log.info("5");
+            // 7. 저장된 Entity 리스트를 Response DTO 리스트로 변환하여 반환합니다.
             return savedEntities.stream()
-                    .map(DartMajorShareholderStatusResponse::from) // from 정적 메소드 사용
+                    .map(DartMajorShareholderStatusResponse::from)
                     .collect(Collectors.toList());
         }
 

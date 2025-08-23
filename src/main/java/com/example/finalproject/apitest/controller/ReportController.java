@@ -1,7 +1,7 @@
 package com.example.finalproject.apitest.controller;
 
 import com.example.finalproject.apitest.dto.overview.response.CompanyOverviewResponse;
-import com.example.finalproject.apitest.service.impl.DartService2;
+import com.example.finalproject.apitest.service.DartService2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
