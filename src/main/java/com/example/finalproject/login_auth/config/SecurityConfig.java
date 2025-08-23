@@ -59,7 +59,8 @@ public class SecurityConfig {
                                 "/api/companies",
                                 "/api/**"
                         ).permitAll()
-                        .requestMatchers("/auth/status").authenticated() // 인증 상태 확인
+                        .requestMatchers("/auth/status").authenticated()
+                        .requestMatchers("/api/**").authenticated()// 인증 상태 확인
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form // 이 부분은 OAuth2 로그인을 시작하는 페이지를 위해 남겨둘 수 있습니다.
