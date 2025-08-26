@@ -28,7 +28,7 @@ public class TestServiceImpl implements TestService {
     private final DartNonConsolidatedFinancialStatementService dartNonConsolidatedFinancialStatementService;
     private final DartCorporateBondBalanceService dartCorporateBondBalanceService;
     private final DartCommercialPaperBalanceService dartCommercialPaperBalanceService;
-
+    private final DartShortTermBondBalanceService dartShortTermBondBalanceService;
 
     @Override
     public List<DartMajorShareholderStatusResponse> DartMajorShareholderStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
@@ -80,5 +80,10 @@ public class TestServiceImpl implements TestService {
     @Override
     public List<DartCommercialPaperBalanceResponse> DartCommercialPaperBalanceCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartCommercialPaperBalanceService.dartCommercialPaperBalanceCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    @Override
+    public List<DartShortTermBondBalanceResponse> DartShortTermBondBalanceCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
+        return dartShortTermBondBalanceService.dartShortTermBondBalanceCall(corpCode, bsnsYear, reprtCode);
     }
 }
