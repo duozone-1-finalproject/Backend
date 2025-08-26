@@ -258,7 +258,7 @@ public class TestController {
     }
 
     // 공모자금의 사용내역
-    // 테스트 Get http://localhost:8080/api/dart/corporations/01571107/public-offering-fund-usage
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/public-offering-fund-usage
     @GetMapping("/{corpCode}/public-offering-fund-usage")
     public MyDartApiResponseDto<List<DartPublicOfferingFundUsageResponse>> syncPublicOfferingFundUsage(@PathVariable String corpCode) {
         try {

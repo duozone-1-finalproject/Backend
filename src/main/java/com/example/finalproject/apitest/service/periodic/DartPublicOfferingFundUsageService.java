@@ -39,7 +39,7 @@ public class DartPublicOfferingFundUsageService {
 
         var responseType = new ParameterizedTypeReference<DartApiResponseDto<DartPublicOfferingFundUsageItem>>() {};
         List<DartPublicOfferingFundUsageItem> items = dartApiCaller.call(
-                builder -> builder.path("/pssrPcptalUseDtls.json")
+                builder -> builder.path("/pssrpCptalUseDtls.json")
                         .queryParam("corp_code", corpCode)
                         .queryParam("bsns_year", bsnsYear)
                         .queryParam("reprt_code", reprtCode),
