@@ -256,4 +256,19 @@ public class TestController {
             return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
         }
     }
+
+    // 공모자금의 사용내역
+    // 테스트 Get http://localhost:8080/api/dart/corporations/01571107/public-offering-fund-usage
+    @GetMapping("/{corpCode}/public-offering-fund-usage")
+    public MyDartApiResponseDto<List<DartPublicOfferingFundUsageResponse>> syncPublicOfferingFundUsage(@PathVariable String corpCode) {
+        try {
+            return MyDartApiResponseDto.ok(testService.DartPublicOfferingFundUsageCall(corpCode, "2024", "11011"));
+        } catch (DartApiException e) {
+            log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
 }

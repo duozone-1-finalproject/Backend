@@ -25,14 +25,16 @@ public class TestServiceImpl implements TestService {
     private final DartCbIssuanceService dartCbIssuanceService;
     private final DartBwIssuanceService dartBwIssuanceService;
     private final DartCocoBondIssuanceService dartCocoBondIssuanceService;
+    private final DartPublicOfferingFundUsageService dartPublicOfferingFundUsageService; // [추가]
     private final DartTotalStockStatusService dartTotalStockStatusService;
     private final DartTreasuryStockStatusService dartTreasuryStockStatusService;
-    private final DartSingleCompanyKeyAccountService dartsingleCompanyKeyAccountService;
+    private final DartSingleCompanyKeyAccountService dartSingleCompanyKeyAccountService;
     private final DartNonConsolidatedFinancialStatementService dartNonConsolidatedFinancialStatementService;
     private final DartCorporateBondBalanceService dartCorporateBondBalanceService;
     private final DartCommercialPaperBalanceService dartCommercialPaperBalanceService;
     private final DartShortTermBondBalanceService dartShortTermBondBalanceService;
     private final DartHybridSecuritiesBalanceService dartHybridSecuritiesBalanceService;
+
 
     @Override
     public List<DartMajorShareholderStatusResponse> DartMajorShareholderStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
@@ -54,6 +56,7 @@ public class TestServiceImpl implements TestService {
         return dartCbIssuanceService.dartCbIssuanceCall(corpCode, bgnDe, endDe);
     }
 
+    @Override
     public List<DartBwIssuanceResponse> DartBwIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException {
         return dartBwIssuanceService.dartBwIssuanceCall(corpCode, bgnDe, endDe);
     }
@@ -63,17 +66,25 @@ public class TestServiceImpl implements TestService {
         return dartCocoBondIssuanceService.dartCocoBondIssuanceCall(corpCode, bgnDe, endDe);
     }
 
+    // [추가]
+    @Override
+    public List<DartPublicOfferingFundUsageResponse> DartPublicOfferingFundUsageCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
+        return dartPublicOfferingFundUsageService.dartPublicOfferingFundUsageCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    @Override
     public List<DartTotalStockStatusResponse> DartTotalStockStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException{
         return dartTotalStockStatusService.dartTotalStockStatusCall(corpCode, bsnsYear, reprtCode);
     }
 
+    @Override
     public List<DartTreasuryStockStatusResponse> DartTreasuryStockStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException{
         return dartTreasuryStockStatusService.dartTreasuryStockStatusCall(corpCode, bsnsYear, reprtCode);
     }
 
     @Override
     public List<DartSingleCompanyKeyAccountResponse> DartSingleCompanyKeyAccountCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
-        return dartsingleCompanyKeyAccountService.dartSingleCompanyKeyAccountCall(corpCode, bsnsYear, reprtCode);
+        return dartSingleCompanyKeyAccountService.dartSingleCompanyKeyAccountCall(corpCode, bsnsYear, reprtCode);
     }
 
     @Override
