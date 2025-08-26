@@ -4,6 +4,7 @@ package com.example.finalproject.apitest.controller;
 import com.example.finalproject.apitest.dto.common.MyDartApiResponseDto;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
+import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
 import com.example.finalproject.apitest.dto.periodic.response.*;
 import com.example.finalproject.apitest.exception.DartApiException;
 import com.example.finalproject.apitest.service.TestService;
@@ -225,6 +226,28 @@ public class TestController {
     public MyDartApiResponseDto<List<DartHybridSecuritiesBalanceResponse>> syncHybridSecuritiesBalance(@PathVariable String corpCode) {
         try {
             return MyDartApiResponseDto.ok(testService.DartHybridSecuritiesBalanceCall(corpCode, "2024", "11011"));
+        } catch (DartApiException e) {
+            log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
+
+    // [추가] 상각형 조건부자본증권 발행결정
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/coco-bond-issuance
+    @GetMapping("/{corpCode}/coco-bond-issuance")
+    public MyDartApiResponseDto<List<DartCocoBondIssuanceResponse>> syncCocoBondIssuance(@PathVariable String corpCode) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            LocalDate today = LocalDate.now();
+            LocalDate oneYearAgo = today.minusYears(1);
+
+            String todayString = today.format(formatter);
+            String oneYearAgoString = oneYearAgo.format(formatter);
+
+            return MyDartApiResponseDto.ok(testService.DartCocoBondIssuanceCall(corpCode, oneYearAgoString, todayString));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());

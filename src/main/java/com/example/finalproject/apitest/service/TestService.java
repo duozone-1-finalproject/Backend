@@ -2,6 +2,7 @@ package com.example.finalproject.apitest.service;
 
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
+import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
 import com.example.finalproject.apitest.dto.periodic.response.*;
 import com.example.finalproject.apitest.entity.periodic.DartExecutiveStatus;
 
@@ -33,4 +34,6 @@ public interface TestService {
     List<DartShortTermBondBalanceResponse> DartShortTermBondBalanceCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
 
     List<DartHybridSecuritiesBalanceResponse> DartHybridSecuritiesBalanceCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
+
+    List<DartCocoBondIssuanceResponse> DartCocoBondIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException;
 }

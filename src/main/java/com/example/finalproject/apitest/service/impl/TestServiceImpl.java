@@ -2,9 +2,11 @@ package com.example.finalproject.apitest.service.impl;
 
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
+import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
 import com.example.finalproject.apitest.dto.periodic.response.*;
 import com.example.finalproject.apitest.service.material.DartBwIssuanceService;
 import com.example.finalproject.apitest.service.material.DartCbIssuanceService;
+import com.example.finalproject.apitest.service.material.DartCocoBondIssuanceService;
 import com.example.finalproject.apitest.service.periodic.*;
 import com.example.finalproject.apitest.service.TestService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class TestServiceImpl implements TestService {
     private final DartExecutiveStatusService dartExecutiveStatusService;
     private final DartCbIssuanceService dartCbIssuanceService;
     private final DartBwIssuanceService dartBwIssuanceService;
+    private final DartCocoBondIssuanceService dartCocoBondIssuanceService;
     private final DartTotalStockStatusService dartTotalStockStatusService;
     private final DartTreasuryStockStatusService dartTreasuryStockStatusService;
     private final DartSingleCompanyKeyAccountService dartsingleCompanyKeyAccountService;
@@ -53,6 +56,11 @@ public class TestServiceImpl implements TestService {
 
     public List<DartBwIssuanceResponse> DartBwIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException {
         return dartBwIssuanceService.dartBwIssuanceCall(corpCode, bgnDe, endDe);
+    }
+
+    @Override
+    public List<DartCocoBondIssuanceResponse> DartCocoBondIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException {
+        return dartCocoBondIssuanceService.dartCocoBondIssuanceCall(corpCode, bgnDe, endDe);
     }
 
     public List<DartTotalStockStatusResponse> DartTotalStockStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException{
