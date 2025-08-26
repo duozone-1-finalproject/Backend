@@ -113,7 +113,7 @@ public class TestController {
     // [추가] 주식의 총수 현황
     // 테스트 Get http://localhost:8080/api/dart/test/01571107/total-stock-status
     @GetMapping("/{corpCode}/total-stock-status")
-    public MyDartApiResponseDto<List<DartTotalStockStatusResponse>> syncTotalStockStatus(@PathVariable String corpCode) {
+    public MyDartApiResponseDto<List<DartTotalStockStatusResponse>> syncDartTotalStockStatus(@PathVariable String corpCode) {
         try {
             // testService에 DartTotalStockStatusCall 메소드가 구현되어 있어야 합니다.
             return MyDartApiResponseDto.ok(testService.DartTotalStockStatusCall(corpCode, "2024", "11011"));
@@ -129,9 +129,25 @@ public class TestController {
     // 자기주식 취득 및 처분 현황
     // 테스트 Get http://localhost:8080/api/dart/test/01571107/treasury-stock-status
     @GetMapping("/{corpCode}/treasury-stock-status")
-    public MyDartApiResponseDto<List<DartTreasuryStockStatusResponse>> syncTreasuryStockStatus(@PathVariable String corpCode) {
+    public MyDartApiResponseDto<List<DartTreasuryStockStatusResponse>> syncDartTreasuryStockStatus(@PathVariable String corpCode) {
         try {
             return MyDartApiResponseDto.ok(testService.DartTreasuryStockStatusCall(corpCode, "2024", "11011"));
+        } catch (DartApiException e) {
+            log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
+
+    // [추가] 단일회사 주요계정
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/single-company-key-account
+    @GetMapping("/{corpCode}/single-company-key-account")
+    public MyDartApiResponseDto<List<DartSingleCompanyKeyAccountResponse>> syncDartSingleCompanyKeyAccount(@PathVariable String corpCode) {
+        try {
+            // testService에 DartSingleCompanyKeyAccountCall 메소드가 구현되어 있어야 합니다.
+            return MyDartApiResponseDto.ok(testService.DartSingleCompanyKeyAccountCall(corpCode, "2023", "11011"));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());

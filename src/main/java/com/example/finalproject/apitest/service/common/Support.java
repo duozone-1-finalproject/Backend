@@ -63,6 +63,18 @@ public class Support {
             return null;
         }
     }
+
+    public Integer safeParseInteger(String textValue) {
+        if (!StringUtils.hasText(textValue) || "-".equals(textValue)) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(textValue.replace(",", ""));
+        } catch (NumberFormatException e) {
+            log.warn("Integer 타입으로 변환할 수 없는 값입니다: {}", textValue);
+            return null;
+        }
+    }
     // --------------------------------------------------------------------------------------------------------------
 }
 
