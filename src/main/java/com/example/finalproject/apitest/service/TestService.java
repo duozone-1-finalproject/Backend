@@ -1,5 +1,7 @@
 package com.example.finalproject.apitest.service;
 
+import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
+import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
 import com.example.finalproject.apitest.dto.periodic.response.DartExecutiveStatusResponse;
 import com.example.finalproject.apitest.dto.periodic.response.DartMajorShareholderChangeResponse;
 import com.example.finalproject.apitest.dto.periodic.response.DartMajorShareholderStatusResponse;
@@ -13,4 +15,8 @@ public interface TestService {
     List<DartMajorShareholderChangeResponse> DartMajorShareholderChangeCall(String corpCode, String reprtCode, String bsnsYear) throws IOException;
     //임원 현황
     List<DartExecutiveStatusResponse> DartExecutiveStatusCall(String corpCode, String reprtCode, String bsnsYear) throws IOException;
+
+    List<DartCbIssuanceResponse> DartCbIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException;
+
+    List<DartBwIssuanceResponse> DartBwIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException;
 }

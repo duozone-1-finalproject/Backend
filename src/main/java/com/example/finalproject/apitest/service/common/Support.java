@@ -1,12 +1,14 @@
-package com.example.finalproject.apitest.service.impl;
+package com.example.finalproject.apitest.service.common;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+@Component
 @Slf4j
 public class Support {
     // 스트링 안전한 형변환기 -------------------------------------------------------------------------------------------
