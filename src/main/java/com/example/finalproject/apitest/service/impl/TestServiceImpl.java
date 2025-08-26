@@ -2,17 +2,11 @@ package com.example.finalproject.apitest.service.impl;
 
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
-import com.example.finalproject.apitest.dto.periodic.response.DartExecutiveStatusResponse;
-import com.example.finalproject.apitest.dto.periodic.response.DartMajorShareholderChangeResponse;
-import com.example.finalproject.apitest.dto.periodic.response.DartMajorShareholderStatusResponse;
-import com.example.finalproject.apitest.dto.periodic.response.DartTotalStockStatusResponse;
+import com.example.finalproject.apitest.dto.periodic.response.*;
 import com.example.finalproject.apitest.service.material.DartBwIssuanceService;
 import com.example.finalproject.apitest.service.material.DartCbIssuanceService;
-import com.example.finalproject.apitest.service.periodic.DartExecutiveStatusService;
-import com.example.finalproject.apitest.service.periodic.DartMajorShareholderChangeService;
-import com.example.finalproject.apitest.service.periodic.DartMajorShareholderStatusService;
+import com.example.finalproject.apitest.service.periodic.*;
 import com.example.finalproject.apitest.service.TestService;
-import com.example.finalproject.apitest.service.periodic.DartTotalStockStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +23,7 @@ public class TestServiceImpl implements TestService {
     private final DartCbIssuanceService dartCbIssuanceService;
     private final DartBwIssuanceService dartBwIssuanceService;
     private final DartTotalStockStatusService dartTotalStockStatusService;
+    private final DartTreasuryStockStatusService dartTreasuryStockStatusService;
 
 
     @Override
@@ -57,6 +52,10 @@ public class TestServiceImpl implements TestService {
 
     public List<DartTotalStockStatusResponse> DartTotalStockStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException{
         return dartTotalStockStatusService.dartTotalStockStatusCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    public List<DartTreasuryStockStatusResponse> DartTreasuryStockStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException{
+        return dartTreasuryStockStatusService.dartTreasuryStockStatusCall(corpCode, bsnsYear, reprtCode);
     }
 
 }

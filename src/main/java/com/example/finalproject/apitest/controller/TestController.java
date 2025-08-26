@@ -4,10 +4,7 @@ package com.example.finalproject.apitest.controller;
 import com.example.finalproject.apitest.dto.common.MyDartApiResponseDto;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
-import com.example.finalproject.apitest.dto.periodic.response.DartExecutiveStatusResponse;
-import com.example.finalproject.apitest.dto.periodic.response.DartMajorShareholderChangeResponse;
-import com.example.finalproject.apitest.dto.periodic.response.DartMajorShareholderStatusResponse;
-import com.example.finalproject.apitest.dto.periodic.response.DartTotalStockStatusResponse;
+import com.example.finalproject.apitest.dto.periodic.response.*;
 import com.example.finalproject.apitest.exception.DartApiException;
 import com.example.finalproject.apitest.service.TestService;
 import com.example.finalproject.apitest.service.impl.TestServiceImpl;
@@ -120,6 +117,21 @@ public class TestController {
         try {
             // testService에 DartTotalStockStatusCall 메소드가 구현되어 있어야 합니다.
             return MyDartApiResponseDto.ok(testService.DartTotalStockStatusCall(corpCode, "2024", "11011"));
+        } catch (DartApiException e) {
+            log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
+
+    // 자기주식 취득 및 처분 현황
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/treasury-stock-status
+    @GetMapping("/{corpCode}/treasury-stock-status")
+    public MyDartApiResponseDto<List<DartTreasuryStockStatusResponse>> syncTreasuryStockStatus(@PathVariable String corpCode) {
+        try {
+            return MyDartApiResponseDto.ok(testService.DartTreasuryStockStatusCall(corpCode, "2024", "11011"));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());
