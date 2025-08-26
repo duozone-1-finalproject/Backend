@@ -25,7 +25,8 @@ public class TestServiceImpl implements TestService {
     private final DartCbIssuanceService dartCbIssuanceService;
     private final DartBwIssuanceService dartBwIssuanceService;
     private final DartCocoBondIssuanceService dartCocoBondIssuanceService;
-    private final DartPublicOfferingFundUsageService dartPublicOfferingFundUsageService; // [추가]
+    private final DartPublicOfferingFundUsageService dartPublicOfferingFundUsageService;
+    private final DartPrivatePlacementFundUsageService dartPrivatePlacementFundUsageService; // [추가]
     private final DartTotalStockStatusService dartTotalStockStatusService;
     private final DartTreasuryStockStatusService dartTreasuryStockStatusService;
     private final DartSingleCompanyKeyAccountService dartSingleCompanyKeyAccountService;
@@ -66,10 +67,15 @@ public class TestServiceImpl implements TestService {
         return dartCocoBondIssuanceService.dartCocoBondIssuanceCall(corpCode, bgnDe, endDe);
     }
 
-    // [추가]
     @Override
     public List<DartPublicOfferingFundUsageResponse> DartPublicOfferingFundUsageCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartPublicOfferingFundUsageService.dartPublicOfferingFundUsageCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    // [추가]
+    @Override
+    public List<DartPrivatePlacementFundUsageResponse> DartPrivatePlacementFundUsageCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
+        return dartPrivatePlacementFundUsageService.dartPrivatePlacementFundUsageCall(corpCode, bsnsYear, reprtCode);
     }
 
     @Override
