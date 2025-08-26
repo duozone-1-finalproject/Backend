@@ -20,6 +20,7 @@ public interface TestService {
     List<DartAuditOpinionResponse> DartAuditOpinionCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartAuditServiceContractResponse> DartAuditServiceContractCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartNonAuditServiceContractResponse> DartNonAuditServiceContractCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
+    List<DartOutsideDirectorChangeStatusResponse> DartOutsideDirectorChangeStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartTotalStockStatusResponse> DartTotalStockStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartTreasuryStockStatusResponse> DartTreasuryStockStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartSingleCompanyKeyAccountResponse> DartSingleCompanyKeyAccountCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;

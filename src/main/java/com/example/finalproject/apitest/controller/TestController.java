@@ -302,6 +302,21 @@ public class TestController {
         }
     }
 
+    // [추가] 사외이사 및 그 변동현황
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/outside-director-change-status
+    @GetMapping("/{corpCode}/outside-director-change-status")
+    public MyDartApiResponseDto<List<DartOutsideDirectorChangeStatusResponse>> syncOutsideDirectorChangeStatus(@PathVariable String corpCode) {
+        try {
+            return MyDartApiResponseDto.ok(testService.DartOutsideDirectorChangeStatusCall(corpCode, "2024", "11011"));
+        } catch (DartApiException e) {
+            log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
+
     // [추가] 감사용역체결현황
     // 테스트 Get http://localhost:8080/api/dart/test/01571107/audit-service-contract
     @GetMapping("/{corpCode}/audit-service-contract")

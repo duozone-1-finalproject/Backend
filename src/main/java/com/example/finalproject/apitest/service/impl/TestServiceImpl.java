@@ -28,7 +28,9 @@ public class TestServiceImpl implements TestService {
     private final DartPublicOfferingFundUsageService dartPublicOfferingFundUsageService;
     private final DartPrivatePlacementFundUsageService dartPrivatePlacementFundUsageService;
     private final DartAuditOpinionService dartAuditOpinionService;
-    private final DartAuditServiceContractService dartAuditServiceContractService; // [추가]
+    private final DartAuditServiceContractService dartAuditServiceContractService;
+    private final DartNonAuditServiceContractService dartNonAuditServiceContractService;
+    private final DartOutsideDirectorChangeStatusService dartOutsideDirectorChangeStatusService; // [추가]
     private final DartTotalStockStatusService dartTotalStockStatusService;
     private final DartTreasuryStockStatusService dartTreasuryStockStatusService;
     private final DartSingleCompanyKeyAccountService dartSingleCompanyKeyAccountService;
@@ -37,7 +39,6 @@ public class TestServiceImpl implements TestService {
     private final DartCommercialPaperBalanceService dartCommercialPaperBalanceService;
     private final DartShortTermBondBalanceService dartShortTermBondBalanceService;
     private final DartHybridSecuritiesBalanceService dartHybridSecuritiesBalanceService;
-    private final DartNonAuditServiceContractService dartNonAuditServiceContractService; // [추가]
 
 
     @Override
@@ -85,10 +86,20 @@ public class TestServiceImpl implements TestService {
         return dartAuditOpinionService.dartAuditOpinionCall(corpCode, bsnsYear, reprtCode);
     }
 
-    // [추가]
     @Override
     public List<DartAuditServiceContractResponse> DartAuditServiceContractCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartAuditServiceContractService.dartAuditServiceContractCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    @Override
+    public List<DartNonAuditServiceContractResponse> DartNonAuditServiceContractCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
+        return dartNonAuditServiceContractService.dartNonAuditServiceContractCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    // [추가]
+    @Override
+    public List<DartOutsideDirectorChangeStatusResponse> DartOutsideDirectorChangeStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
+        return dartOutsideDirectorChangeStatusService.dartOutsideDirectorChangeStatusCall(corpCode, bsnsYear, reprtCode);
     }
 
     @Override
@@ -129,10 +140,5 @@ public class TestServiceImpl implements TestService {
     @Override
     public List<DartHybridSecuritiesBalanceResponse> DartHybridSecuritiesBalanceCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartHybridSecuritiesBalanceService.dartHybridSecuritiesBalanceCall(corpCode, bsnsYear, reprtCode);
-    }
-
-    @Override
-    public List<DartNonAuditServiceContractResponse> DartNonAuditServiceContractCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
-        return dartNonAuditServiceContractService.dartNonAuditServiceContractCall(corpCode, bsnsYear, reprtCode);
     }
 }
