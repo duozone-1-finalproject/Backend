@@ -25,6 +25,7 @@ public class TestServiceImpl implements TestService {
     private final DartTotalStockStatusService dartTotalStockStatusService;
     private final DartTreasuryStockStatusService dartTreasuryStockStatusService;
     private final DartSingleCompanyKeyAccountService dartsingleCompanyKeyAccountService;
+    private final DartNonConsolidatedFinancialStatementService dartNonConsolidatedFinancialStatementService;
 
 
     @Override
@@ -62,5 +63,10 @@ public class TestServiceImpl implements TestService {
     @Override
     public List<DartSingleCompanyKeyAccountResponse> DartSingleCompanyKeyAccountCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartsingleCompanyKeyAccountService.dartSingleCompanyKeyAccountCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    @Override
+    public List<DartNonConsolidatedFinancialStatementResponse> DartNonConsolidatedFinancialStatementCall(String corpCode, String bsnsYear, String reprtCode, String fsDiv) throws IOException {
+        return dartNonConsolidatedFinancialStatementService.dartNonConsolidatedFinancialStatementCall(corpCode, bsnsYear, reprtCode, fsDiv);
     }
 }
