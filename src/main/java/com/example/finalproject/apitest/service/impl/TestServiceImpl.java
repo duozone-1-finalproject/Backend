@@ -5,12 +5,14 @@ import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResp
 import com.example.finalproject.apitest.dto.periodic.response.DartExecutiveStatusResponse;
 import com.example.finalproject.apitest.dto.periodic.response.DartMajorShareholderChangeResponse;
 import com.example.finalproject.apitest.dto.periodic.response.DartMajorShareholderStatusResponse;
+import com.example.finalproject.apitest.dto.periodic.response.DartTotalStockStatusResponse;
 import com.example.finalproject.apitest.service.material.DartBwIssuanceService;
 import com.example.finalproject.apitest.service.material.DartCbIssuanceService;
 import com.example.finalproject.apitest.service.periodic.DartExecutiveStatusService;
 import com.example.finalproject.apitest.service.periodic.DartMajorShareholderChangeService;
 import com.example.finalproject.apitest.service.periodic.DartMajorShareholderStatusService;
 import com.example.finalproject.apitest.service.TestService;
+import com.example.finalproject.apitest.service.periodic.DartTotalStockStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ public class TestServiceImpl implements TestService {
     private final DartExecutiveStatusService dartExecutiveStatusService;
     private final DartCbIssuanceService dartCbIssuanceService;
     private final DartBwIssuanceService dartBwIssuanceService;
+    private final DartTotalStockStatusService dartTotalStockStatusService;
 
 
     @Override
@@ -50,6 +53,10 @@ public class TestServiceImpl implements TestService {
 
     public List<DartBwIssuanceResponse> DartBwIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException {
         return dartBwIssuanceService.dartBwIssuanceCall(corpCode, bgnDe, endDe);
+    }
+
+    public List<DartTotalStockStatusResponse> DartTotalStockStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException{
+        return dartTotalStockStatusService.dartTotalStockStatusCall(corpCode, bsnsYear, reprtCode);
     }
 
 }
