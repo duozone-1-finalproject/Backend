@@ -173,4 +173,19 @@ public class TestController {
             return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
         }
     }
+
+    // 회사채 미상환 잔액
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/corporate-bond-balance
+    @GetMapping("/{corpCode}/corporate-bond-balance")
+    public MyDartApiResponseDto<List<DartCorporateBondBalanceResponse>> syncCorporateBondBalance(@PathVariable String corpCode) {
+        try {
+            return MyDartApiResponseDto.ok(testService.DartCorporateBondBalanceCall(corpCode, "2024", "11011"));
+        } catch (DartApiException e) {
+            log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
 }
