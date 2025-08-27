@@ -3,10 +3,12 @@ package com.example.finalproject.apitest.service.impl;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
+import com.example.finalproject.apitest.dto.overview.response.DartCompanyOverviewResponse;
 import com.example.finalproject.apitest.dto.periodic.response.*;
 import com.example.finalproject.apitest.service.material.DartBwIssuanceService;
 import com.example.finalproject.apitest.service.material.DartCbIssuanceService;
 import com.example.finalproject.apitest.service.material.DartCocoBondIssuanceService;
+import com.example.finalproject.apitest.service.overview.DartCompanyOverviewService;
 import com.example.finalproject.apitest.service.periodic.*;
 import com.example.finalproject.apitest.service.TestService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
+    private final DartCompanyOverviewService dartCompanyOverviewService;
     private final DartMajorShareholderStatusService dartMajorShareholderStatusService;
     private final DartMajorShareholderChangeService dartMajorShareholderChangeService;
     private final DartExecutiveStatusService dartExecutiveStatusService;
@@ -46,6 +49,11 @@ public class TestServiceImpl implements TestService {
     private final DartDirectorAndAuditorCompensationService dartDirectorAndAuditorCompensationService;
 
 
+
+    @Override
+    public DartCompanyOverviewResponse DartCompanyOverviewCall(String corpCode) throws IOException {
+        return dartCompanyOverviewService.dartCompanyOverviewCall(corpCode);
+    }
 
     @Override
     public List<DartMajorShareholderStatusResponse> DartMajorShareholderStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {

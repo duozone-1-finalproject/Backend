@@ -24,10 +24,55 @@ public class DartApiCaller {
     @Value("${dart.api.key}")
     private String dartApiKey;
 
+    /**
+     * DART API를 호출하고 결과를 리스트 형태로 반환합니다.
+     * @param uriCustomizer URI를 설정하는 Consumer
+     * @param responseType 응답 DTO의 타입 참조
+     * @return API 응답 데이터 리스트
+     * @param <T> 응답 아이템의 타입
+     */
     public <T> List<T> call(
             Consumer<UriBuilder> uriCustomizer,
             ParameterizedTypeReference<DartApiResponseDto<T>> responseType
     ) {
+        DartApiResponseDto<T> responseDto = executeApiCall(uriCustomizer, responseType);
+
+        List<T> items = responseDto.getList();
+        if (items == null || items.isEmpty()) {
+            log.info("DART API로부터 수신한 데이터가 없습니다.");
+            return Collections.emptyList();
+        }
+
+        return items;
+    }
+
+    /**
+     * DART API를 호출하고 결과를 단일 객체 형태로 반환합니다. (예: 기업개황)
+     * @param uriCustomizer URI를 설정하는 Consumer
+     * @param responseType 응답 DTO의 타입 참조
+     * @return API 응답 데이터 객체
+     * @param <T> 응답 아이템의 타입
+     */
+    public <T> T callSingle(
+            Consumer<UriBuilder> uriCustomizer,
+            ParameterizedTypeReference<DartApiResponseDto<T>> responseType
+    ) {
+        DartApiResponseDto<T> responseDto = executeApiCall(uriCustomizer, responseType);
+
+        T item = responseDto.getSingleResult();
+        if (item == null) {
+            log.info("DART API로부터 수신한 단일 데이터가 없습니다.");
+        }
+        return item;
+    }
+
+    /**
+     * 실제 DART API 호출 및 공통 예외 처리를 담당하는 private 메소드
+     */
+    private <T> DartApiResponseDto<T> executeApiCall(
+            Consumer<UriBuilder> uriCustomizer,
+            ParameterizedTypeReference<DartApiResponseDto<T>> responseType) {
+
         DartApiResponseDto<T> responseDto;
         try {
             responseDto = client.get()
@@ -50,12 +95,6 @@ public class DartApiCaller {
             throw new DartApiException("DART API 에러: status=" + status + ", message=" + message);
         }
 
-        List<T> items = responseDto.getList();
-        if (items == null || items.isEmpty()) {
-            log.info("DART API로부터 수신한 데이터가 없습니다.");
-            return Collections.emptyList();
-        }
-
-        return items;
+        return responseDto;
     }
 }

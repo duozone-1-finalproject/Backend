@@ -5,6 +5,7 @@ import com.example.finalproject.apitest.dto.common.MyDartApiResponseDto;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
+import com.example.finalproject.apitest.dto.overview.response.DartCompanyOverviewResponse;
 import com.example.finalproject.apitest.dto.periodic.response.*;
 import com.example.finalproject.apitest.exception.DartApiException;
 import com.example.finalproject.apitest.service.TestService;
@@ -413,6 +414,21 @@ public class TestController {
     public MyDartApiResponseDto<List<DartDirectorAndAuditorCompensationResponse>> syncDirectorAndAuditorCompensation(@PathVariable String corpCode) {
         try {
             return MyDartApiResponseDto.ok(testService.DartDirectorAndAuditorCompensationCall(corpCode, "2024", "11011"));
+        } catch (DartApiException e) {
+            log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
+
+    // 기업 개황
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/company-overview
+    @GetMapping("/{corpCode}/company-overview")
+    public MyDartApiResponseDto<DartCompanyOverviewResponse> syncDartCompanyOverview(@PathVariable String corpCode) {
+        try {
+            return MyDartApiResponseDto.ok(testService.DartCompanyOverviewCall(corpCode));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());

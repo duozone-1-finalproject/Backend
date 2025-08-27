@@ -3,6 +3,7 @@ package com.example.finalproject.apitest.service;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
+import com.example.finalproject.apitest.dto.overview.response.DartCompanyOverviewResponse;
 import com.example.finalproject.apitest.dto.periodic.response.*;
 
 import java.io.IOException;
@@ -34,4 +35,5 @@ public interface TestService {
     List<DartMinorityShareholderStatusResponse> DartMinorityShareholderStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartCompensationApprovalResponse> DartCompensationApprovalCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartDirectorAndAuditorCompensationResponse> DartDirectorAndAuditorCompensationCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
+    DartCompanyOverviewResponse DartCompanyOverviewCall(String corpCode) throws IOException;
 }
