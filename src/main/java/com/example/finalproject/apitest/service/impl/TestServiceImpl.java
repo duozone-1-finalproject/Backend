@@ -42,7 +42,7 @@ public class TestServiceImpl implements TestService {
     private final DartShortTermBondBalanceService dartShortTermBondBalanceService;
     private final DartHybridSecuritiesBalanceService dartHybridSecuritiesBalanceService;
     private final DartMinorityShareholderStatusService dartMinorityShareholderStatusService;
-
+    private final DartCompensationApprovalService dartCompensationApprovalService;
 
 
     @Override
@@ -159,5 +159,10 @@ public class TestServiceImpl implements TestService {
     @Override
     public List<DartMinorityShareholderStatusResponse> DartMinorityShareholderStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartMinorityShareholderStatusService.dartMinorityShareholderStatusCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    @Override
+    public List<DartCompensationApprovalResponse> DartCompensationApprovalCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
+        return dartCompensationApprovalService.dartCompensationApprovalCall(corpCode, bsnsYear, reprtCode);
     }
 }
