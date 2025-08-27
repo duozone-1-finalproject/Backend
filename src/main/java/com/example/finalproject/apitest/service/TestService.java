@@ -12,6 +12,8 @@ public interface TestService {
     List<DartMajorShareholderStatusResponse> DartMajorShareholderStatusCall(String corpCode, String reprtCode, String bsnsYear) throws IOException;
     List<DartMajorShareholderChangeResponse> DartMajorShareholderChangeCall(String corpCode, String reprtCode, String bsnsYear) throws IOException;
     List<DartExecutiveStatusResponse> DartExecutiveStatusCall(String corpCode, String reprtCode, String bsnsYear) throws IOException;
+    List<DartEmployeeStatusResponse> DartEmployeeStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
+    List<DartUnregisteredExecutiveCompensationResponse> DartUnregisteredExecutiveCompensationCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartCbIssuanceResponse> DartCbIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException;
     List<DartBwIssuanceResponse> DartBwIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException;
     List<DartCocoBondIssuanceResponse> DartCocoBondIssuanceCall(String corpCode, String bgnDe, String endDe) throws IOException;
@@ -30,5 +32,5 @@ public interface TestService {
     List<DartShortTermBondBalanceResponse> DartShortTermBondBalanceCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartHybridSecuritiesBalanceResponse> DartHybridSecuritiesBalanceCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartMinorityShareholderStatusResponse> DartMinorityShareholderStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
-    List<DartEmployeeStatusResponse> DartEmployeeStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
+
 }

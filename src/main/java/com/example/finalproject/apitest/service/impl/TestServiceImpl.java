@@ -22,6 +22,8 @@ public class TestServiceImpl implements TestService {
     private final DartMajorShareholderStatusService dartMajorShareholderStatusService;
     private final DartMajorShareholderChangeService dartMajorShareholderChangeService;
     private final DartExecutiveStatusService dartExecutiveStatusService;
+    private final DartEmployeeStatusService dartEmployeeStatusService;
+    private final DartUnregisteredExecutiveCompensationService dartUnregisteredExecutiveCompensationService; // [추가]
     private final DartCbIssuanceService dartCbIssuanceService;
     private final DartBwIssuanceService dartBwIssuanceService;
     private final DartCocoBondIssuanceService dartCocoBondIssuanceService;
@@ -30,7 +32,7 @@ public class TestServiceImpl implements TestService {
     private final DartAuditOpinionService dartAuditOpinionService;
     private final DartAuditServiceContractService dartAuditServiceContractService;
     private final DartNonAuditServiceContractService dartNonAuditServiceContractService;
-    private final DartOutsideDirectorChangeStatusService dartOutsideDirectorChangeStatusService; // [추가]
+    private final DartOutsideDirectorChangeStatusService dartOutsideDirectorChangeStatusService;
     private final DartTotalStockStatusService dartTotalStockStatusService;
     private final DartTreasuryStockStatusService dartTreasuryStockStatusService;
     private final DartSingleCompanyKeyAccountService dartSingleCompanyKeyAccountService;
@@ -40,7 +42,7 @@ public class TestServiceImpl implements TestService {
     private final DartShortTermBondBalanceService dartShortTermBondBalanceService;
     private final DartHybridSecuritiesBalanceService dartHybridSecuritiesBalanceService;
     private final DartMinorityShareholderStatusService dartMinorityShareholderStatusService;
-    private final DartEmployeeStatusService dartEmployeeStatusService;
+
 
 
     @Override
@@ -56,6 +58,17 @@ public class TestServiceImpl implements TestService {
     @Override
     public List<DartExecutiveStatusResponse> DartExecutiveStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartExecutiveStatusService.dartExecutiveStatusCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    @Override
+    public List<DartEmployeeStatusResponse> DartEmployeeStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
+        return dartEmployeeStatusService.dartEmployeeStatusCall(corpCode, bsnsYear, reprtCode);
+    }
+
+    // [추가]
+    @Override
+    public List<DartUnregisteredExecutiveCompensationResponse> DartUnregisteredExecutiveCompensationCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
+        return dartUnregisteredExecutiveCompensationService.dartUnregisteredExecutiveCompensationCall(corpCode, bsnsYear, reprtCode);
     }
 
     @Override
@@ -98,7 +111,6 @@ public class TestServiceImpl implements TestService {
         return dartNonAuditServiceContractService.dartNonAuditServiceContractCall(corpCode, bsnsYear, reprtCode);
     }
 
-    // [추가]
     @Override
     public List<DartOutsideDirectorChangeStatusResponse> DartOutsideDirectorChangeStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartOutsideDirectorChangeStatusService.dartOutsideDirectorChangeStatusCall(corpCode, bsnsYear, reprtCode);
@@ -143,13 +155,9 @@ public class TestServiceImpl implements TestService {
     public List<DartHybridSecuritiesBalanceResponse> DartHybridSecuritiesBalanceCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartHybridSecuritiesBalanceService.dartHybridSecuritiesBalanceCall(corpCode, bsnsYear, reprtCode);
     }
-    @Override
-    public List<DartMinorityShareholderStatusResponse> DartMinorityShareholderStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException{
-        return dartMinorityShareholderStatusService.dartMinorityShareholderStatusCall(corpCode, bsnsYear, reprtCode);
-    }
 
     @Override
-    public List<DartEmployeeStatusResponse> DartEmployeeStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException{
-        return dartEmployeeStatusService.dartEmployeeStatusCall(corpCode, bsnsYear, reprtCode);
+    public List<DartMinorityShareholderStatusResponse> DartMinorityShareholderStatusCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
+        return dartMinorityShareholderStatusService.dartMinorityShareholderStatusCall(corpCode, bsnsYear, reprtCode);
     }
 }
