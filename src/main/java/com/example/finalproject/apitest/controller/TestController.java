@@ -406,4 +406,19 @@ public class TestController {
             return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
         }
     }
+
+    // [추가] 이사·감사 전체의 보수현황(보수지급금액 - 유형별)
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/director-auditor-compensation
+    @GetMapping("/{corpCode}/director-auditor-compensation")
+    public MyDartApiResponseDto<List<DartDirectorAndAuditorCompensationResponse>> syncDirectorAndAuditorCompensation(@PathVariable String corpCode) {
+        try {
+            return MyDartApiResponseDto.ok(testService.DartDirectorAndAuditorCompensationCall(corpCode, "2024", "11011"));
+        } catch (DartApiException e) {
+            log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
 }
