@@ -148,7 +148,7 @@ public class TestController {
     public MyDartApiResponseDto<List<DartSingleCompanyKeyAccountResponse>> syncDartSingleCompanyKeyAccount(@PathVariable String corpCode) {
         try {
             // testService에 DartSingleCompanyKeyAccountCall 메소드가 구현되어 있어야 합니다.
-            return MyDartApiResponseDto.ok(testService.DartSingleCompanyKeyAccountCall(corpCode, "2023", "11011"));
+            return MyDartApiResponseDto.ok(testService.DartSingleCompanyKeyAccountCall(corpCode, "2024", "11011"));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());
@@ -165,7 +165,7 @@ public class TestController {
             @PathVariable String corpCode,
             @RequestParam(name = "fsDiv", defaultValue = "OFS") String fsDiv) {
         try {
-            return MyDartApiResponseDto.ok(testService.DartNonConsolidatedFinancialStatementCall(corpCode, "2023", "11011", fsDiv));
+            return MyDartApiResponseDto.ok(testService.DartNonConsolidatedFinancialStatementCall(corpCode, "2024", "11011", fsDiv));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());
@@ -292,7 +292,7 @@ public class TestController {
     @GetMapping("/{corpCode}/audit-opinion")
     public MyDartApiResponseDto<List<DartAuditOpinionResponse>> syncAuditOpinion(@PathVariable String corpCode) {
         try {
-            return MyDartApiResponseDto.ok(testService.DartAuditOpinionCall(corpCode, "2023", "11011"));
+            return MyDartApiResponseDto.ok(testService.DartAuditOpinionCall(corpCode, "2024", "11011"));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());
@@ -322,7 +322,7 @@ public class TestController {
     @GetMapping("/{corpCode}/audit-service-contract")
     public MyDartApiResponseDto<List<DartAuditServiceContractResponse>> syncAuditServiceContract(@PathVariable String corpCode) {
         try {
-            return MyDartApiResponseDto.ok(testService.DartAuditServiceContractCall(corpCode, "2023", "11011"));
+            return MyDartApiResponseDto.ok(testService.DartAuditServiceContractCall(corpCode, "2024", "11011"));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());
@@ -337,7 +337,22 @@ public class TestController {
     @GetMapping("/{corpCode}/non-audit-service-contract")
     public MyDartApiResponseDto<List<DartNonAuditServiceContractResponse>> syncNonAuditServiceContract(@PathVariable String corpCode) {
         try {
-            return MyDartApiResponseDto.ok(testService.DartNonAuditServiceContractCall(corpCode, "2023", "11011"));
+            return MyDartApiResponseDto.ok(testService.DartNonAuditServiceContractCall(corpCode, "2024", "11011"));
+        } catch (DartApiException e) {
+            log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
+
+    // [추가] 소액주주 현황
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/minority-shareholder-status
+    @GetMapping("/{corpCode}/minority-shareholder-status")
+    public MyDartApiResponseDto<List<DartMinorityShareholderStatusResponse>> syncDartMinorityShareholderStatus(@PathVariable String corpCode) {
+        try {
+            return MyDartApiResponseDto.ok(testService.DartMinorityShareholderStatusCall(corpCode, "2024", "11011"));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());
