@@ -79,6 +79,12 @@ dependencies {
 
 	// 날짜관련
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	//aws 시크릿
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.mariadb.jdbc:mariadb-java-client'
+	implementation 'software.amazon.awssdk:secretsmanager:2.22.5'  // AWS SDK v2
+	implementation 'software.amazon.awssdk:core:2.22.5'
 }
 
 tasks.named('test') {
