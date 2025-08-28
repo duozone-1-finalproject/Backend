@@ -1,5 +1,1 @@
-pluginManagement {
-    plugins {
-        id 'org.jetbrains.kotlin.jvm' version '2.1.21'
-    }
-}
+// The unused Kotlin plugin management block has been removed for a pure Java project.
