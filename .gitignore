@@ -32,7 +32,6 @@ build/
 .idea/
 *.log
 
-
 # OS별 캐시파일
 .DS_Store
 Thumbs.db

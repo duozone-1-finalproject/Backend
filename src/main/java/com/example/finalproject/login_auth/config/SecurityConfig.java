@@ -1,6 +1,7 @@
+// src/main/java/com/example/finalproject/login_auth/config/SecurityConfig.java
+
 package com.example.finalproject.login_auth.config;
 
-import com.example.finalproject.login_auth.handler.LocalLoginSuccessHandler;
 import com.example.finalproject.login_auth.handler.OAuthHandler;
 import com.example.finalproject.login_auth.security.JwtAuthenticationFilter;
 import com.example.finalproject.login_auth.security.JwtTokenProvider;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -29,7 +31,7 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
-    private final LocalLoginSuccessHandler localLoginSuccessHandler;
+    // LocalLoginSuccessHandler 필드 제거
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, OAuthHandler oAuthHandler) throws Exception {
@@ -42,16 +44,13 @@ public class SecurityConfig {
                         .successHandler(oAuthHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // REST API 규칙에 맞춰 업데이트된 경로들
+                        // RESTful 규칙에 맞춰 변경된 경로들
                         .requestMatchers(
                                 "/",
                                 "/login",
-                                "/users", // 사용자 리소스 생성 (회원가입)
-                                "/users/check", // 사용자명 중복 체크
-                                "/auth/sessions", // 로그인 세션 생성
-                                "/auth/login", // 기존 로그인 (하위 호환성)
-                                "/auth/oauth/tokens", // OAuth 토큰 획득
-                                "/tokens/refresh", // 토큰 갱신
+                                "/users", // 회원가입: POST /users
+                                "/auth/login", // 기존 로그인
+                                "/auth/refresh", // 통합된 토큰 갱신 엔드포인트
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
@@ -60,15 +59,14 @@ public class SecurityConfig {
                                 "/api/companies",
                                 "/api/**"
                         ).permitAll()
-                        .requestMatchers("/auth/status").authenticated() // 인증 상태 확인
-                        .requestMatchers("/users/me").authenticated() // 현재 사용자 정보 조회
-                        .requestMatchers("/auth/sessions").authenticated() // 로그아웃 (DELETE)
+                        .requestMatchers("/auth/status").authenticated()
+                        .requestMatchers("/api/**").authenticated()// 인증 상태 확인
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .successHandler(localLoginSuccessHandler)
-                        .permitAll()
+                .formLogin(form -> form // 이 부분은 OAuth2 로그인을 시작하는 페이지를 위해 남겨둘 수 있습니다.
+                                .loginPage("/login")
+                                .permitAll()
+                        // .successHandler(...) 설정 제거
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider),
@@ -77,6 +75,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

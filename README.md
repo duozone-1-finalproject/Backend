@@ -36,6 +36,8 @@ tree명령어와 gpt 이용하면 쓸만하게 나옴
 ---
 
 ## 각 branch 용도
+<img width="523" height="461" alt="Image" src="https://github.com/user-attachments/assets/c7d35c8d-8763-4bef-8753-2a3e498ef278" />
+
 > ### main(*중요)
 >> 메인 branch  
 >> main에 대한 모든 업데이트는 **release에서 먼저 테스트**하여 이상이 없을 시에 **팀원 모두의 동의**를 구하고한다.
@@ -121,6 +123,6 @@ tree명령어와 gpt 이용하면 쓸만하게 나옴
 >
 >// 7. 4번 특정 '확장자'에서 일부 제외 할 파일  
 >!manual.txt
-
+>
 ---
 

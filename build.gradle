@@ -28,6 +28,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -39,6 +40,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.mysql:mysql-connector-j:8.2.0'
 	implementation 'com.mysql:mysql-connector-j'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 
 	// ✅ Lombok 의존성
 	compileOnly 'org.projectlombok:lombok'
@@ -51,14 +56,18 @@ dependencies {
 
 	// web flux용
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	// .env 파일을 자동으로 읽어주는 라이브러리 추가
+
+	// elasticsearch 의존성 추가
+	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch:2.7.18")
 	runtimeOnly 'me.paulschwarz:spring-dotenv:4.0.0'
 
-	// Kafka
-	implementation 'org.springframework.kafka:spring-kafka'
-	//
-	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 
+	// opensearch
+	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.19.0'
+	implementation("org.opensearch.client:opensearch-java:2.7.0") // 최신 OpenSearch Client
+
+	// 날짜관련
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {
