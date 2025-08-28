@@ -28,22 +28,22 @@ public class DataSourceConfig {
         @Value("${DB_SECRET_NAME}")
         private String secretName;
 
-        private final SecretsManagerService secretsService;
-
-        // SecretsManagerService를 Spring 컨테이너로부터 주입받습니다.
-        public ProductionDataSourceConfig(SecretsManagerService secretsService) {
-            this.secretsService = secretsService;
+        // SecretsManagerService를 Spring Bean으로 등록
+        @Bean
+        public SecretsManagerService secretsManagerService() {
+            return new SecretsManagerService();
         }
 
         @Bean
-        public DataSource dataSource() {
+        public DataSource dataSource(SecretsManagerService secretsService) {
+            // Secrets Manager에서 비밀번호 가져오기
             String dbPassword = secretsService.getSecret(secretName);
 
             return DataSourceBuilder.create()
                     .url(dbUrl)
                     .username(dbUsername)
                     .password(dbPassword)
-                    .driverClassName("com.mysql.cj.jdbc.Driver") // RDS 종류에 맞는 드라이버 지정
+                    .driverClassName("com.mysql.cj.jdbc.Driver")
                     .build();
         }
     }
