@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'com.example'
@@ -18,73 +17,57 @@ repositories {
 	mavenCentral()
 }
 
+// Use a BOM to manage AWS SDK versions consistently
+dependencyManagement {
+	imports {
+		mavenBom "software.amazon.awssdk:bom:2.25.4"
+	}
+}
+
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
+	// Spring Boot Starters
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
-	// Kafka 관련 의존성
-	implementation 'org.springframework.kafka:spring-kafka'
-	// JSON 직렬화/역직렬화
-	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'com.mysql:mysql-connector-j' // DB에 맞게
-
-
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' // For reactive web
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+	// Kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+
+	// Data & Search
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch:2.7.18'
+	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.19.0'
+	implementation 'org.opensearch.client:opensearch-java:2.7.0'
+
+	// Database Drivers (choose one for production)
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	// runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+	// AWS SDK for Secrets Manager (version managed by BOM)
+	implementation 'software.amazon.awssdk:secretsmanager'
+
+	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-	implementation 'org.springframework.boot:spring-boot-starter-logging'
 
-	// sql 연결
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'com.mysql:mysql-connector-j:8.2.0'
-	implementation 'com.mysql:mysql-connector-j'
-	implementation 'com.fasterxml.jackson.core:jackson-databind'
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-
-	// ✅ Lombok 의존성
+	// Utilities
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'org.projectlombok:lombok'
+	runtimeOnly 'me.paulschwarz:spring-dotenv:4.0.0'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310' // For Java 8 Time API serialization
 
-	// 테스트 코드에서 Lombok 사용 시
+	// Testing
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'com.h2database:h2' // H2 for in-memory testing
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
-
-	// web flux용
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-	// elasticsearch 의존성 추가
-	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch:2.7.18")
-	runtimeOnly 'me.paulschwarz:spring-dotenv:4.0.0'
-
-
-	// opensearch
-	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.19.0'
-	implementation("org.opensearch.client:opensearch-java:2.7.0") // 최신 OpenSearch Client
-
-	// 날짜관련
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
-	//aws 시크릿
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.mariadb.jdbc:mariadb-java-client'
-	implementation 'software.amazon.awssdk:secretsmanager:2.22.5'  // AWS SDK v2
-	implementation 'software.amazon.awssdk:core:2.22.5'
 }
 
 tasks.named('test') {
