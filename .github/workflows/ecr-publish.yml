@@ -37,6 +37,7 @@ jobs:
         run: ./gradlew build
         working-directory: ./ # 백엔드 프로젝트 루트 디렉토리
 
+      # AWS 인증 설정
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -49,8 +50,23 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
+      # Docker 이미지 빌드 및 ECR 푸시
+      - name: Build and Push Docker image to ECR
         run: |
+          IMAGE_TAG=${{ github.sha }}
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY=srg/frontend
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        working-directory: ./ # Dockerfile이 있는 디렉토리
+
+      # 8. kubeconfig 업데이트
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region ap-northeast-2 --name eks-cluster
+
+      # 9. 기존 Deployment 이미지 업데이트
+      - name: Update backend Deployment image
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          kubectl set image deployment/backend backend=$ECR_REGISTRY/srg/backend:$IMAGE_TAG --namespace=default
+          kubectl rollout status deployment/backend --namespace=default
