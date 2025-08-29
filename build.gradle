@@ -17,7 +17,6 @@ repositories {
 	mavenCentral()
 }
 
-// Use a BOM to manage AWS SDK versions consistently
 dependencyManagement {
 	imports {
 		mavenBom "software.amazon.awssdk:bom:2.25.4"
@@ -31,7 +30,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux' // For reactive web
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
@@ -39,16 +37,14 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 
 	// Data & Search
-	// Let the Spring Boot BOM manage the version for compatibility with Spring Boot 3.x
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.19.0'
 	implementation 'org.opensearch.client:opensearch-java:2.7.0'
 
-	// Database Drivers (choose one for production)
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	// runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	// Database Driver - MariaDB (runtimeOnly → implementation for test)
+	implementation 'org.mariadb.jdbc:mariadb-java-client'
 
-	// AWS SDK for Secrets Manager (version managed by BOM)
+	// AWS SDK for Secrets Manager
 	implementation 'software.amazon.awssdk:secretsmanager'
 
 	// JWT
@@ -60,7 +56,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	runtimeOnly 'me.paulschwarz:spring-dotenv:4.0.0'
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310' // For Java 8 Time API serialization
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 	// Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -69,6 +65,7 @@ dependencies {
 	testRuntimeOnly 'com.h2database:h2' // H2 for in-memory testing
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {

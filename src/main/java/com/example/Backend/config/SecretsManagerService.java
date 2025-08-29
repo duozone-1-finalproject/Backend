@@ -1,34 +1,36 @@
-package com.example.Backend.config;
+package com.example.backend.config;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
+import java.util.Map;
+
 @Service
 public class SecretsManagerService {
 
-    private final SecretsManagerClient secretsManagerClient;
+    private final SecretsManagerClient client;
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    /**
-     * EKS 환경에서는 Service Account에 연결된 IAM Role의 자격증명을,
-     * 로컬에서는 ~/.aws/credentials의 자격증명을 자동으로 사용합니다.
-     */
     public SecretsManagerService() {
-        this.secretsManagerClient = SecretsManagerClient.builder()
-                .region(Region.AP_NORTHEAST_2) // 사용하시는 AWS 리전으로 변경
-                .credentialsProvider(DefaultCredentialsProvider.create())
+        this.client = SecretsManagerClient.builder()
+                .region(Region.AP_NORTHEAST_2) // 서울 리전
                 .build();
     }
 
-    public String getSecret(String secretName) {
-        GetSecretValueRequest valueRequest = GetSecretValueRequest.builder()
-                .secretId(secretName)
-                .build();
+    public Map<String, String> getSecretMap(String secretName) {
+        GetSecretValueResponse response = client.getSecretValue(
+                GetSecretValueRequest.builder().secretId(secretName).build()
+        );
 
-        GetSecretValueResponse valueResponse = secretsManagerClient.getSecretValue(valueRequest);
-        return valueResponse.secretString();
+        try {
+            return mapper.readValue(response.secretString(), new TypeReference<Map<String, String>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse secret JSON", e);
+        }
     }
 }

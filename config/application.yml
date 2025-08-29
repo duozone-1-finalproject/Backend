@@ -1,20 +1,15 @@
 server:
   port: 8080
 
-spring:
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.mariadb.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-    open-in-view: false
+    show-sql: true
+  datasource:
+    url: ${DB_HOST}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
 
   data:
     elasticsearch:
@@ -98,3 +93,7 @@ logging:
     org.springframework.boot.autoconfigure.security: DEBUG
     org.springframework.data.opensearch: DEBUG
     # org.springframework.data.elasticsearch: DEBUG
+aws:
+  secret:
+    name: rds/testuser
+
