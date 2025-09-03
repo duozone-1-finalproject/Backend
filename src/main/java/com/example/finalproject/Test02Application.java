@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 // 브랜치 테스트용 커밋 주석
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.example.finalproject.apitest", "com.example.finalproject.login_auth", "com.example.finalproject.dart","com.example.finalproject.dart_viewer"})
+@ComponentScan(basePackages = {"com.example.finalproject.apitest", "com.example.finalproject.login_auth", "com.example.finalproject.dart","com.example.finalproject.dart_viewer","com.example.finalproject.ai_backend"})
 @EnableConfigurationProperties(JwtProperties.class)
 public class Test02Application {
 	public static void main(String[] args) {
