@@ -52,7 +52,8 @@ public class SecurityConfig {
                             "/favicon.ico",
                             // ⭐ AI API 경로를 완전히 Security에서 제외
                             "/api/v1/ai-reports/**",
-                            "/api/v1/**"
+                            "/api/v1/**",
+                            "/api/**"
                     );
         };
     }
