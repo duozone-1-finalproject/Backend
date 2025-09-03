@@ -78,6 +78,8 @@ jpa:
   hibernate:
     ddl-auto: update
   show-sql: true
+  properties:
+    hibernate.dialect: org.hibernate.dialect.MariaDBDialect
 
 jwt: # Secrets Manager의 키 이름과 플레이스홀더를 일치시킵니다.
   secret: ${JWT_SECRET_KEY}
