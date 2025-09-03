@@ -76,7 +76,7 @@ public class DartApiServiceImpl2 implements DartFetchUseCase, DartQueryUseCase {
             // base-url 이 .../api 라면 뒤에는 estkRs.json / list.json 처럼 붙입니다.
             String estkUrl = String.format("%s/estkRs.json?crtfc_key=%s&corp_code=%s&bgn_de=%s&end_de=%s",
                     dartApiBaseUrl, dartApiKey, corpCode, beginDe, endDe);
-            log.info("지분증권 주요정보 호출: {}", estkUrl);
+            log.info(" 주요정보 호출: {}", estkUrl);
 
             String estkResp = restTemplate.getForObject(estkUrl, String.class);
             if (estkResp == null || estkResp.isBlank()) {
