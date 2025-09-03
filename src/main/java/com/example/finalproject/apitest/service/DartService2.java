@@ -1,6 +1,5 @@
 package com.example.finalproject.apitest.service;
 
-import com.example.finalproject.apitest.dto.equity.response.DartCompanyResponse;
 import com.example.finalproject.apitest.dto.common.Company;
 import com.example.finalproject.apitest.dto.overview.response.CompanyOverviewResponse;
 import com.example.finalproject.apitest.dto.common.Headquarters;
