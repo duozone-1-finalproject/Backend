@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}  # .env에서 덮어쓰기 가능 (기본 dev)
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -16,22 +18,29 @@ spring:
         format_sql: true
     open-in-view: false
 
-  data:
-    elasticsearch:
-      cluster-nodes: localhost:9200 # 오픈서치 주소
-      username: admin
-      password: admin
+  opensearch:
+    uris: ${OPENSEARCH_URI:http://192.168.0.77:9200}
+    username: ${OPENSEARCH_USERNAME:admin}
+    password: ${OPENSEARCH_PASSWORD:admin}
+    connection-timeout: 5s     # connect timeout
+    socket-timeout: 60s        # read timeout
+    max-conn-total: 100
+    max-conn-per-route: 100
+    sniff-enabled: false
 
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
-    consumer:
-      group-id: ai-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:ai-backend-group}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: true
 
   security:
     user:
@@ -98,3 +107,40 @@ logging:
     org.springframework.boot.autoconfigure.security: DEBUG
     org.springframework.data.opensearch: DEBUG
     # org.springframework.data.elasticsearch: DEBUG
+    # org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG  # (매핑 확인시 켜기)
+
+# ===== AI 시스템 설정 (기본값: 실서버 사용) =====
+ai:
+  system:
+    enabled: ${AI_SYSTEM_ENABLED:true}   # 실제 AI 서버 사용 여부
+  mock:
+    enabled: ${AI_MOCK_ENABLED:false}    # Mock 사용 여부(기본 false)
+  timeout:
+    seconds: ${AI_TIMEOUT_SECONDS:60}    # AI 응답 대기 시간(초)
+
+# ===== dev 프로필 =====
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+# dev에서도 실AI 연동 테스트가 가능하도록 mock 비활성 & 적당한 타임아웃
+ai:
+  mock:
+    enabled: false
+  timeout:
+    seconds: 60
+
+# ===== prod 프로필 =====
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+ai:
+  mock:
+    enabled: false
+  timeout:
+    seconds: 120

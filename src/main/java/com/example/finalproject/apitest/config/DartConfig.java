@@ -27,9 +27,4 @@ public class DartConfig {
                 .requestFactory(() -> requestFactory)
                 .build();
     }
-
-    @Bean // 이 ObjectMapper 빈 생성 코드를 추가하면 에러가 해결됩니다.
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
 }
