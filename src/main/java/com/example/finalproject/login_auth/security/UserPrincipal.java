@@ -1,6 +1,6 @@
 package com.example.finalproject.login_auth.security;
 
-import com.example.finalproject.login_auth.model.User;
+import com.example.finalproject.login_auth.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
