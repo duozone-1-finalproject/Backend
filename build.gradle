@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'com.example'
@@ -31,43 +32,63 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-	// --- Kafka ---
-	implementation 'org.springframework.kafka:spring-kafka'
 
-	// --- OpenSearch / Elasticsearch ---
-	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-	implementation 'org.opensearch.client:opensearch-java:2.9.0'
-
-	// --- Database Driver ---
-	implementation 'org.mariadb.jdbc:mariadb-java-client'
-
-	// --- JWT ---
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
 
-	// --- Utilities ---
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	runtimeOnly 'me.paulschwarz:spring-dotenv:4.0.0'
+	// SQL 연결
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	runtimeOnly 'com.mysql:mysql-connector-j:8.2.0'
+	implementation 'com.mysql:mysql-connector-j'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-	// --- AWS ---
-	implementation platform('io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1')
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager'
 
-	// --- Testing ---
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testRuntimeOnly 'com.h2database:h2'
+	// ✅ Lombok 의존성
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	implementation 'org.projectlombok:lombok'
+
+	// 테스트 코드에서 Lombok 사용 시
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// WebFlux용
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// Elasticsearch 의존성 추가
+	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch:2.7.18")
+	runtimeOnly 'me.paulschwarz:spring-dotenv:4.0.0'
+
+	// OpenSearch
+	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.19.0'
+	implementation("org.opensearch.client:opensearch-java:2.7.0") // 최신 OpenSearch Client
+
+	// ✅ Kafka 의존성 추가
+	implementation 'org.springframework.kafka:spring-kafka'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+	// (Kotlin 데이터클래스를 쓰면)
+	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+	useJUnitPlatform()
+	systemProperty "file.encoding", "UTF-8"
 }
