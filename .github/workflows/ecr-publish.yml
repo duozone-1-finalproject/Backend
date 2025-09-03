@@ -63,9 +63,10 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --region ap-northeast-2 --name eks-cluster
 
-      # 9. Deployment 이미지 업데이트 및 롤아웃 확인
-      - name: Update backend Deployment image
-        run: |
-          IMAGE_TAG=${{ github.sha }}
-          kubectl set image deployment/backend backend=${{ secrets.AWS_ECR_REGISTRY }}/srg/backend:$IMAGE_TAG --namespace=default
-          kubectl rollout status deployment/backend --namespace=default
+    # 9. 기존 Deployment 이미지 업데이트
+    - name: Update backend Deployment image
+      run: |
+        IMAGE_TAG=${{ github.sha }}
+        ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}  # ex: 123456789012.dkr.ecr.ap-northeast-2.amazonaws.com
+        kubectl set image deployment/backend backend=$ECR_REGISTRY/srg/backend:$IMAGE_TAG --namespace=default
+        kubectl rollout status deployment/backend --namespace=default
