@@ -33,13 +33,7 @@ public interface DartApiService {
     // 위 함수들을 통해 검색어명 폴더에 모든 기업의 검색된 보고서 저장
     String saveDownloadedReports(DownloadAllRequestDto dto);
 
-    String saveDownloadedReportsCompany(String corpCode, DownloadAllRequestDto dto);
-
 // -----------------------------------------------------------------------------------------------
-    // 기업코드로 최근 1년간의 사업/1분기/3분기/반기/감사 보고서의 리스트 반환
-    DartReportListResponseDto getRceptNosByCorpCode(String corpCode);
-
-
 }
 /*
 1. 검색이 된것만 보내고 싶다.
