@@ -1,6 +1,7 @@
 package com.example.finalproject.apitest.controller;
 
 
+import com.example.finalproject.apitest.dto.common.AllDartDataResponse;
 import com.example.finalproject.apitest.dto.common.MyDartApiResponseDto;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
@@ -36,6 +37,32 @@ public class TestController {
     LocalDate oneYearAgo = today.minusYears(1);
     String oneYearAgoString = oneYearAgo.format(formatter);
 
+    // [추가] 모든 데이터를 한 번에 가져오는 통합 엔드포인트
+    // 테스트 URL: http://localhost:8080/api/dart/test/01571107/all-data
+    @GetMapping("/{corpCode}/all-data")
+    public MyDartApiResponseDto<AllDartDataResponse> syncAllData(
+            @PathVariable String corpCode,
+            @RequestParam(defaultValue = "2023") String bsnsYear,
+            @RequestParam(defaultValue = "11011") String reprtCode,
+            @RequestParam(defaultValue = "OFS") String fsDiv
+    ) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            LocalDate today = LocalDate.now();
+            String todayString = today.format(formatter);
+            LocalDate oneYearAgo = today.minusYears(1);
+            String oneYearAgoString = oneYearAgo.format(formatter);
+
+            AllDartDataResponse allData = testService.fetchAllDartData(corpCode, bsnsYear, reprtCode, oneYearAgoString, todayString, fsDiv);
+            return MyDartApiResponseDto.ok(allData);
+        } catch (DartApiException e) {
+            log.error("통합 데이터 서비스 처리 중 에러 발생: {}", e.getMessage());
+            return MyDartApiResponseDto.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("알 수 없는 에러 발생", e);
+            return MyDartApiResponseDto.error("알 수 없는 서버 오류가 발생했습니다.");
+        }
+    }
 
     // 테스트 Get http://localhost:8080/api/dart/test/01571107/major-shareholder-statuses
     @GetMapping("/{corpCode}/major-shareholder-statuses")

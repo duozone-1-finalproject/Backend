@@ -17,10 +17,10 @@ spring:
     open-in-view: false
 
   data:
-    elasticsearch:
-      cluster-nodes: localhost:9200 # 오픈서치 주소
-      username: admin
-      password: admin
+    opensearch:
+      url: ${OS_ENDPOINTS_URL} # 오픈서치 주소
+      port: ${OS_ENDPOINTS_PORT}
+      protocol: ${OS_ENDPOINTS_PROTOCOL}
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}

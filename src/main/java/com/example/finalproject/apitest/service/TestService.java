@@ -1,5 +1,6 @@
 package com.example.finalproject.apitest.service;
 
+import com.example.finalproject.apitest.dto.common.AllDartDataResponse;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
@@ -36,4 +37,6 @@ public interface TestService {
     List<DartCompensationApprovalResponse> DartCompensationApprovalCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     List<DartDirectorAndAuditorCompensationResponse> DartDirectorAndAuditorCompensationCall(String corpCode, String bsnsYear, String reprtCode) throws IOException;
     DartCompanyOverviewResponse DartCompanyOverviewCall(String corpCode) throws IOException;
+
+    AllDartDataResponse fetchAllDartData(String corpCode, String bsnsYear, String reprtCode, String beginDate, String endDate, String fsDiv);
 }
