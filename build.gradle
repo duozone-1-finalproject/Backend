@@ -66,6 +66,10 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	//aws
+	implementation platform('io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1')
+	implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config'
 }
 
 tasks.named('test') {

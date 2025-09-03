@@ -1,14 +1,13 @@
-server:
-  port: 8080
+spring:
+  config:
+    import:
+      - "aws-secretsmanager:rds/testuser"
+      - "aws-secretsmanager:DART/JWT/KAKAO/NAVER/GOOGLE/URL"
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
   datasource:
-    url: ${DB_HOST}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mariadb://${host}:${port}/${dbname} # Secrets Manager의 host, port, dbname 키를 사용합니다.
+    username: ${username}
+    password: ${password}
     driver-class-name: org.mariadb.jdbc.Driver
 
   data:
@@ -32,7 +31,7 @@ server:
     user:
       name: disabled
       password: disabled
-    oauth2:
+    oauth2: # Secrets Manager의 키 이름과 플레이스홀더를 일치시킵니다.
       client:
         registration:
           google:
@@ -72,16 +71,24 @@ server:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-jwt:
-  secret: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION}
+server:
+  port: 8080
+
+jpa:
+  hibernate:
+    ddl-auto: update
+  show-sql: true
+
+jwt: # Secrets Manager의 키 이름과 플레이스홀더를 일치시킵니다.
+  secret: ${JWT_SECRET_KEY}
+  expiration: ${JWT_SECRET_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 dart:
   api:
-    key: ${DART_API_KEY}
-    obj: ${DART_API_OBJ_KEY}
-    ljh: ${DART_API_LJH_KEY}
+    # Secrets Manager의 키 이름과 플레이스홀더를 일치시킵니다.
+    obj: ${DART_API_KEY_OBJ}
+    ljh: ${DART_API_KEY_LJH}
     base-url: https://opendart.fss.or.kr/api
 
 frontend:
@@ -93,7 +100,3 @@ logging:
     org.springframework.boot.autoconfigure.security: DEBUG
     org.springframework.data.opensearch: DEBUG
     # org.springframework.data.elasticsearch: DEBUG
-aws:
-  secret:
-    name: rds/testuser
-
