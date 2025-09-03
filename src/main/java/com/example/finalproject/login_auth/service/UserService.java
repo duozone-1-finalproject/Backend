@@ -2,7 +2,7 @@
 package com.example.finalproject.login_auth.service;
 
 import com.example.finalproject.login_auth.dto.UserRequestDto;
-import com.example.finalproject.login_auth.model.User;
+import com.example.finalproject.login_auth.entity.User;
 import com.example.finalproject.login_auth.repository.UserRepository;
 import com.example.finalproject.login_auth.util.PasswordValidator;
 

@@ -7,15 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-public class CompanyOverviewDto {
+@NoArgsConstructor
+public class CompanyOverviewRequestDto {
     @JsonProperty("corp_code")
     private String corpCode;
 
-    @JsonProperty("corp_code")
+    @JsonProperty("corp_name")
     private String corpName;
 
     @JsonProperty("corp_eng_name")
@@ -24,6 +24,5 @@ public class CompanyOverviewDto {
     @JsonProperty("stock_code")
     private String stockCode;
 
-    @JsonProperty("modify_date")
-    private String modifyDate;
+
 }
