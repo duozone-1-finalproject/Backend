@@ -50,12 +50,15 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      # 7. Docker 이미지 빌드 & 푸시
+      # Docker 이미지 빌드 및 ECR 푸시
       - name: Build and Push Docker image to ECR
         run: |
           IMAGE_TAG=${{ github.sha }}
-          docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/srg/backend:$IMAGE_TAG ./backend
-          docker push ${{ secrets.AWS_ECR_REGISTRY }}/srg/backend:$IMAGE_TAG
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY=srg/backend
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
       # 8. kubeconfig 업데이트
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --region ap-northeast-2 --name eks-cluster
