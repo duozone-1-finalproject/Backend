@@ -1,4 +1,3 @@
-// dto/LoginRequestDto.java
 package com.example.finalproject.login_auth.dto;
 
 import lombok.Getter;

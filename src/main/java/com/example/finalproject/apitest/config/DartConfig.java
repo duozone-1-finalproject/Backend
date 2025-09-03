@@ -27,5 +27,4 @@ public class DartConfig {
                 .requestFactory(() -> requestFactory)
                 .build();
     }
-
 }
