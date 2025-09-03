@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "${frontend.url}")
-public class TestController {
+public class TestControllerV2 {
 
     private final CompanyDataService2 companyDataService;
     private final TemplateService templateService;
