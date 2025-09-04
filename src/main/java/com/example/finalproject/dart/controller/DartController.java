@@ -42,9 +42,15 @@ public class DartController {
     }
 
     // 기업코드로 최근 1년간의 사업/1분기/3분기/반기/감사 보고서의 리스트 반환
+//    @GetMapping("/reports/core")
+//    public DartReportListResponseDto test(@RequestParam("corp_code") String corpCode){
+//        return dartApiService.getRceptNosByCorpCode(corpCode); // "01571107"
+//    }
+
+    // 기업코드로 최근 5년간의 모든 보고서의 리스트 반환
     @GetMapping("/reports/core")
-    public DartReportListResponseDto test(@RequestParam("corp_code") String corpCode){
-        return dartApiService.getRceptNosByCorpCode(corpCode); // "01571107"
+    public DartReportListResponseDto fiveYearRceptCall(@RequestParam("corp_code") String corpCode){
+        return dartApiService.getFiveYearRceptNosByCorpCode(corpCode); // "01571107"
     }
 
 
