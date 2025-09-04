@@ -66,39 +66,39 @@ public class TestServiceImpl implements TestService {
     @Qualifier("taskExecutor")
     private final Executor taskExecutor;
 
-    // --- 비동기 통합 메소드 구현 ---
+    // --- 비동기 통합 메소드 ---
     @Override
     public AllDartDataResponse fetchAllDartData(String corpCode, String bsnsYear, String reprtCode, String beginDate, String endDate, String fsDiv) {
         log.info("corpCode {}에 대한 모든 데이터 비동기 호출 시작", corpCode);
 
         // --- 각 API 호출을 비동기 작업으로 정의 ---
-        CompletableFuture<DartCompanyOverviewResponse> companyOverviewFuture = supplyAsync(() -> DartCompanyOverviewCall(corpCode));
-        CompletableFuture<List<DartMajorShareholderStatusResponse>> majorShareholderStatusFuture = supplyAsyncList(() -> DartMajorShareholderStatusCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartMajorShareholderChangeResponse>> majorShareholderChangeFuture = supplyAsyncList(() -> DartMajorShareholderChangeCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartExecutiveStatusResponse>> executiveStatusFuture = supplyAsyncList(() -> DartExecutiveStatusCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartEmployeeStatusResponse>> employeeStatusFuture = supplyAsyncList(() -> DartEmployeeStatusCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartUnregisteredExecutiveCompensationResponse>> unregisteredExecutiveCompensationFuture = supplyAsyncList(() -> DartUnregisteredExecutiveCompensationCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartCbIssuanceResponse>> cbIssuanceFuture = supplyAsyncList(() -> DartCbIssuanceCall(corpCode, beginDate, endDate));
-        CompletableFuture<List<DartBwIssuanceResponse>> bwIssuanceFuture = supplyAsyncList(() -> DartBwIssuanceCall(corpCode, beginDate, endDate));
-        CompletableFuture<List<DartCocoBondIssuanceResponse>> cocoBondIssuanceFuture = supplyAsyncList(() -> DartCocoBondIssuanceCall(corpCode, beginDate, endDate));
-        CompletableFuture<List<DartPublicOfferingFundUsageResponse>> publicOfferingFundUsageFuture = supplyAsyncList(() -> DartPublicOfferingFundUsageCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartPrivatePlacementFundUsageResponse>> privatePlacementFundUsageFuture = supplyAsyncList(() -> DartPrivatePlacementFundUsageCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartAuditOpinionResponse>> auditOpinionFuture = supplyAsyncList(() -> DartAuditOpinionCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartAuditServiceContractResponse>> auditServiceContractFuture = supplyAsyncList(() -> DartAuditServiceContractCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartNonAuditServiceContractResponse>> nonAuditServiceContractFuture = supplyAsyncList(() -> DartNonAuditServiceContractCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartOutsideDirectorChangeStatusResponse>> outsideDirectorChangeStatusFuture = supplyAsyncList(() -> DartOutsideDirectorChangeStatusCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartTotalStockStatusResponse>> totalStockStatusFuture = supplyAsyncList(() -> DartTotalStockStatusCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartTreasuryStockStatusResponse>> treasuryStockStatusFuture = supplyAsyncList(() -> DartTreasuryStockStatusCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartSingleCompanyKeyAccountResponse>> singleCompanyKeyAccountFuture = supplyAsyncList(() -> DartSingleCompanyKeyAccountCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartNonConsolidatedFinancialStatementResponse>> nonConsolidatedFinancialStatementFuture = supplyAsyncList(() -> DartNonConsolidatedFinancialStatementCall(corpCode, bsnsYear, reprtCode, fsDiv));
-        CompletableFuture<List<DartCorporateBondBalanceResponse>> corporateBondBalanceFuture = supplyAsyncList(() -> DartCorporateBondBalanceCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartCommercialPaperBalanceResponse>> commercialPaperBalanceFuture = supplyAsyncList(() -> DartCommercialPaperBalanceCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartShortTermBondBalanceResponse>> shortTermBondBalanceFuture = supplyAsyncList(() -> DartShortTermBondBalanceCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartHybridSecuritiesBalanceResponse>> hybridSecuritiesBalanceFuture = supplyAsyncList(() -> DartHybridSecuritiesBalanceCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartMinorityShareholderStatusResponse>> minorityShareholderStatusFuture = supplyAsyncList(() -> DartMinorityShareholderStatusCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartCompensationApprovalResponse>> compensationApprovalFuture = supplyAsyncList(() -> DartCompensationApprovalCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<List<DartDirectorAndAuditorCompensationResponse>> directorAndAuditorCompensationFuture = supplyAsyncList(() -> DartDirectorAndAuditorCompensationCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<DartEquitySecuritiesGroupResponse> equitySecuritiesFuture = supplyAsync(() -> DartEquitySecuritiesCall(corpCode, beginDate, endDate));
+        CompletableFuture<DartCompanyOverviewResponse> companyOverviewFuture = supplyAsync(() -> DartCompanyOverviewCall(corpCode), "CompanyOverview");
+        CompletableFuture<List<DartMajorShareholderStatusResponse>> majorShareholderStatusFuture = supplyAsyncList(() -> DartMajorShareholderStatusCall(corpCode, bsnsYear, reprtCode), "MajorShareholderStatus");
+        CompletableFuture<List<DartMajorShareholderChangeResponse>> majorShareholderChangeFuture = supplyAsyncList(() -> DartMajorShareholderChangeCall(corpCode, bsnsYear, reprtCode), "MajorShareholderChange");
+        CompletableFuture<List<DartExecutiveStatusResponse>> executiveStatusFuture = supplyAsyncList(() -> DartExecutiveStatusCall(corpCode, bsnsYear, reprtCode), "ExecutiveStatus");
+        CompletableFuture<List<DartEmployeeStatusResponse>> employeeStatusFuture = supplyAsyncList(() -> DartEmployeeStatusCall(corpCode, bsnsYear, reprtCode), "EmployeeStatus");
+        CompletableFuture<List<DartUnregisteredExecutiveCompensationResponse>> unregisteredExecutiveCompensationFuture = supplyAsyncList(() -> DartUnregisteredExecutiveCompensationCall(corpCode, bsnsYear, reprtCode), "UnregisteredExecutiveCompensation");
+        CompletableFuture<List<DartCbIssuanceResponse>> cbIssuanceFuture = supplyAsyncList(() -> DartCbIssuanceCall(corpCode, beginDate, endDate), "CbIssuance");
+        CompletableFuture<List<DartBwIssuanceResponse>> bwIssuanceFuture = supplyAsyncList(() -> DartBwIssuanceCall(corpCode, beginDate, endDate), "BwIssuance");
+        CompletableFuture<List<DartCocoBondIssuanceResponse>> cocoBondIssuanceFuture = supplyAsyncList(() -> DartCocoBondIssuanceCall(corpCode, beginDate, endDate), "CocoBondIssuance");
+        CompletableFuture<List<DartPublicOfferingFundUsageResponse>> publicOfferingFundUsageFuture = supplyAsyncList(() -> DartPublicOfferingFundUsageCall(corpCode, bsnsYear, reprtCode), "PublicOfferingFundUsage");
+        CompletableFuture<List<DartPrivatePlacementFundUsageResponse>> privatePlacementFundUsageFuture = supplyAsyncList(() -> DartPrivatePlacementFundUsageCall(corpCode, bsnsYear, reprtCode), "PrivatePlacementFundUsage");
+        CompletableFuture<List<DartAuditOpinionResponse>> auditOpinionFuture = supplyAsyncList(() -> DartAuditOpinionCall(corpCode, bsnsYear, reprtCode), "AuditOpinion");
+        CompletableFuture<List<DartAuditServiceContractResponse>> auditServiceContractFuture = supplyAsyncList(() -> DartAuditServiceContractCall(corpCode, bsnsYear, reprtCode), "AuditServiceContract");
+        CompletableFuture<List<DartNonAuditServiceContractResponse>> nonAuditServiceContractFuture = supplyAsyncList(() -> DartNonAuditServiceContractCall(corpCode, bsnsYear, reprtCode), "NonAuditServiceContract");
+        CompletableFuture<List<DartOutsideDirectorChangeStatusResponse>> outsideDirectorChangeStatusFuture = supplyAsyncList(() -> DartOutsideDirectorChangeStatusCall(corpCode, bsnsYear, reprtCode), "OutsideDirectorChangeStatus");
+        CompletableFuture<List<DartTotalStockStatusResponse>> totalStockStatusFuture = supplyAsyncList(() -> DartTotalStockStatusCall(corpCode, bsnsYear, reprtCode), "TotalStockStatus");
+        CompletableFuture<List<DartTreasuryStockStatusResponse>> treasuryStockStatusFuture = supplyAsyncList(() -> DartTreasuryStockStatusCall(corpCode, bsnsYear, reprtCode), "TreasuryStockStatus");
+        CompletableFuture<List<DartSingleCompanyKeyAccountResponse>> singleCompanyKeyAccountFuture = supplyAsyncList(() -> DartSingleCompanyKeyAccountCall(corpCode, bsnsYear, reprtCode), "SingleCompanyKeyAccount");
+        CompletableFuture<List<DartNonConsolidatedFinancialStatementResponse>> nonConsolidatedFinancialStatementFuture = supplyAsyncList(() -> DartNonConsolidatedFinancialStatementCall(corpCode, bsnsYear, reprtCode, fsDiv), "NonConsolidatedFinancialStatement");
+        CompletableFuture<List<DartCorporateBondBalanceResponse>> corporateBondBalanceFuture = supplyAsyncList(() -> DartCorporateBondBalanceCall(corpCode, bsnsYear, reprtCode), "CorporateBondBalance");
+        CompletableFuture<List<DartCommercialPaperBalanceResponse>> commercialPaperBalanceFuture = supplyAsyncList(() -> DartCommercialPaperBalanceCall(corpCode, bsnsYear, reprtCode), "CommercialPaperBalance");
+        CompletableFuture<List<DartShortTermBondBalanceResponse>> shortTermBondBalanceFuture = supplyAsyncList(() -> DartShortTermBondBalanceCall(corpCode, bsnsYear, reprtCode), "ShortTermBondBalance");
+        CompletableFuture<List<DartHybridSecuritiesBalanceResponse>> hybridSecuritiesBalanceFuture = supplyAsyncList(() -> DartHybridSecuritiesBalanceCall(corpCode, bsnsYear, reprtCode), "HybridSecuritiesBalance");
+        CompletableFuture<List<DartMinorityShareholderStatusResponse>> minorityShareholderStatusFuture = supplyAsyncList(() -> DartMinorityShareholderStatusCall(corpCode, bsnsYear, reprtCode), "MinorityShareholderStatus");
+        CompletableFuture<List<DartCompensationApprovalResponse>> compensationApprovalFuture = supplyAsyncList(() -> DartCompensationApprovalCall(corpCode, bsnsYear, reprtCode), "CompensationApproval");
+        CompletableFuture<List<DartDirectorAndAuditorCompensationResponse>> directorAndAuditorCompensationFuture = supplyAsyncList(() -> DartDirectorAndAuditorCompensationCall(corpCode, bsnsYear, reprtCode), "DirectorAndAuditorCompensation");
+        CompletableFuture<DartEquitySecuritiesGroupResponse> equitySecuritiesFuture = supplyAsync(() -> DartEquitySecuritiesCall(corpCode, beginDate, endDate), "EquitySecurities");
 
         // --- 정의된 모든 비동기 작업이 완료될 때까지 기다림 ---
         List<CompletableFuture<?>> allFutures = List.of(
@@ -114,7 +114,6 @@ public class TestServiceImpl implements TestService {
 
         // --- 모든 작업 완료 후, 결과를 취합하여 하나의 DTO로 만들어 반환 ---
         try {
-            // [수정] AllDartDataResponse의 필드명에 맞게 builder 메소드명 수정
             return AllDartDataResponse.builder()
                     .companyOverview(companyOverviewFuture.get())
                     .majorShareholderStatus(majorShareholderStatusFuture.get())
@@ -122,7 +121,6 @@ public class TestServiceImpl implements TestService {
                     .executiveStatus(executiveStatusFuture.get())
                     .employeeStatus(employeeStatusFuture.get())
                     .unregisteredExecutiveCompensation(unregisteredExecutiveCompensationFuture.get())
-                    // .individualCompensations(individualCompensationFuture.get()) // DTO에 없는 필드
                     .cbIssuance(cbIssuanceFuture.get())
                     .bwIssuance(bwIssuanceFuture.get())
                     .cocoBondIssuance(cocoBondIssuanceFuture.get())
@@ -143,7 +141,7 @@ public class TestServiceImpl implements TestService {
                     .minorityShareholderStatus(minorityShareholderStatusFuture.get())
                     .compensationApproval(compensationApprovalFuture.get())
                     .directorAndAuditorCompensation(directorAndAuditorCompensationFuture.get())
-                    // .equitySecurities(equitySecuritiesFuture.get()) // DTO에 없는 필드
+                    .equitySecurities(equitySecuritiesFuture.get())
                     .build();
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
@@ -169,15 +167,33 @@ public class TestServiceImpl implements TestService {
         }, taskExecutor);
     }
 
-    private <T> CompletableFuture<List<T>> supplyAsyncList(IOExceptionSupplier<List<T>> supplier) {
+    private <T> CompletableFuture<T> supplyAsync(IOExceptionSupplier<T> supplier, String apiName) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return supplier.get();
             } catch (Exception e) {
-                log.warn("비동기 API 호출 실패 (결과 empty list 반환): {}", e.getMessage());
-                return Collections.emptyList();
+                // DartApiException을 포함한 모든 예외를 RuntimeException으로 감싸서 전파
+                throw new DartApiException(apiName + " API 호출 실패", e);
             }
-        }, taskExecutor);
+        }, taskExecutor).exceptionally(ex -> {
+            log.warn("{} API 호출 실패: {}", apiName, ex.getMessage());
+            // 단일 객체 실패 시 null 반환
+            return null;
+        });
+    }
+
+    private <T> CompletableFuture<List<T>> supplyAsyncList(IOExceptionSupplier<List<T>> supplier, String apiName) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return supplier.get();
+            } catch (Exception e) {
+                throw new DartApiException(apiName + " API 호출 실패", e);
+            }
+        }, taskExecutor).exceptionally(ex -> {
+            log.warn("{} API 호출 실패: {}", apiName, ex.getMessage());
+            // 리스트 실패 시 빈 리스트 반환
+            return Collections.emptyList();
+        });
     }
 
     // --- 개별 호출 메소드 구현 ---
