@@ -1,6 +1,6 @@
 package com.example.finalproject.login_auth.service;
 
-import com.example.finalproject.login_auth.model.User;
+import com.example.finalproject.login_auth.entity.User;
 import com.example.finalproject.login_auth.repository.UserRepository;
 import com.example.finalproject.login_auth.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
