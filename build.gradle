@@ -93,3 +93,7 @@ tasks.withType(Test) {
 	systemProperty "file.encoding", "UTF-8"
 }
 
+application {
+	mainClass = 'com.example.backend.BackendApplication'
+}
+
