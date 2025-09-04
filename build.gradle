@@ -93,7 +93,9 @@ tasks.withType(Test) {
 	systemProperty "file.encoding", "UTF-8"
 }
 
-application {
+
+springBoot {
 	mainClass = 'com.example.backend.BackendApplication'
 }
+
 
