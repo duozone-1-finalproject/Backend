@@ -11,12 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
-public class OpenSearchConfig2 {
+public class OpenSearchConfig {
 
     @Value("${opensearch.uris:http://192.168.0.77:9200}")
     private String openSearchUri;
 
-    @Bean(name = "openSearchClient2")
+    @Bean(name = "openSearchClient")
     public RestHighLevelClient openSearchClient() {
         try {
             // URI parsing
