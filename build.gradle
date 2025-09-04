@@ -16,11 +16,9 @@ repositories {
 	mavenCentral()
 }
 
-// This BOM is the single source of truth for all Spring Cloud AWS dependency versions.
-// Use the correct version for Spring Boot 3.x
 dependencyManagement {
 	imports {
-		mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:2.4.4"
+		mavenBom "software.amazon.awssdk:bom:2.25.4"
 	}
 }
 
@@ -40,7 +38,8 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	// --- Database ---
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.0'
+
 
 	// --- Lombok ---
 	compileOnly 'org.projectlombok:lombok'
@@ -61,8 +60,6 @@ dependencies {
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
 	// --- AWS ---
-	// No explicit version here! This removes the critical version conflict.
-	// The error "Could not find ...-config:." is caused by a trailing colon. Ensure it is removed.
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
 
 	// --- Testing ---
@@ -78,7 +75,3 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
-// This block is crucial for creating a runnable JAR and resolving the "Unable to find a single main class" error.
-springBoot {
-	mainClass = 'com.example.finalproject.BackendApplication'
-}

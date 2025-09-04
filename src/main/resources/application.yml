@@ -10,18 +10,14 @@ spring:
       - "aws-secretsmanager:DART/JWT/KAKAO/NAVER/GOOGLE/URL"
 
   datasource:
-    url: jdbc:mariadb://${host}:${port}/${dbname} # Secrets Manager의 host, port, dbname 키를 사용합니다.
+    url: jdbc:mariadb://${host}:${port}/${dbname}
     username: ${username}
     password: ${password}
-    driver-class-name: org.mariadb.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-    open-in-view: false
+    show-sql: true
+    database-platform: org.hibernate.dialect.MariaDBDialect
 
   opensearch:
     uris: ${OPENSEARCH_URI:http://192.168.0.77:9200}
@@ -90,13 +86,6 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
-
-jpa:
-  hibernate:
-    ddl-auto: update
-  show-sql: true
-  properties:
-    hibernate.dialect: org.hibernate.dialect.MariaDBDialect
 
 jwt: # Secrets Manager의 키 이름과 플레이스홀더를 일치시킵니다.
   secret: ${JWT_SECRET_KEY}
