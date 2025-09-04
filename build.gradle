@@ -15,9 +15,15 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	set('springCloudVersion', "2023.0.2")
+	set('springCloudAwsVersion', "3.1.1")
+}
+
 dependencyManagement {
 	imports {
-		mavenBom "software.amazon.awssdk:bom:2.25.4"
+		mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:${springCloudAwsVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
 }
 
@@ -45,17 +51,17 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
-	// --- Elasticsearch / OpenSearch ---
+	// --- OpenSearch ---
+	// The starter now correctly manages the required client dependencies.
+	// The deprecated RestHighLevelClient is no longer needed and has been removed.
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.19.0'
-	implementation 'org.opensearch.client:opensearch-java:2.19.0'
 
 	// --- Kafka ---
 	implementation 'org.springframework.kafka:spring-kafka'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
 	// --- AWS ---
-	implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	// --- Testing ---
