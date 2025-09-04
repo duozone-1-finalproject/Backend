@@ -1,40 +1,45 @@
 package com.example.finalproject.apitest.service.impl;
 
 import com.example.finalproject.apitest.dto.common.AllDartDataResponse;
+import com.example.finalproject.apitest.dto.equity.response.DartEquitySecuritiesResponse;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
 import com.example.finalproject.apitest.dto.overview.response.DartCompanyOverviewResponse;
 import com.example.finalproject.apitest.dto.periodic.response.*;
 import com.example.finalproject.apitest.exception.DartApiException;
+import com.example.finalproject.apitest.service.TestService;
+import com.example.finalproject.apitest.service.equity.DartEquitySecuritiesService;
 import com.example.finalproject.apitest.service.material.DartBwIssuanceService;
 import com.example.finalproject.apitest.service.material.DartCbIssuanceService;
 import com.example.finalproject.apitest.service.material.DartCocoBondIssuanceService;
 import com.example.finalproject.apitest.service.overview.DartCompanyOverviewService;
 import com.example.finalproject.apitest.service.periodic.*;
-import com.example.finalproject.apitest.service.TestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import com.example.finalproject.apitest.service.*;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
+    // --- 모든 개별 서비스 주입 ---
     private final DartCompanyOverviewService dartCompanyOverviewService;
     private final DartMajorShareholderStatusService dartMajorShareholderStatusService;
     private final DartMajorShareholderChangeService dartMajorShareholderChangeService;
     private final DartExecutiveStatusService dartExecutiveStatusService;
     private final DartEmployeeStatusService dartEmployeeStatusService;
-    private final DartUnregisteredExecutiveCompensationService dartUnregisteredExecutiveCompensationService; // [추가]
+    private final DartUnregisteredExecutiveCompensationService dartUnregisteredExecutiveCompensationService;
     private final DartCbIssuanceService dartCbIssuanceService;
     private final DartBwIssuanceService dartBwIssuanceService;
     private final DartCocoBondIssuanceService dartCocoBondIssuanceService;
@@ -55,8 +60,130 @@ public class TestServiceImpl implements TestService {
     private final DartMinorityShareholderStatusService dartMinorityShareholderStatusService;
     private final DartCompensationApprovalService dartCompensationApprovalService;
     private final DartDirectorAndAuditorCompensationService dartDirectorAndAuditorCompensationService;
+    private final DartEquitySecuritiesService dartEquitySecuritiesService;
 
+    @Qualifier("taskExecutor")
     private final Executor taskExecutor;
+
+    // --- 비동기 통합 메소드 구현 ---
+    @Override
+    public AllDartDataResponse fetchAllDartData(String corpCode, String bsnsYear, String reprtCode, String beginDate, String endDate, String fsDiv) {
+        log.info("corpCode {}에 대한 모든 데이터 비동기 호출 시작", corpCode);
+
+        // --- 각 API 호출을 비동기 작업으로 정의 ---
+        CompletableFuture<DartCompanyOverviewResponse> companyOverviewFuture = supplyAsync(() -> DartCompanyOverviewCall(corpCode));
+        CompletableFuture<List<DartMajorShareholderStatusResponse>> majorShareholderStatusFuture = supplyAsyncList(() -> DartMajorShareholderStatusCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartMajorShareholderChangeResponse>> majorShareholderChangeFuture = supplyAsyncList(() -> DartMajorShareholderChangeCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartExecutiveStatusResponse>> executiveStatusFuture = supplyAsyncList(() -> DartExecutiveStatusCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartEmployeeStatusResponse>> employeeStatusFuture = supplyAsyncList(() -> DartEmployeeStatusCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartUnregisteredExecutiveCompensationResponse>> unregisteredExecutiveCompensationFuture = supplyAsyncList(() -> DartUnregisteredExecutiveCompensationCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartCbIssuanceResponse>> cbIssuanceFuture = supplyAsyncList(() -> DartCbIssuanceCall(corpCode, beginDate, endDate));
+        CompletableFuture<List<DartBwIssuanceResponse>> bwIssuanceFuture = supplyAsyncList(() -> DartBwIssuanceCall(corpCode, beginDate, endDate));
+        CompletableFuture<List<DartCocoBondIssuanceResponse>> cocoBondIssuanceFuture = supplyAsyncList(() -> DartCocoBondIssuanceCall(corpCode, beginDate, endDate));
+        CompletableFuture<List<DartPublicOfferingFundUsageResponse>> publicOfferingFundUsageFuture = supplyAsyncList(() -> DartPublicOfferingFundUsageCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartPrivatePlacementFundUsageResponse>> privatePlacementFundUsageFuture = supplyAsyncList(() -> DartPrivatePlacementFundUsageCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartAuditOpinionResponse>> auditOpinionFuture = supplyAsyncList(() -> DartAuditOpinionCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartAuditServiceContractResponse>> auditServiceContractFuture = supplyAsyncList(() -> DartAuditServiceContractCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartNonAuditServiceContractResponse>> nonAuditServiceContractFuture = supplyAsyncList(() -> DartNonAuditServiceContractCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartOutsideDirectorChangeStatusResponse>> outsideDirectorChangeStatusFuture = supplyAsyncList(() -> DartOutsideDirectorChangeStatusCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartTotalStockStatusResponse>> totalStockStatusFuture = supplyAsyncList(() -> DartTotalStockStatusCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartTreasuryStockStatusResponse>> treasuryStockStatusFuture = supplyAsyncList(() -> DartTreasuryStockStatusCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartSingleCompanyKeyAccountResponse>> singleCompanyKeyAccountFuture = supplyAsyncList(() -> DartSingleCompanyKeyAccountCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartNonConsolidatedFinancialStatementResponse>> nonConsolidatedFinancialStatementFuture = supplyAsyncList(() -> DartNonConsolidatedFinancialStatementCall(corpCode, bsnsYear, reprtCode, fsDiv));
+        CompletableFuture<List<DartCorporateBondBalanceResponse>> corporateBondBalanceFuture = supplyAsyncList(() -> DartCorporateBondBalanceCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartCommercialPaperBalanceResponse>> commercialPaperBalanceFuture = supplyAsyncList(() -> DartCommercialPaperBalanceCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartShortTermBondBalanceResponse>> shortTermBondBalanceFuture = supplyAsyncList(() -> DartShortTermBondBalanceCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartHybridSecuritiesBalanceResponse>> hybridSecuritiesBalanceFuture = supplyAsyncList(() -> DartHybridSecuritiesBalanceCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartMinorityShareholderStatusResponse>> minorityShareholderStatusFuture = supplyAsyncList(() -> DartMinorityShareholderStatusCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartCompensationApprovalResponse>> compensationApprovalFuture = supplyAsyncList(() -> DartCompensationApprovalCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<List<DartDirectorAndAuditorCompensationResponse>> directorAndAuditorCompensationFuture = supplyAsyncList(() -> DartDirectorAndAuditorCompensationCall(corpCode, bsnsYear, reprtCode));
+        CompletableFuture<DartEquitySecuritiesResponse> equitySecuritiesFuture = supplyAsync(() -> DartEquitySecuritiesCall(corpCode, beginDate, endDate));
+
+        // --- 정의된 모든 비동기 작업이 완료될 때까지 기다림 ---
+        List<CompletableFuture<?>> allFutures = List.of(
+                companyOverviewFuture, majorShareholderStatusFuture, majorShareholderChangeFuture, executiveStatusFuture, employeeStatusFuture,
+                unregisteredExecutiveCompensationFuture, cbIssuanceFuture, bwIssuanceFuture, cocoBondIssuanceFuture, publicOfferingFundUsageFuture,
+                privatePlacementFundUsageFuture, auditOpinionFuture, auditServiceContractFuture, nonAuditServiceContractFuture,
+                outsideDirectorChangeStatusFuture, totalStockStatusFuture, treasuryStockStatusFuture, singleCompanyKeyAccountFuture,
+                nonConsolidatedFinancialStatementFuture, corporateBondBalanceFuture, commercialPaperBalanceFuture, shortTermBondBalanceFuture,
+                hybridSecuritiesBalanceFuture, minorityShareholderStatusFuture, compensationApprovalFuture, directorAndAuditorCompensationFuture,
+                equitySecuritiesFuture
+        );
+        CompletableFuture.allOf(allFutures.toArray(new CompletableFuture[0])).join();
+
+        // --- 모든 작업 완료 후, 결과를 취합하여 하나의 DTO로 만들어 반환 ---
+        try {
+            // [수정] AllDartDataResponse의 필드명에 맞게 builder 메소드명 수정
+            return AllDartDataResponse.builder()
+                    .companyOverview(companyOverviewFuture.get())
+                    .majorShareholderStatus(majorShareholderStatusFuture.get())
+                    .majorShareholderChange(majorShareholderChangeFuture.get())
+                    .executiveStatus(executiveStatusFuture.get())
+                    .employeeStatus(employeeStatusFuture.get())
+                    .unregisteredExecutiveCompensation(unregisteredExecutiveCompensationFuture.get())
+                    // .individualCompensations(individualCompensationFuture.get()) // DTO에 없는 필드
+                    .cbIssuance(cbIssuanceFuture.get())
+                    .bwIssuance(bwIssuanceFuture.get())
+                    .cocoBondIssuance(cocoBondIssuanceFuture.get())
+                    .publicOfferingFundUsage(publicOfferingFundUsageFuture.get())
+                    .privatePlacementFundUsage(privatePlacementFundUsageFuture.get())
+                    .auditOpinion(auditOpinionFuture.get())
+                    .auditServiceContract(auditServiceContractFuture.get())
+                    .nonAuditServiceContract(nonAuditServiceContractFuture.get())
+                    .outsideDirectorChangeStatus(outsideDirectorChangeStatusFuture.get())
+                    .totalStockStatus(totalStockStatusFuture.get())
+                    .treasuryStockStatus(treasuryStockStatusFuture.get())
+                    .singleCompanyKeyAccount(singleCompanyKeyAccountFuture.get())
+                    .nonConsolidatedFinancialStatement(nonConsolidatedFinancialStatementFuture.get())
+                    .corporateBondBalance(corporateBondBalanceFuture.get())
+                    .commercialPaperBalance(commercialPaperBalanceFuture.get())
+                    .shortTermBondBalance(shortTermBondBalanceFuture.get())
+                    .hybridSecuritiesBalance(hybridSecuritiesBalanceFuture.get())
+                    .minorityShareholderStatus(minorityShareholderStatusFuture.get())
+                    .compensationApproval(compensationApprovalFuture.get())
+                    .directorAndAuditorCompensation(directorAndAuditorCompensationFuture.get())
+                    // .equitySecurities(equitySecuritiesFuture.get()) // DTO에 없는 필드
+                    .build();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            log.error("비동기 DART API 데이터 취합 중 최종 오류 발생", e);
+            throw new DartApiException("데이터 취합 중 최종 오류가 발생했습니다.");
+        }
+    }
+
+    // --- 비동기 호출 헬퍼 메소드 ---
+    @FunctionalInterface
+    private interface IOExceptionSupplier<T> {
+        T get() throws IOException;
+    }
+
+    private <T> CompletableFuture<T> supplyAsync(IOExceptionSupplier<T> supplier) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return supplier.get();
+            } catch (Exception e) {
+                log.warn("비동기 API 호출 실패 (결과 null 반환): {}", e.getMessage());
+                return null;
+            }
+        }, taskExecutor);
+    }
+
+    private <T> CompletableFuture<List<T>> supplyAsyncList(IOExceptionSupplier<List<T>> supplier) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return supplier.get();
+            } catch (Exception e) {
+                log.warn("비동기 API 호출 실패 (결과 empty list 반환): {}", e.getMessage());
+                return Collections.emptyList();
+            }
+        }, taskExecutor);
+    }
+
+    // --- 개별 호출 메소드 구현 ---
+    @Override
+    public DartEquitySecuritiesResponse DartEquitySecuritiesCall(String corpCode, String bgnDe, String endDe) throws IOException {
+        return dartEquitySecuritiesService.dartEquitySecuritiesCall(corpCode, bgnDe, endDe);
+    }
 
     @Override
     public DartCompanyOverviewResponse DartCompanyOverviewCall(String corpCode) throws IOException {
@@ -83,7 +210,6 @@ public class TestServiceImpl implements TestService {
         return dartEmployeeStatusService.dartEmployeeStatusCall(corpCode, bsnsYear, reprtCode);
     }
 
-    // [추가]
     @Override
     public List<DartUnregisteredExecutiveCompensationResponse> DartUnregisteredExecutiveCompensationCall(String corpCode, String bsnsYear, String reprtCode) throws IOException {
         return dartUnregisteredExecutiveCompensationService.dartUnregisteredExecutiveCompensationCall(corpCode, bsnsYear, reprtCode);
@@ -188,84 +314,5 @@ public class TestServiceImpl implements TestService {
     public List<DartDirectorAndAuditorCompensationResponse> DartDirectorAndAuditorCompensationCall(String corpCode, String bsnsYear, String reprtCode) throws IOException{
         return dartDirectorAndAuditorCompensationService.dartDirectorAndAuditorCompensationCall(corpCode, bsnsYear, reprtCode);
     }
-
-    // --- 비동기 통합 메소드 구현 ---
-    @Override
-    public AllDartDataResponse fetchAllDartData(String corpCode, String bsnsYear, String reprtCode, String beginDate, String endDate, String fsDiv) {
-        log.info("corpCode {}에 대한 모든 데이터 비동기 호출 시작", corpCode);
-
-        // 각 API 호출을 비동기 작업으로 정의하고, 실패 시 기본값을 반환하도록 .exceptionally()를 추가합니다.
-        CompletableFuture<DartCompanyOverviewResponse> companyOverviewFuture = CompletableFuture.supplyAsync(() -> { try { return DartCompanyOverviewCall(corpCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("CompanyOverview API 호출 실패: {}", ex.getMessage()); return null; });
-        CompletableFuture<List<DartMajorShareholderStatusResponse>> majorShareholderStatusFuture = CompletableFuture.supplyAsync(() -> { try { return DartMajorShareholderStatusCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("MajorShareholderStatus API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartMajorShareholderChangeResponse>> majorShareholderChangeFuture = CompletableFuture.supplyAsync(() -> { try { return DartMajorShareholderChangeCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("MajorShareholderChange API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartExecutiveStatusResponse>> executiveStatusFuture = CompletableFuture.supplyAsync(() -> { try { return DartExecutiveStatusCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("ExecutiveStatus API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartEmployeeStatusResponse>> employeeStatusFuture = CompletableFuture.supplyAsync(() -> { try { return DartEmployeeStatusCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("EmployeeStatus API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartUnregisteredExecutiveCompensationResponse>> unregisteredExecutiveCompensationFuture = CompletableFuture.supplyAsync(() -> { try { return DartUnregisteredExecutiveCompensationCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("UnregisteredExecutiveCompensation API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartCbIssuanceResponse>> cbIssuanceFuture = CompletableFuture.supplyAsync(() -> { try { return DartCbIssuanceCall(corpCode, beginDate, endDate); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("CbIssuance API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartBwIssuanceResponse>> bwIssuanceFuture = CompletableFuture.supplyAsync(() -> { try { return DartBwIssuanceCall(corpCode, beginDate, endDate); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("BwIssuance API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartCocoBondIssuanceResponse>> cocoBondIssuanceFuture = CompletableFuture.supplyAsync(() -> { try { return DartCocoBondIssuanceCall(corpCode, beginDate, endDate); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("CocoBondIssuance API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartPublicOfferingFundUsageResponse>> publicOfferingFundUsageFuture = CompletableFuture.supplyAsync(() -> { try { return DartPublicOfferingFundUsageCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("PublicOfferingFundUsage API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartPrivatePlacementFundUsageResponse>> privatePlacementFundUsageFuture = CompletableFuture.supplyAsync(() -> { try { return DartPrivatePlacementFundUsageCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("PrivatePlacementFundUsage API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartAuditOpinionResponse>> auditOpinionFuture = CompletableFuture.supplyAsync(() -> { try { return DartAuditOpinionCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("AuditOpinion API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartAuditServiceContractResponse>> auditServiceContractFuture = CompletableFuture.supplyAsync(() -> { try { return DartAuditServiceContractCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("AuditServiceContract API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartNonAuditServiceContractResponse>> nonAuditServiceContractFuture = CompletableFuture.supplyAsync(() -> { try { return DartNonAuditServiceContractCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("NonAuditServiceContract API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartOutsideDirectorChangeStatusResponse>> outsideDirectorChangeStatusFuture = CompletableFuture.supplyAsync(() -> { try { return DartOutsideDirectorChangeStatusCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("OutsideDirectorChangeStatus API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartTotalStockStatusResponse>> totalStockStatusFuture = CompletableFuture.supplyAsync(() -> { try { return DartTotalStockStatusCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("TotalStockStatus API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartTreasuryStockStatusResponse>> treasuryStockStatusFuture = CompletableFuture.supplyAsync(() -> { try { return DartTreasuryStockStatusCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("TreasuryStockStatus API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartSingleCompanyKeyAccountResponse>> singleCompanyKeyAccountFuture = CompletableFuture.supplyAsync(() -> { try { return DartSingleCompanyKeyAccountCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("SingleCompanyKeyAccount API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartNonConsolidatedFinancialStatementResponse>> nonConsolidatedFinancialStatementFuture = CompletableFuture.supplyAsync(() -> { try { return DartNonConsolidatedFinancialStatementCall(corpCode, bsnsYear, reprtCode, fsDiv); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("NonConsolidatedFinancialStatement API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartCorporateBondBalanceResponse>> corporateBondBalanceFuture = CompletableFuture.supplyAsync(() -> { try { return DartCorporateBondBalanceCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("CorporateBondBalance API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartCommercialPaperBalanceResponse>> commercialPaperBalanceFuture = CompletableFuture.supplyAsync(() -> { try { return DartCommercialPaperBalanceCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("CommercialPaperBalance API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartShortTermBondBalanceResponse>> shortTermBondBalanceFuture = CompletableFuture.supplyAsync(() -> { try { return DartShortTermBondBalanceCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("ShortTermBondBalance API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartHybridSecuritiesBalanceResponse>> hybridSecuritiesBalanceFuture = CompletableFuture.supplyAsync(() -> { try { return DartHybridSecuritiesBalanceCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("HybridSecuritiesBalance API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartMinorityShareholderStatusResponse>> minorityShareholderStatusFuture = CompletableFuture.supplyAsync(() -> { try { return DartMinorityShareholderStatusCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("MinorityShareholderStatus API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartCompensationApprovalResponse>> compensationApprovalFuture = CompletableFuture.supplyAsync(() -> { try { return DartCompensationApprovalCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("CompensationApproval API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-        CompletableFuture<List<DartDirectorAndAuditorCompensationResponse>> directorAndAuditorCompensationFuture = CompletableFuture.supplyAsync(() -> { try { return DartDirectorAndAuditorCompensationCall(corpCode, bsnsYear, reprtCode); } catch (IOException e) { throw new RuntimeException(e); } }, taskExecutor).exceptionally(ex -> { log.warn("DirectorAndAuditorCompensation API 호출 실패: {}", ex.getMessage()); return Collections.emptyList(); });
-
-        // 정의된 모든 비동기 작업이 완료될 때까지 기다립니다.
-        List<CompletableFuture<?>> allFutures = List.of(
-                companyOverviewFuture, majorShareholderStatusFuture, majorShareholderChangeFuture, executiveStatusFuture, employeeStatusFuture,
-                unregisteredExecutiveCompensationFuture, cbIssuanceFuture, bwIssuanceFuture, cocoBondIssuanceFuture, publicOfferingFundUsageFuture,
-                privatePlacementFundUsageFuture, auditOpinionFuture, auditServiceContractFuture, nonAuditServiceContractFuture,
-                outsideDirectorChangeStatusFuture, totalStockStatusFuture, treasuryStockStatusFuture, singleCompanyKeyAccountFuture,
-                nonConsolidatedFinancialStatementFuture, corporateBondBalanceFuture, commercialPaperBalanceFuture, shortTermBondBalanceFuture,
-                hybridSecuritiesBalanceFuture, minorityShareholderStatusFuture, compensationApprovalFuture, directorAndAuditorCompensationFuture
-        );
-        CompletableFuture.allOf(allFutures.toArray(new CompletableFuture[0])).join();
-
-        // 모든 작업이 완료되면, 결과를 취합하여 하나의 DTO로 만들어 반환합니다.
-        try {
-            return AllDartDataResponse.builder()
-                    .companyOverview(companyOverviewFuture.get())
-                    .majorShareholderStatus(majorShareholderStatusFuture.get())
-                    .majorShareholderChange(majorShareholderChangeFuture.get())
-                    .executiveStatus(executiveStatusFuture.get())
-                    .employeeStatus(employeeStatusFuture.get())
-                    .unregisteredExecutiveCompensation(unregisteredExecutiveCompensationFuture.get())
-                    .cbIssuance(cbIssuanceFuture.get())
-                    .bwIssuance(bwIssuanceFuture.get())
-                    .cocoBondIssuance(cocoBondIssuanceFuture.get())
-                    .publicOfferingFundUsage(publicOfferingFundUsageFuture.get())
-                    .privatePlacementFundUsage(privatePlacementFundUsageFuture.get())
-                    .auditOpinion(auditOpinionFuture.get())
-                    .auditServiceContract(auditServiceContractFuture.get())
-                    .nonAuditServiceContract(nonAuditServiceContractFuture.get())
-                    .outsideDirectorChangeStatus(outsideDirectorChangeStatusFuture.get())
-                    .totalStockStatus(totalStockStatusFuture.get())
-                    .treasuryStockStatus(treasuryStockStatusFuture.get())
-                    .singleCompanyKeyAccount(singleCompanyKeyAccountFuture.get())
-                    .nonConsolidatedFinancialStatement(nonConsolidatedFinancialStatementFuture.get())
-                    .corporateBondBalance(corporateBondBalanceFuture.get())
-                    .commercialPaperBalance(commercialPaperBalanceFuture.get())
-                    .shortTermBondBalance(shortTermBondBalanceFuture.get())
-                    .hybridSecuritiesBalance(hybridSecuritiesBalanceFuture.get())
-                    .minorityShareholderStatus(minorityShareholderStatusFuture.get())
-                    .compensationApproval(compensationApprovalFuture.get())
-                    .directorAndAuditorCompensation(directorAndAuditorCompensationFuture.get())
-                    .build();
-        } catch (Exception e) {
-            log.error("비동기 DART API 데이터 취합 중 최종 오류 발생", e);
-            throw new DartApiException("데이터 취합 중 최종 오류가 발생했습니다.");
-        }
-    }
 }
+

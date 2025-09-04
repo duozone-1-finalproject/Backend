@@ -1,6 +1,7 @@
 package com.example.finalproject.apitest.service;
 
 import com.example.finalproject.apitest.dto.common.AllDartDataResponse;
+import com.example.finalproject.apitest.dto.equity.response.DartEquitySecuritiesResponse;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.util.List;
 
 public interface TestService {
+    DartEquitySecuritiesResponse DartEquitySecuritiesCall(String corpCode, String bgnDe, String endDe) throws IOException;
+
     List<DartMajorShareholderStatusResponse> DartMajorShareholderStatusCall(String corpCode, String reprtCode, String bsnsYear) throws IOException;
     List<DartMajorShareholderChangeResponse> DartMajorShareholderChangeCall(String corpCode, String reprtCode, String bsnsYear) throws IOException;
     List<DartExecutiveStatusResponse> DartExecutiveStatusCall(String corpCode, String reprtCode, String bsnsYear) throws IOException;
