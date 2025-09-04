@@ -3,6 +3,7 @@ package com.example.finalproject.apitest.controller;
 
 import com.example.finalproject.apitest.dto.common.AllDartDataResponse;
 import com.example.finalproject.apitest.dto.common.MyDartApiResponseDto;
+import com.example.finalproject.apitest.dto.equity.response.DartEquitySecuritiesGroupResponse;
 import com.example.finalproject.apitest.dto.equity.response.DartEquitySecuritiesResponse;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
@@ -467,13 +468,13 @@ public class TestController {
     }
 
     // [추가] 지분증권
-    // 테스트 Get http://localhost:8080/api/dart/corporations/01571107/equity-securities
+    // 테스트 Get http://localhost:8080/api/dart/test/01571107/equity-securities
     @GetMapping("/{corpCode}/equity-securities")
-    public MyDartApiResponseDto<DartEquitySecuritiesResponse> syncEquitySecurities(@PathVariable String corpCode) {
+    public MyDartApiResponseDto<DartEquitySecuritiesGroupResponse> syncEquitySecurities(@PathVariable String corpCode) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             LocalDate today = LocalDate.now();
-            LocalDate oneYearAgo = today.minusYears(1);
+            LocalDate oneYearAgo = today.minusYears(5);
 
             String todayString = today.format(formatter);
             String oneYearAgoString = oneYearAgo.format(formatter);

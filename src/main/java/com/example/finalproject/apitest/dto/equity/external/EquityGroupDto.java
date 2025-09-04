@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class EquityGroupDto {
     private String title;
-    private List<JsonNode> list; // 다양한 타입의 리스트를 받기 위해 JsonNode 사용
+    private JsonNode list; // [수정] List<JsonNode>에서 JsonNode로 변경
 }

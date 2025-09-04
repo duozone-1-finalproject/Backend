@@ -1,6 +1,7 @@
 package com.example.finalproject.apitest.service.impl;
 
 import com.example.finalproject.apitest.dto.common.AllDartDataResponse;
+import com.example.finalproject.apitest.dto.equity.response.DartEquitySecuritiesGroupResponse;
 import com.example.finalproject.apitest.dto.equity.response.DartEquitySecuritiesResponse;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
@@ -97,7 +98,7 @@ public class TestServiceImpl implements TestService {
         CompletableFuture<List<DartMinorityShareholderStatusResponse>> minorityShareholderStatusFuture = supplyAsyncList(() -> DartMinorityShareholderStatusCall(corpCode, bsnsYear, reprtCode));
         CompletableFuture<List<DartCompensationApprovalResponse>> compensationApprovalFuture = supplyAsyncList(() -> DartCompensationApprovalCall(corpCode, bsnsYear, reprtCode));
         CompletableFuture<List<DartDirectorAndAuditorCompensationResponse>> directorAndAuditorCompensationFuture = supplyAsyncList(() -> DartDirectorAndAuditorCompensationCall(corpCode, bsnsYear, reprtCode));
-        CompletableFuture<DartEquitySecuritiesResponse> equitySecuritiesFuture = supplyAsync(() -> DartEquitySecuritiesCall(corpCode, beginDate, endDate));
+        CompletableFuture<DartEquitySecuritiesGroupResponse> equitySecuritiesFuture = supplyAsync(() -> DartEquitySecuritiesCall(corpCode, beginDate, endDate));
 
         // --- 정의된 모든 비동기 작업이 완료될 때까지 기다림 ---
         List<CompletableFuture<?>> allFutures = List.of(
@@ -181,7 +182,7 @@ public class TestServiceImpl implements TestService {
 
     // --- 개별 호출 메소드 구현 ---
     @Override
-    public DartEquitySecuritiesResponse DartEquitySecuritiesCall(String corpCode, String bgnDe, String endDe) throws IOException {
+    public DartEquitySecuritiesGroupResponse DartEquitySecuritiesCall(String corpCode, String bgnDe, String endDe) throws IOException {
         return dartEquitySecuritiesService.dartEquitySecuritiesCall(corpCode, bgnDe, endDe);
     }
 

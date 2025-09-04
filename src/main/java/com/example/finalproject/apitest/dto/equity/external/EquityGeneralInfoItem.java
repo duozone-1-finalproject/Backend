@@ -1,6 +1,5 @@
 package com.example.finalproject.apitest.dto.equity.external;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
