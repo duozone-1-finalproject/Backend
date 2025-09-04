@@ -16,11 +16,15 @@ spring:
         format_sql: true
     open-in-view: false
 
-  data:
-    opensearch:
-      url: ${OS_ENDPOINTS_URL} # 오픈서치 주소
-      port: ${OS_ENDPOINTS_PORT}
-      protocol: ${OS_ENDPOINTS_PROTOCOL}
+  opensearch:
+    uris: ${OPENSEARCH_URI:http://192.168.0.77:9200}
+    username: ${OPENSEARCH_USERNAME:admin}
+    password: ${OPENSEARCH_PASSWORD:admin}
+    connection-timeout: 5s     # connect timeout
+    socket-timeout: 60s        # read timeout
+    max-conn-total: 100
+    max-conn-per-route: 100
+    sniff-enabled: false
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
