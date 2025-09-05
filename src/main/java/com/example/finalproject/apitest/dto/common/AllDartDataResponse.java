@@ -1,5 +1,6 @@
 package com.example.finalproject.apitest.dto.common;
 
+import com.example.finalproject.apitest.dto.equity.response.DartEquitySecuritiesGroupResponse;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
@@ -40,4 +41,6 @@ public class AllDartDataResponse {
     private List<DartMinorityShareholderStatusResponse> minorityShareholderStatus;
     private List<DartCompensationApprovalResponse> compensationApproval;
     private List<DartDirectorAndAuditorCompensationResponse> directorAndAuditorCompensation;
+
+    private DartEquitySecuritiesGroupResponse equitySecurities;
 }

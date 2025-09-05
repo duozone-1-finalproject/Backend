@@ -8,16 +8,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 @Configuration
-@EnableAsync // Spring의 비동기 메소드 기능을 활성화합니다.
+@EnableAsync // 비동기 기능 활성화를 위한 어노테이션
 public class AsyncConfig {
 
     @Bean(name = "taskExecutor")
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10); // 동시에 실행시킬 스레드의 수
-        executor.setMaxPoolSize(20);  // 최대 스레드 수
-        executor.setQueueCapacity(100); // 작업 대기 큐의 크기
-        executor.setThreadNamePrefix("DartApi-"); // 스레드 이름 접두사
+        executor.setCorePoolSize(10); // 기본 스레드 수
+        executor.setMaxPoolSize(30); // 최대 스레드 수 (API 개수가 많으므로 늘림)
+        executor.setQueueCapacity(100); // 대기 큐 사이즈
+        executor.setThreadNamePrefix("DartApi-");
         executor.initialize();
         return executor;
     }

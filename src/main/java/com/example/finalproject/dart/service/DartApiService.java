@@ -39,6 +39,8 @@ public interface DartApiService {
     // 기업코드로 최근 1년간의 사업/1분기/3분기/반기/감사 보고서의 리스트 반환
     DartReportListResponseDto getRceptNosByCorpCode(String corpCode);
 
+    // 기업코드로 최근 5년간의 모든 보고서 리스트 반환
+    DartReportListResponseDto getFiveYearRceptNosByCorpCode(String corpCode);
 
 }
 /*
