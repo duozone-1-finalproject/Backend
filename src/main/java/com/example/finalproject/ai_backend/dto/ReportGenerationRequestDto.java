@@ -18,7 +18,4 @@ public class ReportGenerationRequestDto {
 
     @JsonProperty("report_type")
     private String reportType;      // 보고서 타입 (예: "증권신고서")
-
-    @JsonProperty("template_id")
-    private String templateId;      // 템플릿 ID
 }
