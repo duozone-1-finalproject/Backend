@@ -28,18 +28,26 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      # Gradle 캐시 적용
+      - name: Cache Gradle wrapper and dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/wrapper       # wrapper → 소스 코드 변경과 무관, 거의 항상 재사용
+            ~/.gradle/caches        # dependency 캐시
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
-        working-directory: ./
 
       - name: Build with Gradle
-        run: ./gradlew build
-        working-directory: ./
+        run: ./gradlew build --no-daemon
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          # Using static credentials. Less secure than OIDC.
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2

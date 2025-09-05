@@ -33,9 +33,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-logging'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	// 'starter-logging' is included by default in 'starter-web'
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
 
 	// --- JWT ---
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -43,7 +47,11 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	// --- Database ---
-	implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.0'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
+
 
 	// --- Lombok ---
 	compileOnly 'org.projectlombok:lombok'
@@ -51,23 +59,28 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
+	// WebFlux용
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	// --- OpenSearch ---
-	// The starter now correctly manages the required client dependencies.
-	// The deprecated RestHighLevelClient is no longer needed and has been removed.
-	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	// Your code uses the deprecated RestHighLevelClient, so we include the client library directly
+	// instead of the spring-boot-starter-data-elasticsearch, which causes version conflicts.
+	implementation 'org.opensearch.client:opensearch-java:2.19.0'
+	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.19.0'
 
 	// --- Kafka ---
 	implementation 'org.springframework.kafka:spring-kafka'
-	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
-	// --- AWS ---
+	// --- AWS Secrets Manager ---
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager'
+
+	// --- Annotation Processor ---
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	// --- Testing ---
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()

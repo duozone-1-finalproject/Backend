@@ -13,5 +13,5 @@ public class DartProperties {
     private String apiKey;
     private String apiKeyObj;
     private String apiKeyLjh;
-    private String baseUrl;
+    private String Url;
 }
