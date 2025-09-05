@@ -1,6 +1,7 @@
 package com.example.finalproject.apitest.dto.common;
 
 import com.example.finalproject.apitest.dto.equity.response.DartEquitySecuritiesGroupResponse;
+import com.example.finalproject.ai_backend.dto.CompanyDataDto2;
 import com.example.finalproject.apitest.dto.material.response.DartBwIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCbIssuanceResponse;
 import com.example.finalproject.apitest.dto.material.response.DartCocoBondIssuanceResponse;
@@ -8,12 +9,15 @@ import com.example.finalproject.apitest.dto.overview.response.DartCompanyOvervie
 import com.example.finalproject.apitest.dto.periodic.response.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Data
-@Builder
-public class AllDartDataResponse {
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
+public class AllDartDataResponse extends CompanyDataDto2 {
     // 각 API의 응답을 필드로 정의합니다.
     private DartCompanyOverviewResponse companyOverview;
     private List<DartMajorShareholderStatusResponse> majorShareholderStatus;

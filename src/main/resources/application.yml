@@ -21,6 +21,7 @@ spring:
 
   opensearch:
     uris: ${OPENSEARCH_URI:http://192.168.0.77:9200}
+    #uris: ${OPENSEARCH_URI:http://localhost:9200}
     username: ${OPENSEARCH_USERNAME:admin}
     password: ${OPENSEARCH_PASSWORD:admin}
     connection-timeout: 5s     # connect timeout
@@ -97,6 +98,7 @@ dart:
     key: ${DART_API_KEY}
     obj: ${DART_API_OBJ_KEY}
     ljh: ${DART_API_LJH_KEY}
+    base-url: https://opendart.fss.or.kr/api
 
 frontend:
   url: ${FRONTEND_URL}

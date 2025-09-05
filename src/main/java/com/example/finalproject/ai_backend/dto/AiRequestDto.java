@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.example.finalproject.apitest.dto.common.AllDartDataResponse;
 
 @Data
 @Builder
@@ -14,11 +15,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @AllArgsConstructor
 public class AiRequestDto {
 
-    @JsonProperty("template")
-    private String template;        // HTML 템플릿
-
     @JsonProperty("company_data")
-    private CompanyDataDto2 companyData;  // 회사 데이터
+    private AllDartDataResponse allDartData;  // 회사 데이터
 
     @JsonProperty("request_id")
     private String requestId;       // 요청 ID (추적용)
