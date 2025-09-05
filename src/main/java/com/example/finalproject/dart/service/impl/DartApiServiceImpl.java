@@ -512,6 +512,19 @@ public class DartApiServiceImpl implements DartApiService {
         return rpt_all;
     }
 
+    // 기업코드로 최근 5년간의 보고서의 리스트 반환
+    @Override
+    public DartReportListResponseDto getFiveYearRceptNosByCorpCode(String corpCode){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate today = LocalDate.now();
+        String todayString = today.format(formatter);
+
+        LocalDate fiveYearAgo = today.minusYears(5);
+        String fiveYearAgoString = fiveYearAgo.format(formatter);
+
+        // 회사코드(corpCode)를 통해서 api로 (회사정보,(보고서리스트))를 가져옴(최대 100개)
+        return getCompanyInfoByCorpCode(corpCode, new DownloadAllRequestDto("보고서",fiveYearAgoString,todayString));
+    }
 /*
     1. xml 1개 다운하던걸 폴더 만들어서 내부 파일 전부 바꾸는걸로 전환
     2.

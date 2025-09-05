@@ -25,39 +25,32 @@ public class DartApiCaller {
     private String dartApiKey;
 
     /**
-     * DART API를 호출하고 결과를 리스트 형태로 반환합니다.
-     * @param uriCustomizer URI를 설정하는 Consumer
-     * @param responseType 응답 DTO의 타입 참조
-     * @return API 응답 데이터 리스트
-     * @param <T> 응답 아이템의 타입
+     * DART API로부터 'list' 형태로 감싸인 표준 응답을 호출하고, 데이터 리스트를 반환합니다.
      */
     public <T> List<T> call(
             Consumer<UriBuilder> uriCustomizer,
             ParameterizedTypeReference<DartApiResponseDto<T>> responseType
     ) {
-        DartApiResponseDto<T> responseDto = executeApiCall(uriCustomizer, responseType);
+        // [수정] 표준 API 호출 및 검증을 담당하는 private 메소드 호출
+        DartApiResponseDto<T> responseDto = executeStandardApiCall(uriCustomizer, responseType);
 
         List<T> items = responseDto.getList();
         if (items == null || items.isEmpty()) {
             log.info("DART API로부터 수신한 데이터가 없습니다.");
             return Collections.emptyList();
         }
-
         return items;
     }
 
     /**
-     * DART API를 호출하고 결과를 단일 객체 형태로 반환합니다. (예: 기업개황)
-     * @param uriCustomizer URI를 설정하는 Consumer
-     * @param responseType 응답 DTO의 타입 참조
-     * @return API 응답 데이터 객체
-     * @param <T> 응답 아이템의 타입
+     * DART API로부터 단일 객체 형태로 감싸인 표준 응답(예: 기업개황)을 호출하고, 해당 객체를 반환합니다.
      */
     public <T> T callSingle(
             Consumer<UriBuilder> uriCustomizer,
             ParameterizedTypeReference<DartApiResponseDto<T>> responseType
     ) {
-        DartApiResponseDto<T> responseDto = executeApiCall(uriCustomizer, responseType);
+        // [수정] 표준 API 호출 및 검증을 담당하는 private 메소드 호출
+        DartApiResponseDto<T> responseDto = executeStandardApiCall(uriCustomizer, responseType);
 
         T item = responseDto.getSingleResult();
         if (item == null) {
@@ -67,15 +60,41 @@ public class DartApiCaller {
     }
 
     /**
-     * 실제 DART API 호출 및 공통 예외 처리를 담당하는 private 메소드
+     * DART API로부터 비표준 응답(예: 지분증권의 'group' 구조)을 호출하고, 응답 DTO를 그대로 반환합니다.
      */
-    private <T> DartApiResponseDto<T> executeApiCall(
+    public <T> T callGrouped(
+            Consumer<UriBuilder> uriCustomizer,
+            ParameterizedTypeReference<T> responseType
+    ) {
+        // [수정] 이 메소드는 상태 코드 검증이 없으므로, 순수 API 호출만 담당하는 executeApiCall을 직접 호출
+        return executeApiCall(uriCustomizer, responseType);
+    }
+
+    /**
+     * [신규] 표준 DART API 응답(status, message 포함)을 처리하는 공통 메소드.
+     * API를 호출하고 응답 상태 코드를 검증하여 유효한 DTO를 반환합니다.
+     */
+    private <T> DartApiResponseDto<T> executeStandardApiCall(
             Consumer<UriBuilder> uriCustomizer,
             ParameterizedTypeReference<DartApiResponseDto<T>> responseType) {
 
-        DartApiResponseDto<T> responseDto;
+        DartApiResponseDto<T> responseDto = executeApiCall(uriCustomizer, responseType);
+
+        if (responseDto == null || !"000".equals(responseDto.getStatus())) {
+            handleApiError(responseDto);
+        }
+        return responseDto;
+    }
+
+    /**
+     * [수정] 실제 HTTP 요청을 보내고 응답을 받는 순수 API 호출 메소드.
+     * 이 메소드는 상태 코드 검증을 하지 않습니다.
+     */
+    private <T> T executeApiCall(
+            Consumer<UriBuilder> uriCustomizer,
+            ParameterizedTypeReference<T> responseType) {
         try {
-            responseDto = client.get()
+            return client.get()
                     .uri(uriBuilder -> {
                         uriBuilder.queryParam("crtfc_key", dartApiKey);
                         uriCustomizer.accept(uriBuilder);
@@ -87,14 +106,13 @@ public class DartApiCaller {
             log.error("DART API 호출 중 에러 발생", e);
             throw new DartApiException("DART API 호출 중 에러 발생", e);
         }
+    }
 
-        if (responseDto == null || !"000".equals(responseDto.getStatus())) {
-            String status = (responseDto != null) ? responseDto.getStatus() : "null";
-            String message = (responseDto != null) ? responseDto.getMessage() : "null response";
-            log.error("DART API가 에러를 반환했습니다. Status: {}, Message: {}", status, message);
-            throw new DartApiException("DART API 에러: status=" + status + ", message=" + message);
-        }
-
-        return responseDto;
+    private <T> void handleApiError(DartApiResponseDto<T> responseDto) {
+        String status = (responseDto != null) ? responseDto.getStatus() : "null";
+        String message = (responseDto != null) ? responseDto.getMessage() : "null response";
+        log.error("DART API가 에러를 반환했습니다. Status: {}, Message: {}", status, message);
+        throw new DartApiException("DART API 에러: status=" + status + ", message=" + message);
     }
 }
+
