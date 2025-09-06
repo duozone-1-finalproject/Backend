@@ -81,7 +81,7 @@ spring:
             user-name-attribute: id
 
   kafka:
-    bootstrap-servers: ${spring.kafka.bootstrap-servers}
+    bootstrap-servers: ${spring.kafka.bootstrap-servers} # ✨ 이 부분을 수정했습니다.
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -95,12 +95,20 @@ spring:
       enable-auto-commit: true
 
   opensearch:
-    uris: ${spring.opensearch.uris}
+    uris: ${spring.opensearch.uris:https://e71809655b9d.ngrok-free.app/}
+    username: ${OPENSEARCH_USERNAME:admin}
+    password: ${OPENSEARCH_PASSWORD:admin}
     connection-timeout: 5s     # connect timeout
     socket-timeout: 60s        # read timeout
     max-conn-total: 100
     max-conn-per-route: 100
     sniff-enabled: false
+
+  frontend:
+    url: :http://localhost:3000
+
+
+
 
 # ===== AI 시스템 설정 (기본값: 실서버 사용) =====
 ai:

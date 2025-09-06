@@ -3,12 +3,12 @@ package com.example.finalproject.ai_backend.controller;
 
 import com.example.finalproject.ai_backend.dto.ApiResponseDto2;
 import com.example.finalproject.ai_backend.dto.AiResponseDto;
+import com.example.finalproject.ai_backend.dto.SearchResultDto;
 import com.example.finalproject.ai_backend.dto.ReportGenerationRequestDto;
 import com.example.finalproject.ai_backend.service.ReportGenerationService;
 import com.example.finalproject.ai_backend.service.OpenSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.opensearch.search.SearchHits;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,15 +70,17 @@ public class AiReportController {
     }
 
     @GetMapping("/company/{companyName}")
-    public CompletableFuture<ResponseEntity<ApiResponseDto2<List<Map<String, Object>>>>> getReportsByCompany(
+    public CompletableFuture<ResponseEntity<ApiResponseDto2<SearchResultDto<Map<String, Object>>>>> getReportsByCompany(
             @PathVariable String companyName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
         log.info("회사별 보고서 조회 요청: company={}, page={}, size={}", companyName, page, size);
 
-        return reportGenerationService.getReportsByCompany(companyName, page, size)
-                .thenApply(reports ->
-                        ResponseEntity.ok(ApiResponseDto2.success(reports, companyName + "의 보고서 목록을 조회했습니다."))
+        // 역할에 맞게 ReportGenerationService가 아닌 OpenSearchService를 호출하도록 변경합니다.
+        // 이렇게 하면 ReportGenerationService에서 OpenSearch 관련 코드를 모두 제거할 수 있습니다.
+        return openSearchService.searchReportsByCompany(companyName, page, size)
+                .thenApply(searchResult ->
+                        ResponseEntity.ok(ApiResponseDto2.success(searchResult, companyName + "의 보고서 목록을 조회했습니다."))
                 )
                 .exceptionally(throwable -> {
                     log.error("회사별 보고서 조회 실패: {}", companyName, throwable);
@@ -88,16 +90,16 @@ public class AiReportController {
     }
 
     @GetMapping("/search")
-    public CompletableFuture<ResponseEntity<ApiResponseDto2<SearchHits>>> searchReports(
+    public CompletableFuture<ResponseEntity<ApiResponseDto2<SearchResultDto<Map<String, Object>>>>> searchReports(
             @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "1") int page, // 페이지는 1부터 시작하는 것이 사용자 친화적입니다.
+            @RequestParam(defaultValue = "10") int size) {
         log.info("키워드 보고서 검색 요청: keyword={}, page={}, size={}", keyword, page, size);
 
-        return openSearchService.searchReportsByKeyword(keyword, page, size) // ✅ 수정
-                .thenApply(searchResponse ->
+        return openSearchService.searchReportsByKeyword(keyword, page, size)
+                .thenApply(searchResult ->
                         ResponseEntity.ok(ApiResponseDto2.success(
-                                searchResponse.getHits(), "키워드 '" + keyword + "'로 보고서를 검색했습니다."))
+                                searchResult, "키워드 '" + keyword + "'로 보고서를 검색했습니다."))
                 )
                 .exceptionally(throwable -> {
                     log.error("키워드 검색 실패: {}", keyword, throwable);

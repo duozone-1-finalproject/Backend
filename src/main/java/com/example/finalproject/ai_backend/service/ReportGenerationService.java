@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -78,13 +77,5 @@ public class ReportGenerationService {
                         "pending_requests", aiCommunicationService.getPendingRequestCount(),
                         "timestamp", java.time.LocalDateTime.now().toString()
                 ));
-    }
-
-    /**
-     * 회사 이름으로 보고서 조회 (OpenSearch 사용)
-     */
-    public CompletableFuture<List<Map<String, Object>>> getReportsByCompany(String companyName, int page, int size) {
-        log.info("OpenSearch에서 회사별 보고서 조회 요청: company={}, page={}, size={}", companyName, page, size);
-        return openSearchService.searchReportsByCompany(companyName, page, size);
     }
 }

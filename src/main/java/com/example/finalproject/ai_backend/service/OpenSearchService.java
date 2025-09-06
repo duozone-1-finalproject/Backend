@@ -2,29 +2,27 @@
 package com.example.finalproject.ai_backend.service;
 
 import com.example.finalproject.ai_backend.dto.AiResponseDto;
+import com.example.finalproject.ai_backend.dto.SearchResultDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.opensearch.action.index.IndexRequest;
-import org.opensearch.action.index.IndexResponse;
-import org.opensearch.action.search.SearchRequest;
-import org.opensearch.action.search.SearchResponse;
-import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.common.xcontent.XContentType;
-import org.opensearch.search.builder.SearchSourceBuilder;
-import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch.core.IndexResponse;
+import org.opensearch.client.opensearch.core.SearchResponse;
+import org.opensearch.client.opensearch.core.search.Hit;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class OpenSearchService {
 
-    private final RestHighLevelClient client;
+    private final OpenSearchClient client;
 
     private static final String INDEX_NAME = "ai_generated_reports";
 
@@ -42,14 +40,14 @@ public class OpenSearchService {
                 doc.put("status", aiResponse.getStatus());
                 doc.put("created_at", new Date());
 
-                IndexRequest request = new IndexRequest(INDEX_NAME)
+                IndexResponse response = client.index(i -> i
+                        .index(INDEX_NAME)
                         .id(aiResponse.getRequestId())
-                        .source(doc, XContentType.JSON);
+                        .document(doc)
+                );
 
-                IndexResponse response = client.index(request, RequestOptions.DEFAULT);
-
-                log.info("OpenSearch 저장 완료: id={}, result={}", response.getId(), response.getResult());
-                return response.getId();
+                log.info("OpenSearch 저장 완료: id={}, result={}", response.id(), response.result());
+                return response.id();
 
             } catch (IOException e) {
                 log.error("OpenSearch 저장 실패: {}", e.getMessage(), e);
@@ -61,24 +59,30 @@ public class OpenSearchService {
     /**
      * 회사명으로 보고서 검색
      */
-    public CompletableFuture<List<Map<String, Object>>> searchReportsByCompany(String companyName, int page, int size) {
+    public CompletableFuture<SearchResultDto<Map<String, Object>>> searchReportsByCompany(String companyName, int page, int size) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+                SearchResponse<Map> response = client.search(s -> s
+                                .index(INDEX_NAME)
+                                .query(q -> q
+                                        .match(t -> t
+                                                .field("summary")
+                                                .query(FieldValue.of(companyName)) // ✨ 수정된 부분 1
+                                        )
+                                )
+                                .from((page - 1) * size)
+                                .size(size),
+                        Map.class
+                );
 
-                SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
-                        .query(QueryBuilders.matchQuery("summary", companyName))
-                        .from((page - 1) * size)
-                        .size(size);
+                List<Map<String, Object>> results = response.hits().hits().stream()
+                        .map(hit -> (Map<String, Object>) hit.source()) // ✨ 수정된 부분 2
+                        .collect(Collectors.toList());
 
-                searchRequest.source(sourceBuilder);
-                SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-
-                List<Map<String, Object>> results = new ArrayList<>();
-                response.getHits().forEach(hit -> results.add(hit.getSourceAsMap()));
+                long totalHits = response.hits().total().value();
 
                 log.info("OpenSearch 검색 완료: {} 건 조회", results.size());
-                return results;
+                return new SearchResultDto<>(totalHits, results);
 
             } catch (IOException e) {
                 log.error("OpenSearch 검색 실패: {}", e.getMessage(), e);
@@ -87,21 +91,30 @@ public class OpenSearchService {
         });
     }
 
-    public CompletableFuture<SearchResponse> searchReportsByKeyword(String keyword, int page, int size) {
+    public CompletableFuture<SearchResultDto<Map<String, Object>>> searchReportsByKeyword(String keyword, int page, int size) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+                SearchResponse<Map> response = client.search(s -> s
+                                .index(INDEX_NAME)
+                                .query(q -> q
+                                        .multiMatch(m -> m
+                                                .query(keyword)
+                                                .fields("summary", "company_name", "ceo_name")
+                                        )
+                                )
+                                .from((page - 1) * size)
+                                .size(size),
+                        Map.class
+                );
 
-                SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
-                        .query(QueryBuilders.multiMatchQuery(keyword, "summary", "company_name", "ceo_name"))
-                        .from(page * size)
-                        .size(size);
+                List<Map<String, Object>> results = response.hits().hits().stream()
+                        .map(hit -> (Map<String, Object>) hit.source()) // ✨ 수정된 부분 3
+                        .collect(Collectors.toList());
 
-                searchRequest.source(sourceBuilder);
-                SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+                long totalHits = response.hits().total().value();
 
-                log.info("키워드 검색 완료: {} hits", response.getHits().getTotalHits().value);
-                return response;
+                log.info("키워드 검색 완료: {} hits", totalHits);
+                return new SearchResultDto<>(totalHits, results);
 
             } catch (IOException e) {
                 log.error("OpenSearch 키워드 검색 실패: {}", e.getMessage(), e);

@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api/v1/monitoring")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${frontend.url}")
+@CrossOrigin(origins = "${spring.frontend.url}")
 public class MonitoringController {
 
     private final ReportGenerationService reportGenerationService;
