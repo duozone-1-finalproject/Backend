@@ -88,16 +88,17 @@ public class AiReportController {
     }
 
     @GetMapping("/search")
-    public CompletableFuture<ResponseEntity<ApiResponseDto2<SearchHits>>> searchReports(
+    public CompletableFuture<ResponseEntity<ApiResponseDto2<Object>>> searchReports(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         log.info("키워드 보고서 검색 요청: keyword={}, page={}, size={}", keyword, page, size);
 
-        return openSearchService.searchReportsByKeyword(keyword, page, size) // ✅ 수정
+        return openSearchService.searchReportsByKeyword(keyword, page, size)
                 .thenApply(searchResponse ->
                         ResponseEntity.ok(ApiResponseDto2.success(
-                                searchResponse.getHits(), "키워드 '" + keyword + "'로 보고서를 검색했습니다."))
+                                (Object) searchResponse.hits().hits(), // ✅ Object로 캐스팅
+                                "키워드 '" + keyword + "'로 보고서를 검색했습니다."))
                 )
                 .exceptionally(throwable -> {
                     log.error("키워드 검색 실패: {}", keyword, throwable);

@@ -70,14 +70,31 @@ public class KafkaConfig {
         return factory;
     }
 
-    // Topic Configuration
+    // --- Topic Configuration ---
+
+    // 💡 1. Java AI 보고서 서버 연동용 토픽 (기존)
     @Bean
     public NewTopic aiRequestTopic() {
+        log.info("Creating Kafka topic: ai-report-request");
         return TopicBuilder.name("ai-report-request").partitions(3).replicas(1).build();
     }
 
     @Bean
     public NewTopic aiResponseTopic() {
+        log.info("Creating Kafka topic: ai-report-response");
         return TopicBuilder.name("ai-report-response").partitions(3).replicas(1).build();
+    }
+
+    // 💡 2. FastAPI(Python) 주석 생성 서버 연동용 토픽 (신규 추가)
+    @Bean
+    public NewTopic fastApiEquityRequestTopic() {
+        log.info("Creating Kafka topic for FastAPI: fastapi-equity-request");
+        return TopicBuilder.name("fastapi-equity-request").partitions(1).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic fastApiEquityResponseTopic() {
+        log.info("Creating Kafka topic for FastAPI: fastapi-equity-response");
+        return TopicBuilder.name("fastapi-equity-response").partitions(1).replicas(1).build();
     }
 }
