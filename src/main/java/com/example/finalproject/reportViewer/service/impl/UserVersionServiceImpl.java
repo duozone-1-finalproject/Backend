@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -21,6 +22,7 @@ import static com.example.finalproject.reportViewer.constant.VersionConstant.SEC
 public class UserVersionServiceImpl implements UserVersionService {
 
     private final UserVersionRepository userVersionRepository;
+    private final RestClient fastApiClient;
 
     private String getSection(UserVersion entity, String field) {
         return switch (field) {
