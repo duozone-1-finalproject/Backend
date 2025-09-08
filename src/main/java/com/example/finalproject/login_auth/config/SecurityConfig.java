@@ -75,7 +75,7 @@ public class SecurityConfig {
                         // ⭐ OPTIONS 요청은 항상 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/kafka-test/**").permitAll()
-
+                        .requestMatchers("/actuator/**").permitAll()
                         // ⭐ 공개 API
                         .requestMatchers(
                                 "/",

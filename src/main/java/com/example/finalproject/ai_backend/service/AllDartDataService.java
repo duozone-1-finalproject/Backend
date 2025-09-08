@@ -22,7 +22,7 @@ public class AllDartDataService {
         return AllDartDataResponse.builder()
                 .companyOverview(
                         companyOverviewRepo.findById(corpCode)
-                                .map(DartCompanyOverviewResponse::from) // ✅ 여기만 쓰면 됨
+                                .map(DartCompanyOverviewResponse::from)
                                 .orElse(null)
                 )
                 // TODO: executiveStatus, auditOpinion, cbIssuance 등도 여기에 추가

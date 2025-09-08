@@ -13,8 +13,11 @@ public class WebClientConfig2 {
     @Bean
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder()
-                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024)) // 10MB
+                .codecs(configurer -> configurer
+                        .defaultCodecs()
+                        .maxInMemorySize(10 * 1024 * 1024)) // 10MB
                 .defaultHeader("User-Agent", "AI-Backend/1.0")
+                .defaultHeader("Content-Type", "application/json")
                 .defaultHeader("Accept", "application/json");
     }
 }
