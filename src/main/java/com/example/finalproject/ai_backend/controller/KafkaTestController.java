@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api/v1/kafka-test")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${spring.frontend.url}", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class KafkaTestController {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
