@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 public class OpenSearchConfig {
-    //@Value("${opensearch.uris:http://192.168.0.77:9200}")
-    @Value("${opensearch.uris:localhost:9200}")
+    @Value("${opensearch.uris:http://192.168.0.77:9200}")
+    //@Value("${opensearch.uris:localhost:9200}")
     private String openSearchUri;
 
     @Bean(name = "openSearchClient")
