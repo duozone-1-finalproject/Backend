@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.client.WebClientException;
 
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @RestControllerAdvice
@@ -49,13 +50,31 @@ public class GlobalExceptionHandler {
     /**
      * 비동기 처리 예외 처리
      */
-    @ExceptionHandler(CompletionException.class)
+    @ExceptionHandler(TimeoutException.class)
+    public ResponseEntity<ApiResponseDto2<String>> handleTimeoutException(TimeoutException e) {
+        log.error("요청 처리 타임아웃", e);
+
+        ApiResponseDto2<String> response = ApiResponseDto2.error(
+                "408",
+                "요청 처리 시간이 초과되었습니다. AI 서버가 응답하지 않습니다."
+        );
+
+        return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(response);
+    }
+
+    @ExceptionHandler({CompletionException.class})
     public ResponseEntity<ApiResponseDto2<String>> handleCompletionException(CompletionException e) {
         log.error("비동기 처리 실패", e);
 
+        // 내부 원인 확인
+        Throwable cause = e.getCause();
+        if (cause instanceof TimeoutException) {
+            return handleTimeoutException((TimeoutException) cause);
+        }
+
         ApiResponseDto2<String> response = ApiResponseDto2.error(
                 "500",
-                "요청 처리 중 오류가 발생했습니다."
+                "요청 처리 중 오류가 발생했습니다: " + cause.getMessage()
         );
 
         return ResponseEntity.internalServerError().body(response);

@@ -34,6 +34,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 	// Security
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
@@ -57,6 +59,8 @@ dependencies {
 	// OpenSearch 최신 클라이언트
 	implementation 'org.opensearch.client:opensearch-java:2.19.0'
 	implementation 'org.opensearch.client:opensearch-rest-client:2.19.0'
+	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.10.0'
+
 
 	// Jackson override
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
@@ -86,4 +90,9 @@ tasks.named('test') {
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+	useJUnitPlatform()
+	systemProperty "file.encoding", "UTF-8"
 }

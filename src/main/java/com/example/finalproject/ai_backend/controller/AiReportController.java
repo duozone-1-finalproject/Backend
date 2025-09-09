@@ -9,6 +9,7 @@ import com.example.finalproject.ai_backend.service.ReportGenerationService;
 import com.example.finalproject.ai_backend.service.OpenSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.opensearch.search.SearchHits;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
