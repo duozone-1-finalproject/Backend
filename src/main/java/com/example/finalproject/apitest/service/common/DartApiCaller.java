@@ -4,6 +4,7 @@ import com.example.finalproject.apitest.dto.common.DartApiResponseDto;
 import com.example.finalproject.apitest.exception.DartApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -16,13 +17,16 @@ import java.util.function.Consumer;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class DartApiCaller {
 
     private final RestClient client;
 
     @Value("${dart.api.key}")
     private String dartApiKey;
+
+    public DartApiCaller(@Qualifier("dartApiClient") RestClient restClient) {
+        this.client = restClient;
+    }
 
     /**
      * DART API로부터 'list' 형태로 감싸인 표준 응답을 호출하고, 데이터 리스트를 반환합니다.
