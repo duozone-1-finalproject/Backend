@@ -44,7 +44,7 @@ public class TestController {
     @GetMapping("/{corpCode}/all-data")
     public MyDartApiResponseDto<AllDartDataResponse> syncAllData(
             @PathVariable String corpCode,
-            @RequestParam(defaultValue = "2023") String bsnsYear,
+            @RequestParam(defaultValue = "2024") String bsnsYear,
             @RequestParam(defaultValue = "11011") String reprtCode,
             @RequestParam(defaultValue = "OFS") String fsDiv
     ) {
@@ -474,12 +474,12 @@ public class TestController {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             LocalDate today = LocalDate.now();
-            LocalDate oneYearAgo = today.minusYears(5);
+            LocalDate fiveYearAgo = today.minusYears(5);
 
             String todayString = today.format(formatter);
-            String oneYearAgoString = oneYearAgo.format(formatter);
+            String fiveYearAgoString = fiveYearAgo.format(formatter);
 
-            return MyDartApiResponseDto.ok(testService.DartEquitySecuritiesCall(corpCode, oneYearAgoString, todayString));
+            return MyDartApiResponseDto.ok(testService.DartEquitySecuritiesCall(corpCode, fiveYearAgoString, todayString));
         } catch (DartApiException e) {
             log.error("서비스 처리 중 에러 발생: {}", e.getMessage());
             return MyDartApiResponseDto.error(e.getMessage());
