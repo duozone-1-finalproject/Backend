@@ -34,7 +34,7 @@ spring:
       key: ${dart.api.key}
       key-obj: ${dart.api.key-obj}     # Secrets Manager에서 가져오기
       key-ljh: ${dart.api.key-ljh}     # Secrets Manager에서 가져오기
-      base-url: ${dart.api.base-url}   # https://opendart.fss.or.kr/api
+      base-url: ${dart.api.base-url}
 
   security:
     user:
@@ -81,7 +81,7 @@ spring:
             user-name-attribute: id
 
   kafka:
-    bootstrap-servers: ${spring.kafka.bootstrap-servers} # ✨ 이 부분을 수정했습니다.
+    bootstrap-servers: ${spring.kafka.bootstrap-servers}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -95,7 +95,7 @@ spring:
       enable-auto-commit: true
 
   opensearch:
-    uris: ${spring.opensearch.uris:https://e71809655b9d.ngrok-free.app/}
+    uris: ${spring.opensearch.uris}
     username: ${OPENSEARCH_USERNAME:admin}
     password: ${OPENSEARCH_PASSWORD:admin}
     connection-timeout: 5s     # connect timeout
