@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api/v1/ai-reports")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "${spring.frontend.url}", allowCredentials = "true")
 public class AiReportController {
 
     private final ReportGenerationService reportGenerationService;
