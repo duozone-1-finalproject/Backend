@@ -4,8 +4,8 @@ server:
 spring:
   config:
     import:
-      - "aws-secretsmanager:app/finalproject"
-      - "aws-secretsmanager:rds/finalproject"
+      - "optional:aws-secretsmanager:app/finalproject"
+      - "optional:aws-secretsmanager:rds/finalproject"
   cloud:
     aws:
       secrets-manager:
@@ -19,7 +19,7 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.MariaDBDialect
+    # database-platform is auto-detected by Hibernate from the driver.
     hibernate:
       ddl-auto: update
       show-sql: true
@@ -36,9 +36,9 @@ spring:
       base-url: ${dart.api.base-url}
 
   security:
-    user:
-      name: disabled
-      password: disabled
+    # [Clarity] Use the standard property to disable the default basic authentication login prompt.
+    basic:
+      enabled: false
     oauth2:
       client:
         registration:
@@ -108,7 +108,6 @@ spring:
 
 
 
-
 # ===== AI 시스템 설정 (기본값: 실서버 사용) =====
 ai:
   system:
@@ -117,6 +116,14 @@ ai:
     enabled: ${AI_MOCK_ENABLED:false}    # Mock 사용 여부(기본 false)
   timeout:
     seconds: ${AI_TIMEOUT_SECONDS:60}    # AI 응답 대기 시간(초)
+
+# ===== FastAPI 연동 설정 =====
+fastapi:
+  urls: ${FastAPI_URL}
+  kafka:
+    timeout:
+      seconds: ${FASTAPI_KAFKA_TIMEOUT:180} # 타임아웃 180초
+
 
 # ===== dev 프로필 =====
 ---
