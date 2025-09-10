@@ -19,7 +19,7 @@ public class JwtTokenProvider {
     private final long refreshTokenValidityMs;
 
     public JwtTokenProvider(
-            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.secret-key}") String secretKey,
             @Value("${jwt.expiration:3600000}") long accessTokenValidityMs, // 1시간 (기본값)
             @Value("${jwt.refresh-expiration:604800000}") long refreshTokenValidityMs) { // 7일 (기본값)
 
