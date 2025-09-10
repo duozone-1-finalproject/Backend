@@ -13,9 +13,9 @@ spring:
         region: ap-northeast-2
 
   datasource:
-    url: jdbc:mariadb://${db.host}:${db.port}/${db.name}
-    username: ${db.username}         # Secrets Manager에서 가져옴
-    password: ${db.password}         # Secrets Manager에서 가져옴
+    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USERNAME}         # Secrets Manager에서 가져옴
+    password: ${DB_PASSWORD}         # Secrets Manager에서 가져옴
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
