@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/variables")
+@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 @RequiredArgsConstructor
 public class VariableMappingController {
 
