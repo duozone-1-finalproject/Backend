@@ -80,14 +80,17 @@ spring:
             user-name-attribute: id
 
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       acks: all
       retries: 3
     consumer:
+      # 다른 Java AI 서버용 group-id
       group-id: ${KAFKA_CONSUMER_GROUP:ai-backend-group}
+      # FastAPI 연동 전용 group-id
+      fastapi-group-id: ${KAFKA_FASTAPI_CONSUMER_GROUP:fastapi-backend-group}
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       auto-offset-reset: earliest
@@ -104,7 +107,7 @@ spring:
     sniff-enabled: false
 
   frontend:
-    url: ${spring.frontend.uris}
+    url: ${FRONTEND_URL}
 
 
 
