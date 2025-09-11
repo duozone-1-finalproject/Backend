@@ -1,10 +1,11 @@
 package com.example.finalproject;
 
-import com.example.finalproject.login_auth.config.JwtProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
+import com.example.finalproject.login_auth.security.JwtProperties;
+
 
 // 브랜치 테스트용 커밋 주석
 @SpringBootApplication

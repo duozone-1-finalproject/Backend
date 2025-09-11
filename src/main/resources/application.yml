@@ -4,19 +4,21 @@ server:
 spring:
   config:
     import:
-      - "optional:aws-secretsmanager:app/finalproject"
-      - "optional:aws-secretsmanager:rds/finalproject"
+      - optional: true
+        value: "aws-secretsmanager:app/finalproject?region=ap-northeast-2"
+      - optional: true
+        value: "aws-secretsmanager:rds/finalproject?region=ap-northeast-2"
+
   cloud:
     aws:
       secrets-manager:
         enabled: true
-        region: ap-northeast-2
 
   datasource:
     url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USERNAME}         # Secrets Manager에서 가져옴
-    password: ${DB_PASSWORD}         # Secrets Manager에서 가져옴
-    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
 
   jpa:
     # database-platform is auto-detected by Hibernate from the driver.

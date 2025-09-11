@@ -1,10 +1,10 @@
 // jwt/JwtTokenProvider.java
 package com.example.finalproject.login_auth.security;
 
-import com.example.finalproject.login_auth.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -18,16 +18,19 @@ public class JwtTokenProvider {
     private final long accessTokenValidityMs;
     private final long refreshTokenValidityMs;
 
-    public JwtTokenProvider(JwtProperties jwtProperties) {
-        this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
-        this.accessTokenValidityMs = jwtProperties.getExpiration().toMillis();
-        this.refreshTokenValidityMs = jwtProperties.getRefreshExpiration().toMillis();
+    public JwtTokenProvider(
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.expiration:3600000}") long accessTokenValidityMs, // 1시간 (기본값)
+            @Value("${jwt.refresh-expiration:604800000}") long refreshTokenValidityMs) { // 7일 (기본값)
+
+        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.accessTokenValidityMs = accessTokenValidityMs;
+        this.refreshTokenValidityMs = refreshTokenValidityMs;
     }
 
-    public String generateToken(User user) {
+    public String generateToken(String username) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenValidityMs);
-        String username = user.getEmail(); // 또는 user.getUsername() 등 고유 식별자
 
         return Jwts.builder()
                 .setSubject(username)
@@ -37,10 +40,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(User user) {
+    public String generateRefreshToken(String username) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshTokenValidityMs);
-        String username = user.getEmail();
 
         return Jwts.builder()
                 .setSubject(username)
