@@ -17,6 +17,7 @@ import com.example.finalproject.dart.dto.common.MyApiResponseDto;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/companies")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CompanyOverviewController {
     private final DbService dbService; // ✅ 여기서 생성자 주입 받기
 
@@ -45,5 +46,13 @@ public class CompanyOverviewController {
     public CompanyOverviewListResponseDto getAllCompanies(){
         return dbService.getAllCompanyOverviews();
     }
+
+
+    // 기업 정보 키워드로 100개 가져오기
+    @GetMapping("/search")
+    public CompanyOverviewListResponseDto get100Companies(@RequestParam String keyword){
+        return dbService.get100CorpCode(keyword);
+    }
+
 
 }

@@ -24,5 +24,8 @@ public class CompanyOverviewRequestDto {
     @JsonProperty("stock_code")
     private String stockCode;
 
+    @JsonProperty("modify_date")
+    private String modifyDate;
+
 
 }
