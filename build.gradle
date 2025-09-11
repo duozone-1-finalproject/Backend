@@ -1,89 +1,70 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.2.5'
-	id 'io.spring.dependency-management' version '1.1.5'
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.jetbrains.kotlin.jvm' version '1.9.10' // 버전 추가
+	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.10' // Spring 지원용
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '21'
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+	kotlinOptions {
+		jvmTarget = "17" // Kotlin은 17까지만 지원
+	}
 }
 
 repositories {
 	mavenCentral()
 }
 
-ext {ext {
-	set('springCloudVersion', "2023.0.2")
-	set('springCloudAwsVersion', "3.1.1")
-}
-}
-
-dependencyManagement {
-	imports {
-		mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:${springCloudAwsVersion}"
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
-}
-
 dependencies {
-	// Spring Boot & Web
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-
-	// Template Engine
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 
-	// JWT
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
 
-	// Database & JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	runtimeOnly 'com.mysql:mysql-connector-j:8.2.0'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-	// Kafka
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.kafka:spring-kafka'
-
-	// OpenSearch 최신 클라이언트
-	implementation 'org.opensearch.client:opensearch-java:2.19.0'
-	implementation 'org.opensearch.client:opensearch-rest-client:2.19.0'
-	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.10.0'
-
-
-	// Jackson override
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
-	implementation 'com.fasterxml.jackson.core:jackson-core:2.18.2'
-	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.18.2'
-
-	// AWS
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager'
-
-	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-	// Testing
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
 
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation "org.springframework.boot:spring-boot-starter-data-elasticsearch:2.7.18"
+	runtimeOnly 'me.paulschwarz:spring-dotenv:4.0.0'
+	implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.19.0'
+	implementation "org.opensearch.client:opensearch-java:2.7.0"
+
+	implementation 'org.springframework.kafka:spring-kafka'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+
+	implementation 'software.amazon.msk:aws-msk-iam-auth:1.1.1'
+}
 
 tasks.named('test') {
 	useJUnitPlatform()

@@ -2,45 +2,64 @@ server:
   port: 8080
 
 spring:
-  config:
-    import:
-      - optional: true
-        value: "aws-secretsmanager:app/finalproject?region=ap-northeast-2"
-      - optional: true
-        value: "aws-secretsmanager:rds/finalproject?region=ap-northeast-2"
-
-  cloud:
-    aws:
-      secrets-manager:
-        enabled: true
-
+  mvc:
+    async:
+      request-timeout: 180000   # 3분 (ms)
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}  # .env에서 덮어쓰기 가능 (기본 dev)
   datasource:
     url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
+    username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-
+    driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
-    # database-platform is auto-detected by Hibernate from the driver.
     hibernate:
       ddl-auto: update
-      show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    dialect: org.hibernate.dialect.MariaDBDialect
+    open-in-view: false
 
-  jwt:
-    secret-key: ${JWT_SECRET_KEY}   # Secrets Manager 혹은 환경변수에서 가져올 값
-    expiration: ${JWT_EXPIRATION}   # Secrets Manager 값
+  opensearch:
+    uris: ${OPENSEARCH_URI}
+    #uris: ${OPENSEARCH_URI:http://localhost:9200}
+    connection-timeout: 5s     # connect timeout
+    socket-timeout: 60s        # read timeout
+    max-conn-total: 100
+    max-conn-per-route: 100
+    sniff-enabled: false
 
-  dart:
-    api:
-      key: ${DART_API_KEY}
-      key-obj: ${DART_API_KEY_OBJ}     # Secrets Manager에서 가져오기
-      key-ljh: ${DART_API_KEY_LJH}     # Secrets Manager에서 가져오기
-      base-url: ${DART_API_BASE_URL}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: AWS_MSK_IAM
+      sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
+      ssl.truststore.location: C:/Users/user/테라폼_finalproject/infra/msk-truststore.jks
+      ssl.truststore.password: changeit
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+    consumer:
+      # 다른 Java AI 서버용 group-id
+      group-id: ${KAFKA_CONSUMER_GROUP:ai-backend-group}
+      # FastAPI 연동 전용 group-id
+      fastapi-group-id: ${KAFKA_FASTAPI_CONSUMER_GROUP:fastapi-backend-group}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+
+
 
   security:
-    # [Clarity] Use the standard property to disable the default basic authentication login prompt.
-    basic:
-      enabled: false
+    user:
+      name: disabled
+      password: disabled
     oauth2:
       client:
         registration:
@@ -81,37 +100,41 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
+# FastAPI 관련 설정 그룹
+fastapi:
+  urls: ${FastAPI_URL:http://localhost:8000}
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      acks: all
-      retries: 3
-    consumer:
-      # 다른 Java AI 서버용 group-id
-      group-id: ${KAFKA_CONSUMER_GROUP:ai-backend-group}
-      # FastAPI 연동 전용 group-id
-      fastapi-group-id: ${KAFKA_FASTAPI_CONSUMER_GROUP:fastapi-backend-group}
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      auto-offset-reset: earliest
-      enable-auto-commit: true
+    timeout:
+      seconds: ${FASTAPI_KAFKA_TIMEOUT:80} # 타임아웃 120초
 
-  opensearch:
-    uris: ${OPENSEARCH_URI}
-    username: ${OPENSEARCH_USERNAME:admin}
-    password: ${OPENSEARCH_PASSWORD:admin}
-    connection-timeout: 5s     # connect timeout
-    socket-timeout: 60s        # read timeout
-    max-conn-total: 100
-    max-conn-per-route: 100
-    sniff-enabled: false
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
-  frontend:
-    url: ${FRONTEND_URL}
+dart:
+  api:
+    key: ${DART_API_KEY}
+    obj: ${DART_API_OBJ_KEY}
+    ljh: ${DART_API_LJH_KEY}
+    base-url: https://opendart.fss.or.kr/api
 
+frontend:
+  url: ${FRONTEND_URL}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "configprops,env"
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.boot.autoconfigure.security: DEBUG
+    org.springframework.data.opensearch: DEBUG
+    # org.springframework.data.elasticsearch: DEBUG
+    # org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG  # (매핑 확인시 켜기)
 
 # ===== AI 시스템 설정 (기본값: 실서버 사용) =====
 ai:
@@ -121,14 +144,6 @@ ai:
     enabled: ${AI_MOCK_ENABLED:false}    # Mock 사용 여부(기본 false)
   timeout:
     seconds: ${AI_TIMEOUT_SECONDS:60}    # AI 응답 대기 시간(초)
-
-# ===== FastAPI 연동 설정 =====
-fastapi:
-  urls: ${FastAPI_URL}
-  kafka:
-    timeout:
-      seconds: ${FASTAPI_KAFKA_TIMEOUT:180} # 타임아웃 180초
-
 
 # ===== dev 프로필 =====
 ---
@@ -151,8 +166,4 @@ spring:
     activate:
       on-profile: prod
 
-ai:
-  mock:
-    enabled: false
-  timeout:
-    seconds: 120
+
