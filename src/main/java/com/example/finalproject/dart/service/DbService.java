@@ -3,6 +3,7 @@ package com.example.finalproject.dart.service;
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListRequestDto;
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListResponseDto;
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewRequestDto;
+import com.example.finalproject.dart.dto.IndutyTableResponseDto;
 import com.example.finalproject.dart.entity.CompanyOverview;
 
 import java.util.List;
@@ -23,4 +24,7 @@ public interface DbService {
 
     // db에서 키워드로 검색된 리스트 100개 출력
     CompanyOverviewListResponseDto get100CorpCode(String keyword);
+
+    // db에서 산업코드를 통해 산업명 반환
+    IndutyTableResponseDto getIndutyName(String indutyCode);
 }

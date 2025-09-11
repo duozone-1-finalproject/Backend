@@ -3,6 +3,7 @@ package com.example.finalproject.dart.controller;
 
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListRequestDto;
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListResponseDto;
+import com.example.finalproject.dart.dto.IndutyTableResponseDto;
 import com.example.finalproject.dart.entity.CompanyOverview;
 import com.example.finalproject.dart.service.DbService;
 import lombok.RequiredArgsConstructor;
@@ -54,5 +55,17 @@ public class CompanyOverviewController {
         return dbService.get100CorpCode(keyword);
     }
 
+    // 산업 코드로 산업 정보 조회
+    @GetMapping("/industries/{industryCode}")
+    public MyApiResponseDto<IndutyTableResponseDto> getIndustryByCode(@PathVariable String industryCode) {
+        // IndustryResponseDto는 직접 만드셔야 하는, 산업 정보 응답을 위한 DTO입니다.
+        try {
+            IndutyTableResponseDto industry = dbService.getIndutyName(industryCode);
+            return MyApiResponseDto.ok(industry);
+        } catch (Exception e) {
+            log.error("산업 정보 조회 중 에러 발생: {}", e.getMessage());
+            return MyApiResponseDto.error("산업 정보를 조회하는 중 오류가 발생했습니다.");
+        }
+    }
 
 }

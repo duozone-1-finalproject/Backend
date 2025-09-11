@@ -3,10 +3,13 @@ package com.example.finalproject.dart.service.impl;
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListRequestDto;
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListResponseDto;
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewResponseDto;
+import com.example.finalproject.dart.dto.IndutyTableResponseDto;
 import com.example.finalproject.dart.entity.CompanyOverview;
 import com.example.finalproject.dart.entity.CorpCode;
+import com.example.finalproject.dart.entity.IndutyTable;
 import com.example.finalproject.dart.repository.CompanyOverviewRepository;
 import com.example.finalproject.dart.repository.CorpCodeRepository;
+import com.example.finalproject.dart.repository.IndutyTableRepository;
 import com.example.finalproject.dart.service.DbService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 public class DbServiceImpl implements DbService {
     private final CompanyOverviewRepository companyOverviewRepository;
     private final CorpCodeRepository corpCodeRepository;
+    private final IndutyTableRepository indutyTableRepository;
 
 
     // db에 기업코드 리스트 넣기
@@ -103,4 +107,15 @@ public class DbServiceImpl implements DbService {
 
     }
 
+    // 산업코드로 산업명 반환
+    @Override
+    public IndutyTableResponseDto getIndutyName(String indutyCode){
+
+        IndutyTable indutyTable = indutyTableRepository.findOneByIndutyCode();
+        return IndutyTableResponseDto.builder()
+                .indutyCode(indutyTable.getIndutyCode())
+                .indutyName(indutyTable.getIndutyName())
+                .build();
+
+    }
 }

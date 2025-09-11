@@ -16,7 +16,7 @@ public class MyApiResponseDto<T> {
         return new MyApiResponseDto<>("SUCCESS", "요청에 성공했습니다.", data);
     }
 
-    public static MyApiResponseDto<String> error(String message) {
+    public static <T> MyApiResponseDto<T> error(String message) {
         return new MyApiResponseDto<>("ERROR", message, null);
     }
 }
