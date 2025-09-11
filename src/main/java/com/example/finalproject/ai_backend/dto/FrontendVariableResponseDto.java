@@ -22,15 +22,15 @@ public class FrontendVariableResponseDto {
     @JsonProperty("S3_1C_1")
     private String s3_1c_1;         // 기타 투자위험
 
-    @JsonProperty("s1_1d_1")
-    private String s1_1d_1;
+    //@JsonProperty("s1_1d_1")
+    //private String s1_1d_1;
 
     public static FrontendVariableResponseDto from(VariableMappingResponseDto aiResponse) {
         return FrontendVariableResponseDto.builder()
                 .s3_1a_1(aiResponse.getRiskIndustry())
                 .s3_1b_1(aiResponse.getRiskCompany())
                 .s3_1c_1(aiResponse.getRiskEtc())
-                .s1_1d_1(aiResponse.getS1_1d_1())
+                //.s1_1d_1(aiResponse.getS1_1d_1())
                 .build();
     }
 }

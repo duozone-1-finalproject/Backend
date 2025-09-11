@@ -62,6 +62,7 @@ public class MainVariableMappingService {
                         if ("SUCCESS".equals(aiResponse.getStatus())) {
                             FrontendVariableResponseDto frontendResponse = FrontendVariableResponseDto.from(aiResponse);
                             log.info("프론트엔드 응답 변환 완료");
+                            log.info("프론트엔드 응답 데이터: {}", frontendResponse);
                             return frontendResponse;
                         } else {
                             log.error("AI 처리 실패: requestId={}, status={}", requestId, aiResponse.getStatus());

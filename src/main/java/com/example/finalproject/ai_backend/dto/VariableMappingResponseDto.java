@@ -25,8 +25,8 @@ public class VariableMappingResponseDto {
     @JsonProperty("risk_etc")
     private String riskEtc;         // S3_1C_1 변수에 들어갈 내용
 
-    @JsonProperty("s1_1d_1")
-    private String s1_1d_1;
+    //@JsonProperty("s1_1d_1")
+    //private String s1_1d_1;
 
     @JsonProperty("processing_time")
     private Long processingTime;    // 처리 시간 (밀리초)

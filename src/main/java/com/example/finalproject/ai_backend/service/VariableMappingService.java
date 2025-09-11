@@ -22,7 +22,7 @@ public class VariableMappingService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${ai.timeout.seconds:60}")
+    @Value("${ai.timeout.seconds:600}")
     private int timeoutSeconds;
 
     // 요청-응답 매핑
@@ -83,7 +83,7 @@ public class VariableMappingService {
     /**
      * AI 응답 수신
      */
-    @KafkaListener(topics = AI_RESPONSE_TOPIC, groupId = "ai-backend-group")
+    @KafkaListener(topics = AI_RESPONSE_TOPIC, groupId = "${spring.kafka.consumer.group-id}")
     public void handleAiResponse(String message) {
         log.info("AI 서버 응답 수신: {}", message.substring(0, Math.min(message.length(), 100)) + "...");
         handleAiResponseInternal(message);
