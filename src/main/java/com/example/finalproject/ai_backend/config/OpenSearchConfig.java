@@ -1,60 +1,53 @@
 package com.example.finalproject.ai_backend.config;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.opensearch.client.RestClient;
-import org.opensearch.client.RestClientBuilder;
-import org.opensearch.client.RestHighLevelClient;
-import org.springframework.beans.factory.annotation.Value;
+import org.opensearch.client.json.jackson.JacksonJsonpMapper;
+import org.opensearch.client.transport.OpenSearchTransport;
+import org.opensearch.client.transport.rest_client.RestClientTransport;
+import org.opensearch.client.java.OpenSearchClient;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
+@EnableConfigurationProperties(OpenSearchProperties.class) // Properties 클래스 활성화
 public class OpenSearchConfig {
-    @Value("${spring.opensearch.uris}")
-    //@Value("${opensearch.uris:localhost:9200}")
-    private String openSearchUri;
 
-    @Bean(name = "openSearchClient")
-    public RestHighLevelClient openSearchClient() {
-        try {
-            // URI parsing
-            String cleanUri = openSearchUri.replace("http://", "").replace("https://", "");
-            String[] hostAndPort = cleanUri.split(":");
-            String host = hostAndPort[0];
-            int port = hostAndPort.length > 1 ? Integer.parseInt(hostAndPort[1]) : 9200;
+    private final OpenSearchProperties properties;
 
-            log.info("OpenSearch connection setup: {}:{}", host, port);
+    @Bean
+    public OpenSearchClient openSearchClient() {
+        // 1. 설정 파일의 URI로부터 HttpHost 배열 생성
+        HttpHost[] hosts = properties.getUris().stream()
+                .map(HttpHost::create)
+                .toArray(HttpHost[]::new);
 
-            // Create RestClientBuilder first
-            RestClientBuilder builder = RestClient.builder(
-                    new HttpHost(host, port, "http")
-            ).setRequestConfigCallback(requestConfigBuilder ->
-                    requestConfigBuilder
-                            .setConnectTimeout(10000)  // 10 seconds
-                            .setSocketTimeout(60000)   // 60 seconds
-            );
-
-            // Create RestHighLevelClient using the builder
-            RestHighLevelClient client = new RestHighLevelClient(builder);
-
-            // Connection test
-            try {
-                var info = client.info(org.opensearch.client.RequestOptions.DEFAULT);
-                log.info("OpenSearch connection successful: cluster={}, version={}",
-                        info.getClusterName(), info.getVersion().getNumber());
-            } catch (Exception e) {
-                log.error("OpenSearch connection test failed: {}", e.getMessage());
-                // Even if connection fails, create the bean (for runtime retry)
-                log.warn("OpenSearch connection failed but client will be created. Runtime retry possible.");
-            }
-
-            return client;
-
-        } catch (Exception e) {
-            log.error("OpenSearch client setup failed: {}", e.getMessage(), e);
-            throw new RuntimeException("Cannot initialize OpenSearch client: " + e.getMessage(), e);
+        // 2. 인증 정보 설정
+        final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        if (properties.getUsername() != null && properties.getPassword() != null) {
+            credentialsProvider.setCredentials(AuthScope.ANY,
+                    new UsernamePasswordCredentials(properties.getUsername(), properties.getPassword()));
         }
+
+        // 3. RestClient 빌드 (인증, 타임아웃 설정 포함)
+        RestClient restClient = RestClient.builder(hosts)
+                .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                        .setDefaultCredentialsProvider(credentialsProvider))
+                .setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder
+                        .setConnectTimeout((int) properties.getConnectionTimeout().toMillis())
+                        .setSocketTimeout((int) properties.getSocketTimeout().toMillis()))
+                .build();
+
+        // 4. OpenSearch Java 클라이언트 생성 및 반환
+        OpenSearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
+        return new OpenSearchClient(transport);
     }
 }
