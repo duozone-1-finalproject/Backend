@@ -96,22 +96,21 @@ public class UserVersionServiceImpl implements UserVersionService {
         newEntry.setSection4(sections.get("section4"));
         // newEntry.setSection5(sections.get("section5"));
         newEntry.setSection6(sections.get("section6"));
-        String rceptNo="20240321000788"; //20250829000910
+
         try {
             // 1. API 호출 시도
-
             String section5Html = fastApiClient.get()
-                    .uri("/search/file/{rceptNo}", rceptNo)
+                    .uri("/search/file/{rceptNo}", "20240321000788")
                     .retrieve()
                     .body(String.class);
 
             // 2. 성공 시: API 응답으로 section5를 설정
-            log.info("Successfully fetched section5 from FastAPI for rceptNo: {}", rceptNo);
+            log.info("Successfully fetched section5 from FastAPI for rceptNo: {}", "20240321000788");
             newEntry.setSection5(section5Html);
 
         } catch (RestClientException e) {
             // 3. 실패 시: 로그를 남기고, 기존 DTO의 데이터로 section5를 설정 (Fallback)
-            log.error("Failed to fetch section5 from FastAPI for rceptNo: {}. Falling back to DTO data. Error: {}", rceptNo, e.getMessage());
+            log.error("Failed to fetch section5 from FastAPI for rceptNo: {}. Falling back to DTO data. Error: {}", "20240321000788", e.getMessage());
             newEntry.setSection5(sections.get("section5"));
         }
 
