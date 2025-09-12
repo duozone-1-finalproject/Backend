@@ -99,7 +99,7 @@ fastapi:
   urls: ${FastAPI_URL:http://localhost:8000}
   kafka:
     timeout:
-      seconds: ${FASTAPI_KAFKA_TIMEOUT:300} # 타임아웃 120초
+      seconds: ${FASTAPI_KAFKA_TIMEOUT:600} # 타임아웃 120초
 
 jwt:
   secret: ${JWT_SECRET}
@@ -137,7 +137,7 @@ ai:
   mock:
     enabled: ${AI_MOCK_ENABLED:false}    # Mock 사용 여부(기본 false)
   timeout:
-    seconds: ${AI_TIMEOUT_SECONDS:360}    # AI 응답 대기 시간(초)
+    seconds: ${AI_TIMEOUT_SECONDS:600}    # AI 응답 대기 시간(초)
 
 # ===== dev 프로필 =====
 ---
@@ -151,7 +151,7 @@ ai:
   mock:
     enabled: false
   timeout:
-    seconds: 360
+    seconds: 600
 
 # ===== prod 프로필 =====
 ---
@@ -164,5 +164,5 @@ ai:
   mock:
     enabled: false
   timeout:
-    seconds: 360
+    seconds: 600
 
