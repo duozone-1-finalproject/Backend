@@ -53,6 +53,12 @@ public class DartController {
         return dartApiService.getFiveYearRceptNosByCorpCode(corpCode); // "01571107"
     }
 
+    // 기업코드로 최근 5년간의 모든 보고서의 리스트 반환
+    @GetMapping("/reports/latest-annual")
+    public DartReportListResponseDto getLatestAnnualReportReceptionNo(@RequestParam("corp_code") String corpCode){
+        return dartApiService.getFiveYearRceptNosByCorpCode(corpCode); // "01571107"
+    }
+
 
 
 }
