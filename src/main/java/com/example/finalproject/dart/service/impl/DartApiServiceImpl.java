@@ -1,11 +1,15 @@
 package com.example.finalproject.dart.service.impl;
 
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListResponseDto;
+import com.example.finalproject.dart.dto.dart.BusinessReportDto;
 import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
 import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
+import com.example.finalproject.dart.exception.BusinessReportException;
 import com.example.finalproject.dart.service.DartApiService;
 import com.example.finalproject.dart.service.DbService;
+import com.example.finalproject.dart_viewer.repository.UserVersionRepository;
+import com.example.finalproject.dart_viewer.service.UserVersionService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +18,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -38,14 +44,15 @@ public class DartApiServiceImpl implements DartApiService {
 
     private final WebClient dartWebClient;
     private final DbService dbService;
-
+    private final RestClient fastApiClient;
 
     @Value("${dart.api.key}")
     private String dartApiKey;
 
-    public DartApiServiceImpl(@Qualifier("dartWebClient") WebClient dartWebClient, DbService dbService) {
+    public DartApiServiceImpl(@Qualifier("dartWebClient") WebClient dartWebClient, @Qualifier("fastApiClient") RestClient fastApiClient, DbService dbService) {
         this.dartWebClient = dartWebClient;
         this.dbService = dbService; // dbService 초기화
+        this.fastApiClient = fastApiClient;
     }
 
     // 기업코드와 문서제목으로 보고서 검색
@@ -523,13 +530,90 @@ public class DartApiServiceImpl implements DartApiService {
         String fiveYearAgoString = fiveYearAgo.format(formatter);
 
         // 회사코드(corpCode)를 통해서 api로 (회사정보,(보고서리스트))를 가져옴(최대 100개)
-        return getCompanyInfoByCorpCode(corpCode, new DownloadAllRequestDto("보고서",fiveYearAgoString,todayString));
+        return getCompanyInfoByCorpCode(corpCode, new DownloadAllRequestDto("사업",fiveYearAgoString,todayString));
     }
+
+    // 기업코드로 최신 사업보고서 접수번호 반환
+    public String getLatestBusinessReportCodeByCorpCode(String corpCode){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate today = LocalDate.now();
+        String todayString = today.format(formatter);
+
+        LocalDate twoYearAgo = today.minusYears(2);
+        String twoYearAgoString = twoYearAgo.format(formatter);
+
+        DartReportListResponseDto list = getCompanyInfoByCorpCode(corpCode, new DownloadAllRequestDto("사업", twoYearAgoString, todayString));
+
+        // 응답이 null이거나 리스트가 비어있는 경우 처리
+        if (list == null || list.getList() == null || list.getList().isEmpty()) {
+            return null; // 또는 예외를 던지거나 기본값 반환
+        }
+
+        // rcept_dt(접수일자) 기준으로 가장 최신 사업보고서의 접수번호 반환
+        return list.getList().stream()
+                .filter(report -> report.getReportNm() != null && report.getReportNm().contains("사업"))
+                .filter(report -> report.getRceptDt() != null) // 접수일자가 null이 아닌 것만
+                .max((r1, r2) -> r1.getRceptDt().compareTo(r2.getRceptDt())) // 접수일자로 정렬
+                .map(DartReportListResponseDto.ReportSummary::getRceptNo) // 접수번호 추출
+                .orElse(null); // 결과가 없으면 null 반환
+    }
+
+    // 기업코드로 최신 사업보고서 HTML 반환
+    @Override
+    public BusinessReportDto getLatestBusinessReportByCorpCode(String corpCode) throws BusinessReportException {
+        // 1. 최신 사업보고서 접수번호 조회
+        String rceptNo = getLatestBusinessReportCodeByCorpCode(corpCode);
+
+        if (rceptNo == null) {
+            log.warn("기업코드 {}에 대한 최신 사업보고서를 찾을 수 없습니다.", corpCode);
+            throw new BusinessReportException("해당 기업코드에 대한 최신 사업보고서를 찾을 수 없습니다: " + corpCode);
+        }
+
+        log.info("기업코드 {}의 최신 사업보고서 접수번호: {}", corpCode, rceptNo);
+
+        try {
+            // 2. FastAPI 호출 시도 - HTML 파일 전체 조회
+            String businessReportHtml = fastApiClient.get()
+                    .uri("/search/file/{rceptNo}", rceptNo)
+                    .retrieve()
+                    .body(String.class);
+
+            // 3. 성공 시: API 응답으로 HTML 반환
+            log.info("Successfully fetched business report HTML from FastAPI for rceptNo: {}", rceptNo);
+            return BusinessReportDto.builder()
+                    .recepNo(rceptNo)
+                    .htmlContent(businessReportHtml)
+                    .build();
+
+        } catch (RestClientException e) {
+            // 4. 실패 시: 예외 발생
+            log.error("Failed to fetch business report HTML from FastAPI for rceptNo: {}. Error: {}", rceptNo, e.getMessage());
+            throw new BusinessReportException("사업보고서 조회에 실패했습니다. 접수번호: " + rceptNo + ", 오류: " + e.getMessage());
+        }
+    }
+}
 /*
     1. xml 1개 다운하던걸 폴더 만들어서 내부 파일 전부 바꾸는걸로 전환
     2.
+
+    try {
+            // 1. API 호출 시도
+            String section5Html = fastApiClient.get()
+                    .uri("/search/file/{rceptNo}", "20240321000788")
+                    .retrieve()
+                    .body(String.class);
+
+            // 2. 성공 시: API 응답으로 section5를 설정
+            log.info("Successfully fetched section5 from FastAPI for rceptNo: {}", "20240321000788");
+            newEntry.setSection5(section5Html);
+
+        } catch (RestClientException e) {
+            // 3. 실패 시: 로그를 남기고, 기존 DTO의 데이터로 section5를 설정 (Fallback)
+            log.error("Failed to fetch section5 from FastAPI for rceptNo: {}. Falling back to DTO data. Error: {}", "20240321000788", e.getMessage());
+            newEntry.setSection5(sections.get("section5"));
+        }
 */
 
 
-}
+
 
