@@ -33,12 +33,6 @@ spring:
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
-    properties:
-      security.protocol: SASL_SSL
-      sasl.mechanism: AWS_MSK_IAM
-      sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
-      ssl.truststore.location: C:/Users/user/테라폼_finalproject/infra/msk-truststore.jks
-      ssl.truststore.password: changeit
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -102,7 +96,7 @@ spring:
 
 # FastAPI 관련 설정 그룹
 fastapi:
-  urls: ${FastAPI_URL:http://localhost:8000}
+  urls: ${FastAPI_URL}
   kafka:
     timeout:
       seconds: ${FASTAPI_KAFKA_TIMEOUT:80} # 타임아웃 120초
