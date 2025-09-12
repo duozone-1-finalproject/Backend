@@ -13,8 +13,9 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/versions")
-@CrossOrigin(origins = "${frontend.url}") // React 앱 주소
+@CrossOrigin(origins = "${frontend.url}", allowCredentials = "true")
 public class ViewerController {
+
     private final UserVersionService userVersionService;
 
     @GetMapping

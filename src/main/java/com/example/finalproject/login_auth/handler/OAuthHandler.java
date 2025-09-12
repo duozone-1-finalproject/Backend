@@ -28,11 +28,12 @@ public class OAuthHandler implements AuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final OAuth2Utils oAuth2Utils; // <-- 주입
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+                                        Authentication authentication) throws IOException {
 
         // 1. OAuth 제공자 정보 추출
         String provider = extractProvider(authentication);
@@ -48,8 +49,8 @@ public class OAuthHandler implements AuthenticationSuccessHandler {
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
         CookieUtils.setRefreshTokenCookie(response, refreshToken);
 
-        // 5. 프론트엔드 리다이렉트 (함수로 분리)
-        OAuth2Utils.redirectToFrontend(response);
+        // 5. 프론트엔드 리다이렉트 (instance 메서드 사용)
+        oAuth2Utils.redirectToFrontend(response); // <-- 변경
     }
 
     private String extractProvider(Authentication authentication) {

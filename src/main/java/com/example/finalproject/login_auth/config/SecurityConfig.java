@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -131,13 +132,16 @@ public class SecurityConfig {
     /**
      * ✅ CORS 설정
      */
+    @Value("${frontend.url}")
+    private String frontendUrl; // 환경변수 주입
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        log.info("🔧 CORS 설정");
+        log.info("🔧 CORS 설정, 프론트엔드 URL: {}", frontendUrl);
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("${frontend.url}"));
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedOriginPatterns(List.of(frontendUrl)); // ✅ 실제 URL 사용
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization"));
 
