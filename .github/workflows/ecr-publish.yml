@@ -2,7 +2,7 @@ name: Deploy Backend to Amazon ECR
 
 on:
   push:
-    branches: [ "feature/infra" ]
+    branches: [ "main" ]
 
 env:
   ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
