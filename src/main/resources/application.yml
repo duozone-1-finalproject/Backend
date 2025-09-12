@@ -1,6 +1,14 @@
 server:
   port: 8080
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,configprops,env"
+    health:
+      show-details: always
+
 spring:
   mvc:
     async:
@@ -116,11 +124,6 @@ dart:
 frontend:
   url: ${FRONTEND_URL}
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "configprops,env"
 
 logging:
   level:
