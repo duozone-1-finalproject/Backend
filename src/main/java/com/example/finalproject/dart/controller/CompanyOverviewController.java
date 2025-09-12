@@ -17,7 +17,7 @@ import com.example.finalproject.dart.dto.common.MyApiResponseDto;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/companies")
-@CrossOrigin(origins = "${frontend.url}", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CompanyOverviewController {
     private final DbService dbService; // ✅ 여기서 생성자 주입 받기
 

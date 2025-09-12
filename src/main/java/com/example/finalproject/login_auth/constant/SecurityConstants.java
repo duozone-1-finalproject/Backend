@@ -14,7 +14,7 @@ public class SecurityConstants {
     public static final boolean COOKIE_SECURE = false; // 로컬 개발용
 
     // 프론트엔드 URL
-    public static final String FRONTEND_URL = "${frontend.url}";
+    public static final String FRONTEND_URL = "http://localhost:3000";
     public static final String OAUTH_SUCCESS_PATH = "/oauth-success";
 
     // 사용자 역할 및 제공자 (매직 스트링 방지)

@@ -27,7 +27,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/dart/test")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${frontend.url}", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class TestController {
 
     private final TestService testService;

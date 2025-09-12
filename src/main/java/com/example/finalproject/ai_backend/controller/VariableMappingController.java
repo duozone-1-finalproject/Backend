@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api/v1/variables")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${frontend.url}", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class VariableMappingController {
 
     private final MainVariableMappingService mainVariableMappingService;
