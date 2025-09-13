@@ -12,5 +12,7 @@ import java.util.List;
 public class UpdateModifiedSectionsRequestDto {
     @JsonProperty("user_id")
     private Long userId;
+    private String corpCode;
+    private String corpName;
     private List<String> modifiedSections;
 }
