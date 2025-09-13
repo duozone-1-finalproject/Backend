@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface UserVersionService {
 
-    Map<String, VersionResponseDto> getVersions(Long userId) throws IOException;
+    Map<String, VersionResponseDto> getCompanyVersions(GetCompanyVersionsRequestDto request) throws IOException;
     UserVersion createVersion(CreateVersionRequestDto request) throws IOException;
     UserVersion saveEditingVersion(SaveEditingVersionRequestDto request) throws IOException;
     UserVersion updateEditingModified(UpdateModifiedSectionsRequestDto request) throws Exception;
