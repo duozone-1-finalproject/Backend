@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 public class FinalizeVersionRequestDto {
     @JsonProperty("user_id")
     private Long userId;
+    private String corpCode;
+    private String corpName;
     private String description; //null 가능
     private String createdAt;
 }

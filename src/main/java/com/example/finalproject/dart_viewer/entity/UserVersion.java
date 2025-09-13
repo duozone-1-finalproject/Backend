@@ -15,6 +15,12 @@ public class UserVersion {
     @JsonProperty("id")
     private Long id;
 
+    @JsonProperty("corp_code")
+    private Long corpCode;
+
+    @JsonProperty("corp_name")
+    private Long corpName;
+
     // user_id
     @JsonProperty("user_id")
     private Long userId;
