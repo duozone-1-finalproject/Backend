@@ -16,10 +16,10 @@ public class UserVersion {
     private Long id;
 
     @JsonProperty("corp_code")
-    private Long corpCode;
+    private String corpCode;
 
     @JsonProperty("corp_name")
-    private Long corpName;
+    private String corpName;
 
     // user_id
     @JsonProperty("user_id")

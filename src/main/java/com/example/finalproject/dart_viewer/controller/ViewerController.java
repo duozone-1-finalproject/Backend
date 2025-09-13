@@ -19,8 +19,8 @@ public class ViewerController {
     private final UserVersionService userVersionService;
 
     @GetMapping
-    public ResponseEntity<Map<String, VersionResponseDto>> getVersions(@RequestParam Long userId) throws IOException {
-        return ResponseEntity.ok(userVersionService.getVersions(userId));
+    public ResponseEntity<Map<String, VersionResponseDto>> getCompanyVersions(@RequestParam GetCompanyVersionsRequestDto request) throws IOException {
+        return ResponseEntity.ok(userVersionService.getCompanyVersions(request));
     }
 
     // 2. 초기 버전 생성 (v0 등)
