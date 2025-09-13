@@ -1,21 +1,29 @@
 package com.example.finalproject.dart.controller;
 
 
+import com.example.finalproject.dart.dto.ApiResponse;
+import com.example.finalproject.dart.dto.dart.BusinessReportDto;
 import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
 import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
+import com.example.finalproject.dart.exception.BusinessReportException;
 import com.example.finalproject.dart.service.DartApiService;
+import com.example.finalproject.dart.service.OtherNoticeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/dart")
+@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class DartController {
     private final DartApiService dartApiService; // ✅ 여기서 생성자 주입 받기
+    private final OtherNoticeService otherNoticeService;
 
     // [DartDocumentListRequestDto 내용]
     /*  [DartDocumentListRequestDto 내용]
@@ -52,6 +60,28 @@ public class DartController {
     public DartReportListResponseDto fiveYearRceptCall(@RequestParam("corp_code") String corpCode){
         return dartApiService.getFiveYearRceptNosByCorpCode(corpCode); // "01571107"
     }
+
+    // 기업코드로 최신 사업보고서의 접수번호 반환
+    @GetMapping("/reports/latest")
+    public ApiResponse<BusinessReportDto> getLatestBusinessReport(@RequestParam("corp_code") String corpCode) {
+        try {
+            BusinessReportDto result = dartApiService.getLatestBusinessReportByCorpCode(corpCode);
+            return ApiResponse.success(result);
+        } catch (BusinessReportException e) {
+            log.error("사업보고서 조회 실패: {}", e.getMessage());
+            return ApiResponse.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("예상치 못한 오류 발생: {}", e.getMessage());
+            return ApiResponse.fail("서버 내부 오류가 발생했습니다.");
+        }
+    }
+
+    // 기업이름으로 기타사항 반환
+    @GetMapping("/reports/etc-matters")
+    public ApiResponse<String> getEtcMatters(@RequestParam("corp_name") String corpName){
+        return ApiResponse.success(otherNoticeService.otherNotice(corpName));
+    }
+
 
 
 

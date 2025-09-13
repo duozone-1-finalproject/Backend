@@ -7,7 +7,11 @@ import com.example.finalproject.dart_viewer.service.UserVersionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,10 +21,19 @@ import java.util.stream.Collectors;
 import static com.example.finalproject.dart_viewer.constant.VersionConstant.SECTION_FIELDS;
 
 @Service
-@RequiredArgsConstructor
+@Slf4j
 public class UserVersionServiceImpl implements UserVersionService {
 
     private final UserVersionRepository userVersionRepository;
+    private final RestClient fastApiClient;
+
+    public UserVersionServiceImpl(
+            UserVersionRepository userVersionRepository,
+            @Qualifier("fastApiClient") RestClient fastApiClient
+    ) {
+        this.userVersionRepository = userVersionRepository;
+        this.fastApiClient = fastApiClient;
+    }
 
     private String getSection(UserVersion entity, String field) {
         return switch (field) {

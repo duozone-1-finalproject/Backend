@@ -1,8 +1,10 @@
 package com.example.finalproject.dart.service;
 
+import com.example.finalproject.dart.dto.dart.BusinessReportDto;
 import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
 import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
+import com.example.finalproject.dart.exception.BusinessReportException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Mono;
@@ -41,6 +43,10 @@ public interface DartApiService {
 
     // 기업코드로 최근 5년간의 모든 보고서 리스트 반환
     DartReportListResponseDto getFiveYearRceptNosByCorpCode(String corpCode);
+
+    // 기업코드로 최신 사업보고서 반환
+    BusinessReportDto getLatestBusinessReportByCorpCode(String corpCode) throws BusinessReportException;
+
 
 }
 /*

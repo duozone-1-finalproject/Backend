@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -71,6 +73,12 @@ public class TestServiceImpl implements TestService {
     public AllDartDataResponse fetchAllDartData(String corpCode, String bsnsYear, String reprtCode, String beginDate, String endDate, String fsDiv) {
         log.info("corpCode {}에 대한 모든 데이터 비동기 호출 시작", corpCode);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate today = LocalDate.now();
+        LocalDate fiveYearAgo = today.minusYears(5);
+
+        String fiveYearAgoString = fiveYearAgo.format(formatter);
+
         // --- 각 API 호출을 비동기 작업으로 정의 ---
         CompletableFuture<DartCompanyOverviewResponse> companyOverviewFuture = supplyAsync(() -> DartCompanyOverviewCall(corpCode), "CompanyOverview");
         CompletableFuture<List<DartMajorShareholderStatusResponse>> majorShareholderStatusFuture = supplyAsyncList(() -> DartMajorShareholderStatusCall(corpCode, bsnsYear, reprtCode), "MajorShareholderStatus");
@@ -98,7 +106,7 @@ public class TestServiceImpl implements TestService {
         CompletableFuture<List<DartMinorityShareholderStatusResponse>> minorityShareholderStatusFuture = supplyAsyncList(() -> DartMinorityShareholderStatusCall(corpCode, bsnsYear, reprtCode), "MinorityShareholderStatus");
         CompletableFuture<List<DartCompensationApprovalResponse>> compensationApprovalFuture = supplyAsyncList(() -> DartCompensationApprovalCall(corpCode, bsnsYear, reprtCode), "CompensationApproval");
         CompletableFuture<List<DartDirectorAndAuditorCompensationResponse>> directorAndAuditorCompensationFuture = supplyAsyncList(() -> DartDirectorAndAuditorCompensationCall(corpCode, bsnsYear, reprtCode), "DirectorAndAuditorCompensation");
-        CompletableFuture<DartEquitySecuritiesGroupResponse> equitySecuritiesFuture = supplyAsync(() -> DartEquitySecuritiesCall(corpCode, beginDate, endDate), "EquitySecurities");
+        CompletableFuture<DartEquitySecuritiesGroupResponse> equitySecuritiesFuture = supplyAsync(() -> DartEquitySecuritiesCall(corpCode, fiveYearAgoString, endDate), "EquitySecurities");
 
         // --- 정의된 모든 비동기 작업이 완료될 때까지 기다림 ---
         List<CompletableFuture<?>> allFutures = List.of(
