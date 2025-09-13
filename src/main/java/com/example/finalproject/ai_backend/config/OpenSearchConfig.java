@@ -12,42 +12,35 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 public class OpenSearchConfig {
+
     @Value("${spring.opensearch.uris}")
-    //@Value("${opensearch.uris:localhost:9200}")
     private String openSearchUri;
 
     @Bean(name = "openSearchClient")
     public RestHighLevelClient openSearchClient() {
         try {
-            // URI parsing
-            String cleanUri = openSearchUri.replace("http://", "").replace("https://", "");
-            String[] hostAndPort = cleanUri.split(":");
-            String host = hostAndPort[0];
-            int port = hostAndPort.length > 1 ? Integer.parseInt(hostAndPort[1]) : 9200;
+            // HttpHost를 포트 없이 생성
+            HttpHost targetHost = HttpHost.create(openSearchUri);
 
-            log.info("OpenSearch connection setup: {}:{}", host, port);
+            log.info("OpenSearch connection setup: {}", targetHost);
 
-            // Create RestClientBuilder first
-            RestClientBuilder builder = RestClient.builder(
-                    new HttpHost(host, port, "http")
-            ).setRequestConfigCallback(requestConfigBuilder ->
-                    requestConfigBuilder
-                            .setConnectTimeout(10000)  // 10 seconds
-                            .setSocketTimeout(60000)   // 60 seconds
-            );
+            RestClientBuilder builder = RestClient.builder(targetHost)
+                    .setRequestConfigCallback(requestConfigBuilder ->
+                            requestConfigBuilder
+                                    .setConnectTimeout(10000)  // 10초
+                                    .setSocketTimeout(60000)   // 60초
+                    );
 
-            // Create RestHighLevelClient using the builder
             RestHighLevelClient client = new RestHighLevelClient(builder);
 
-            // Connection test
+            // 연결 테스트
             try {
                 var info = client.info(org.opensearch.client.RequestOptions.DEFAULT);
                 log.info("OpenSearch connection successful: cluster={}, version={}",
                         info.getClusterName(), info.getVersion().getNumber());
             } catch (Exception e) {
                 log.error("OpenSearch connection test failed: {}", e.getMessage());
-                // Even if connection fails, create the bean (for runtime retry)
-                log.warn("OpenSearch connection failed but client will be created. Runtime retry possible.");
+                log.warn("Connection failed but client will be created. Runtime retry possible.");
             }
 
             return client;
