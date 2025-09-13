@@ -22,13 +22,15 @@ public class UserVersionRepository {
     private final OpenSearchClient client;
 
     /**
-     * userId로 전체 버전 검색
+     * userId + corpCode 로 전체 버전 검색
      */
-    public List<UserVersion> findByUserId(Long userId) throws IOException {
+    public List<UserVersion> findByUserIdAndCorpCode(Long userId, String corpCode) throws IOException {
         Query query = Query.of(q -> q
-                .term(t -> t
-                        .field("user_id") // entity의 JsonProperty 기준
-                        .value(FieldValue.of(userId))
+                .bool(b -> b
+                        .must(List.of(
+                                Query.of(m -> m.term(t -> t.field("user_id").value(FieldValue.of(userId)))),
+                                Query.of(m -> m.term(t -> t.field("corp_code").value(FieldValue.of(corpCode))))
+                        ))
                 )
         );
 
@@ -45,13 +47,14 @@ public class UserVersionRepository {
     }
 
     /**
-     * userId + version 으로 단건 조회
+     * userId + corpCode + version 으로 단건 조회
      */
-    public Optional<UserVersion> findByUserIdAndVersion(Long userId, String version) throws IOException {
+    public Optional<UserVersion> findByUserIdAndCorpCodeAndVersion(Long userId, String corpCode, String version) throws IOException {
         Query query = Query.of(q -> q
                 .bool(b -> b
                         .must(List.of(
                                 Query.of(m -> m.term(t -> t.field("user_id").value(FieldValue.of(userId)))),
+                                Query.of(m -> m.term(t -> t.field("corp_code").value(FieldValue.of(corpCode)))),
                                 Query.of(m -> m.term(t -> t.field("version").value(FieldValue.of(version))))
                         ))
                 )
@@ -70,12 +73,15 @@ public class UserVersionRepository {
     }
 
     /**
-     * userId가 같고 version이 다른 것 중 최신(id DESC) 하나
+     * userId + corpCode가 같고 version이 다른 것 중 최신(id DESC) 하나
      */
-    public Optional<UserVersion> findTopByUserIdAndVersionNotOrderByIdDesc(Long userId, String version) throws IOException {
+    public Optional<UserVersion> findTopByUserIdAndCorpCodeAndVersionNotOrderByIdDesc(Long userId, String corpCode, String version) throws IOException {
         Query query = Query.of(q -> q
                 .bool(b -> b
-                        .must(m -> m.term(t -> t.field("user_id").value(FieldValue.of(userId))))
+                        .must(List.of(
+                                Query.of(m -> m.term(t -> t.field("user_id").value(FieldValue.of(userId)))),
+                                Query.of(m -> m.term(t -> t.field("corp_code").value(FieldValue.of(corpCode))))
+                        ))
                         .mustNot(m -> m.term(t -> t.field("version").value(FieldValue.of(version))))
                 )
         );
@@ -102,7 +108,7 @@ public class UserVersionRepository {
      * @return
      */
     public UserVersion save(UserVersion userVersion) throws IOException {
-        String docId = userVersion.getUserId() + "_" + userVersion.getVersion();
+        String docId = userVersion.getUserId() + "_" + userVersion.getCorpCode() + "_" + userVersion.getVersion();
         client.index(i -> i
                 .index(INDEX_NAME)
                 .id(docId)
@@ -113,13 +119,16 @@ public class UserVersionRepository {
     }
 
 
-    public void delete(Long userId) throws IOException {
+    public void delete(Long userId, String corpCode) throws IOException {
         var searchResponse = client.search(s -> s
                         .index(INDEX_NAME)
                         .query(q -> q
                                 .bool(b -> b
-                                        .must(Query.of(q1 -> q1.term(t -> t.field("user_id").value(FieldValue.of(userId)))))
-                                        .must(Query.of(q2 -> q2.term(t -> t.field("version").value(FieldValue.of("editing")))))
+                                        .must(List.of(
+                                                Query.of(q1 -> q1.term(t -> t.field("user_id").value(FieldValue.of(userId)))),
+                                                Query.of(q2 -> q2.term(t -> t.field("corp_code").value(FieldValue.of(corpCode)))),
+                                                Query.of(q3 -> q3.term(t -> t.field("version").value(FieldValue.of("editing"))))
+                                        ))
                                 )
                         )
                         .size(1),  // 하나만 삭제

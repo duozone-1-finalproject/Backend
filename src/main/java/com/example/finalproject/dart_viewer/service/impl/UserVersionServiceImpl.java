@@ -6,16 +6,15 @@ import com.example.finalproject.dart_viewer.repository.UserVersionRepository;
 import com.example.finalproject.dart_viewer.service.UserVersionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.example.finalproject.dart_viewer.constant.VersionConstant.SECTION_FIELDS;
@@ -60,8 +59,8 @@ public class UserVersionServiceImpl implements UserVersionService {
 
     @Override
     // 1. 모든 버전 조회
-    public Map<String, VersionResponseDto> getVersions(Long userId) throws IOException {
-        return userVersionRepository.findByUserId(userId).stream()
+    public Map<String, VersionResponseDto> getCompanyVersions(GetCompanyVersionsRequestDto request) throws IOException {
+        return userVersionRepository.findByUserIdAndCorpCode(request.getUserId(), request.getCorpCode()).stream()
                 .collect(Collectors.toMap(
                         UserVersion::getVersion,
                         v -> new VersionResponseDto(
@@ -83,6 +82,8 @@ public class UserVersionServiceImpl implements UserVersionService {
     public UserVersion createVersion(CreateVersionRequestDto request) throws IOException {
         UserVersion newEntry = new UserVersion();
         newEntry.setUserId(request.getUserId());
+        newEntry.setCorpCode(request.getCorpCode());
+        newEntry.setCorpName(request.getCorpName());
         newEntry.setVersion(request.getVersion());
         newEntry.setVersionNumber(request.getVersionNumber());
         newEntry.setDescription(request.getDescription());
@@ -94,44 +95,30 @@ public class UserVersionServiceImpl implements UserVersionService {
         newEntry.setSection2(sections.get("section2"));
         newEntry.setSection3(sections.get("section3"));
         newEntry.setSection4(sections.get("section4"));
-        // newEntry.setSection5(sections.get("section5"));
+        newEntry.setSection5(sections.get("section5"));
         newEntry.setSection6(sections.get("section6"));
-
-        try {
-            // 1. API 호출 시도
-            String section5Html = fastApiClient.get()
-                    .uri("/search/file/{rceptNo}", "20240321000788")
-                    .retrieve()
-                    .body(String.class);
-
-            // 2. 성공 시: API 응답으로 section5를 설정
-            log.info("Successfully fetched section5 from FastAPI for rceptNo: {}", "20240321000788");
-            newEntry.setSection5(section5Html);
-
-        } catch (RestClientException e) {
-            // 3. 실패 시: 로그를 남기고, 기존 DTO의 데이터로 section5를 설정 (Fallback)
-            log.error("Failed to fetch section5 from FastAPI for rceptNo: {}. Falling back to DTO data. Error: {}", "20240321000788", e.getMessage());
-            newEntry.setSection5(sections.get("section5"));
-        }
-
-
 
         return userVersionRepository.save(newEntry); // DB 저장 + 엔티티 반환
     }
 
     @Override
     public UserVersion saveEditingVersion(SaveEditingVersionRequestDto request) throws IOException {
-        UserVersion editing = userVersionRepository.findByUserIdAndVersion(request.getUserId(), "editing")
+        AtomicBoolean isNew = new AtomicBoolean(false);
+
+        UserVersion editing = userVersionRepository.findByUserIdAndCorpCodeAndVersion(request.getUserId(), request.getCorpCode(),"editing")
                 .orElseGet(() -> {
+                    isNew.set(true);
                     UserVersion u = new UserVersion();
                     u.setVersion("editing");
                     u.setUserId(request.getUserId());
+                    u.setCorpCode(request.getCorpCode());
+                    u.setCorpName(request.getCorpName());
                     return u;
                 });
 
         // 마지막 버전 데이터 가져오기 (신규 생성 시만)
-        if (editing.getId() == null) {
-            userVersionRepository.findTopByUserIdAndVersionNotOrderByIdDesc(request.getUserId(), "editing")
+        if (isNew.get()) {
+            userVersionRepository.findTopByUserIdAndCorpCodeAndVersionNotOrderByIdDesc(request.getUserId(), request.getCorpCode(), "editing")
                     .ifPresent(last -> SECTION_FIELDS.forEach(f -> setSection(editing, f, getSection(last, f))));
         }
 
@@ -152,7 +139,7 @@ public class UserVersionServiceImpl implements UserVersionService {
     public UserVersion updateEditingModified(UpdateModifiedSectionsRequestDto request) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
-        UserVersion editing = userVersionRepository.findByUserIdAndVersion(request.getUserId(), "editing")
+        UserVersion editing = userVersionRepository.findByUserIdAndCorpCodeAndVersion(request.getUserId(), request.getCorpCode(), "editing")
                 .orElseThrow(() -> new RuntimeException("편집중인 버전이 없습니다."));
 
         // List<String> → JSON 문자열
@@ -164,11 +151,11 @@ public class UserVersionServiceImpl implements UserVersionService {
 
     @Override
     public UserVersion finalizeVersion(FinalizeVersionRequestDto request) throws IOException {
-        UserVersion editing = userVersionRepository.findByUserIdAndVersion(request.getUserId(), "editing")
+        UserVersion editing = userVersionRepository.findByUserIdAndCorpCodeAndVersion(request.getUserId(), request.getCorpCode(), "editing")
                 .orElseThrow(() -> new RuntimeException("편집중인 버전이 없습니다."));
 
         // 현재 이 코드에서 계속 v0를 리턴하고 있음 -> 그래서 계속 v1만 업데이트 되는 현상 발생.
-        Optional<UserVersion> lastOpt = userVersionRepository.findTopByUserIdAndVersionNotOrderByIdDesc(request.getUserId(), "editing");
+        Optional<UserVersion> lastOpt = userVersionRepository.findTopByUserIdAndCorpCodeAndVersionNotOrderByIdDesc(request.getUserId(), request.getCorpCode(), "editing");
 
         int newNum = 0;
         if (lastOpt.isPresent() && lastOpt.get().getVersion().startsWith("v")) {
@@ -178,6 +165,8 @@ public class UserVersionServiceImpl implements UserVersionService {
 
         UserVersion newEntry = UserVersion.builder()
                 .userId(request.getUserId())
+                .corpCode(request.getCorpCode())
+                .corpName(request.getCorpName())
                 .version(newVersion)
                 .versionNumber((long) newNum)
                 .description(request.getDescription())
@@ -189,7 +178,7 @@ public class UserVersionServiceImpl implements UserVersionService {
                 .section5(editing.getSection5())
                 .section6(editing.getSection6())
                 .build();
-        userVersionRepository.delete(request.getUserId());
+        userVersionRepository.delete(request.getUserId(), request.getCorpCode());
 
         return userVersionRepository.save(newEntry);
     }
@@ -197,6 +186,6 @@ public class UserVersionServiceImpl implements UserVersionService {
     @Override
     @Transactional
     public void deleteEditingVersion(DeleteEditingRequestDto request) throws IOException {
-        userVersionRepository.delete(request.getUserId());
+        userVersionRepository.delete(request.getUserId(), request.getCorpCode());
     }
 }

@@ -13,7 +13,13 @@ public class UserVersion {
 
     @Id
     @JsonProperty("id")
-    private Long id;
+    private String id;
+
+    @JsonProperty("corp_code")
+    private String corpCode;
+
+    @JsonProperty("corp_name")
+    private String corpName;
 
     // user_id
     @JsonProperty("user_id")

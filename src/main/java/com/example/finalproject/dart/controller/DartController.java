@@ -1,10 +1,12 @@
 package com.example.finalproject.dart.controller;
 
 
+import com.example.finalproject.dart.dto.ApiResponse;
 import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
 import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
 import com.example.finalproject.dart.service.DartApiService;
+import com.example.finalproject.dart.service.OtherNoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +16,10 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/dart")
+@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class DartController {
     private final DartApiService dartApiService; // ✅ 여기서 생성자 주입 받기
+    private final OtherNoticeService otherNoticeService;
 
     // [DartDocumentListRequestDto 내용]
     /*  [DartDocumentListRequestDto 내용]
@@ -51,6 +55,12 @@ public class DartController {
     @GetMapping("/reports/core")
     public DartReportListResponseDto fiveYearRceptCall(@RequestParam("corp_code") String corpCode){
         return dartApiService.getFiveYearRceptNosByCorpCode(corpCode); // "01571107"
+    }
+
+    // 기업이름으로 기타사항 반환
+    @GetMapping("/reports/etc-matters")
+    public ApiResponse<String> getEtcMatters(@RequestParam("corp_name") String corpName){
+        return ApiResponse.success(otherNoticeService.otherNotice(corpName));
     }
 
 

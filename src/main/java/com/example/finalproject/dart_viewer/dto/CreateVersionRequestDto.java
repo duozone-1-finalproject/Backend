@@ -12,6 +12,9 @@ import java.util.Map;
 public class CreateVersionRequestDto {
     @JsonProperty("user_id")
     private Long userId;
+    @JsonProperty("corp_code")
+    private String corpCode;
+    private String corpName;
     private String version;
     private Long versionNumber;
     private String description; //null 가능

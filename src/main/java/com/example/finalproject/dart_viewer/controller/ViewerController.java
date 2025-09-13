@@ -17,9 +17,9 @@ import java.util.Map;
 public class ViewerController {
     private final UserVersionService userVersionService;
 
-    @GetMapping
-    public ResponseEntity<Map<String, VersionResponseDto>> getVersions(@RequestParam Long userId) throws IOException {
-        return ResponseEntity.ok(userVersionService.getVersions(userId));
+    @PostMapping("/search")
+    public ResponseEntity<Map<String, VersionResponseDto>> getCompanyVersions(@RequestBody GetCompanyVersionsRequestDto request) throws IOException {
+        return ResponseEntity.ok(userVersionService.getCompanyVersions(request));
     }
 
     // 2. 초기 버전 생성 (v0 등)

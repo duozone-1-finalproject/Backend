@@ -12,6 +12,9 @@ import java.util.Map;
 public class SaveEditingVersionRequestDto {
     @JsonProperty("user_id")
     private Long userId;
+    @JsonProperty("corp_code")
+    private String corpCode;
+    private String corpName;
     private String description; //null 가능
     private final Map<String, String> sectionsData = new HashMap<>();
     private String createdAt;
