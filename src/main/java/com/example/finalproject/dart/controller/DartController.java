@@ -8,6 +8,7 @@ import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
 import com.example.finalproject.dart.exception.BusinessReportException;
 import com.example.finalproject.dart.service.DartApiService;
+import com.example.finalproject.dart.service.OtherNoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -22,6 +23,7 @@ import reactor.core.publisher.Mono;
 @CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class DartController {
     private final DartApiService dartApiService; // ✅ 여기서 생성자 주입 받기
+    private final OtherNoticeService otherNoticeService;
 
     // [DartDocumentListRequestDto 내용]
     /*  [DartDocumentListRequestDto 내용]
@@ -73,6 +75,13 @@ public class DartController {
             return ApiResponse.fail("서버 내부 오류가 발생했습니다.");
         }
     }
+
+    // 기업이름으로 기타사항 반환
+    @GetMapping("/reports/etc-matters")
+    public ApiResponse<String> getEtcMatters(@RequestParam("corp_name") String corpName){
+        return ApiResponse.success(otherNoticeService.otherNotice(corpName));
+    }
+
 
 
 
