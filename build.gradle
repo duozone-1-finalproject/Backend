@@ -64,6 +64,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 
 	implementation 'software.amazon.msk:aws-msk-iam-auth:1.1.1'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 tasks.named('test') {
