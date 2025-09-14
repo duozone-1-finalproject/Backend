@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 public class DeleteEditingRequestDto {
     @JsonProperty("user_id")
     private Long userId;
+    private String corpCode;
+    private String corpName;
 }
