@@ -2,10 +2,7 @@ package com.example.finalproject.dart.controller;
 
 
 import com.example.finalproject.dart.dto.ApiResponse;
-import com.example.finalproject.dart.dto.dart.BusinessReportDto;
-import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
-import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
-import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
+import com.example.finalproject.dart.dto.dart.*;
 import com.example.finalproject.dart.exception.BusinessReportException;
 import com.example.finalproject.dart.service.DartApiService;
 import com.example.finalproject.dart.service.OtherNoticeService;
@@ -80,6 +77,13 @@ public class DartController {
     @GetMapping("/reports/etc-matters")
     public ApiResponse<String> getEtcMatters(@RequestParam("corp_name") String corpName){
         return ApiResponse.success(otherNoticeService.otherNotice(corpName));
+    }
+
+    // -------------------------------------------------------------------------------------- //
+    // < 규상 코드 -> 재무정보 저장하는 controller (fin_corpCode OpenSearch에 저장)
+    @PostMapping("/financials")
+    public ApiResponse<String> saveFinancials(@RequestBody FinancialDto request) {
+        return ApiResponse.success(dartApiService.saveFinancials(request));
     }
 
 
