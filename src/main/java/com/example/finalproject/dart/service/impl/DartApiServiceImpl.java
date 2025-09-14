@@ -4,16 +4,20 @@ import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListResp
 import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
 import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
+import com.example.finalproject.dart.dto.dart.FinancialDto;
 import com.example.finalproject.dart.service.DartApiService;
 import com.example.finalproject.dart.service.DbService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -25,6 +29,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,14 +43,16 @@ public class DartApiServiceImpl implements DartApiService {
 
     private final WebClient dartWebClient;
     private final DbService dbService;
+    private final RestClient fastApiClient;
 
 
     @Value("${dart.api.key}")
     private String dartApiKey;
 
-    public DartApiServiceImpl(@Qualifier("dartWebClient") WebClient dartWebClient, DbService dbService) {
+    public DartApiServiceImpl(@Qualifier("dartWebClient") WebClient dartWebClient, DbService dbService, RestClient fastApiClient) {
         this.dartWebClient = dartWebClient;
         this.dbService = dbService; // dbService 초기화
+        this.fastApiClient = fastApiClient;
     }
 
     // 기업코드와 문서제목으로 보고서 검색
@@ -524,6 +531,29 @@ public class DartApiServiceImpl implements DartApiService {
 
         // 회사코드(corpCode)를 통해서 api로 (회사정보,(보고서리스트))를 가져옴(최대 100개)
         return getCompanyInfoByCorpCode(corpCode, new DownloadAllRequestDto("보고서",fiveYearAgoString,todayString));
+    }
+
+    @Override
+    public String saveFinancials(FinancialDto request) {
+        try {
+            Map<String, Object> result = fastApiClient.post()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/financials/")
+                            .queryParam("corp_code", request.getCorpCode())
+                            .build())
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {});
+
+            if (result != null) {
+                return (String) result.get("message");
+            } else {
+                return "저장 실패";
+            }
+
+        } catch (RestClientException e) {
+            log.error("FastAPI 재무 정보 저장 실패: corpCode={}, error={}", request.getCorpCode(), e.getMessage());
+            return "재무 정보 저장 중 오류가 발생했습니다: " + e.getMessage();
+        }
     }
 /*
     1. xml 1개 다운하던걸 폴더 만들어서 내부 파일 전부 바꾸는걸로 전환

@@ -5,6 +5,7 @@ import com.example.finalproject.dart.dto.ApiResponse;
 import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
 import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
 import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
+import com.example.finalproject.dart.dto.dart.FinancialDto;
 import com.example.finalproject.dart.service.DartApiService;
 import com.example.finalproject.dart.service.OtherNoticeService;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +62,11 @@ public class DartController {
     @GetMapping("/reports/etc-matters")
     public ApiResponse<String> getEtcMatters(@RequestParam("corp_name") String corpName){
         return ApiResponse.success(otherNoticeService.otherNotice(corpName));
+    }
+
+    @PostMapping("/financials")
+    public ApiResponse<String> saveFinancials(@RequestBody FinancialDto request) {
+        return ApiResponse.success(dartApiService.saveFinancials(request));
     }
 
 
