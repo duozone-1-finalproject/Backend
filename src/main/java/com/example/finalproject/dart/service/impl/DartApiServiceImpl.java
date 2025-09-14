@@ -1,18 +1,13 @@
 package com.example.finalproject.dart.service.impl;
 
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListResponseDto;
-import com.example.finalproject.dart.dto.dart.BusinessReportDto;
-import com.example.finalproject.dart.dto.dart.DartReportListResponseDto;
-import com.example.finalproject.dart.dto.dart.DartDocumentListRequestDto;
-import com.example.finalproject.dart.dto.dart.DownloadAllRequestDto;
+import com.example.finalproject.dart.dto.dart.*;
 import com.example.finalproject.dart.exception.BusinessReportException;
 import com.example.finalproject.dart.service.DartApiService;
 import com.example.finalproject.dart.service.DbService;
-import com.example.finalproject.dart_viewer.repository.UserVersionRepository;
-import com.example.finalproject.dart_viewer.service.UserVersionService;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +26,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -589,6 +585,31 @@ public class DartApiServiceImpl implements DartApiService {
             // 4. 실패 시: 예외 발생
             log.error("Failed to fetch business report HTML from FastAPI for rceptNo: {}. Error: {}", rceptNo, e.getMessage());
             throw new BusinessReportException("사업보고서 조회에 실패했습니다. 접수번호: " + rceptNo + ", 오류: " + e.getMessage());
+        }
+    }
+
+    // --------------------------------------------------------------------------------------------------------------------------
+    // < 규상 코드 > -> saveFinancials 구현
+    @Override
+    public String saveFinancials(FinancialDto request) {
+        try {
+            Map<String, Object> result = fastApiClient.post()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/financials/")
+                            .queryParam("corp_code", request.getCorpCode())
+                            .build())
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {});
+
+            if (result != null) {
+                return (String) result.get("message");
+            } else {
+                return "저장 실패";
+            }
+
+        } catch (RestClientException e) {
+            log.error("FastAPI 재무 정보 저장 실패: corpCode={}, error={}", request.getCorpCode(), e.getMessage());
+            return "재무 정보 저장 중 오류가 발생했습니다: " + e.getMessage();
         }
     }
 }
