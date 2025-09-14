@@ -14,7 +14,8 @@ public class SaveEditingVersionRequestDto {
     private Long userId;
     @JsonProperty("corp_code")
     private String corpCode;
-    private String corpName;
+    @JsonProperty("company_name")
+    private String companyName;
     private String description; //null 가능
     private final Map<String, String> sectionsData = new HashMap<>();
     private String createdAt;

@@ -11,7 +11,6 @@ public class FinalizeVersionRequestDto {
     private Long userId;
     @JsonProperty("corp_code")
     private String corpCode;
-    private String corpName;
     private String description; //null 가능
     private String createdAt;
 }

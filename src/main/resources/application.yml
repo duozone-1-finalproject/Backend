@@ -23,7 +23,7 @@ spring:
     open-in-view: false
 
   opensearch:
-    uris: ${OPENSEARCH_URI:http://192.168.0.77:9200}
+    uris: ${OPENSEARCH_URI:http://192.168.0.2:9200}
     #uris: ${OPENSEARCH_URI:http://localhost:9200}
     username: ${OPENSEARCH_USERNAME:admin}
     password: ${OPENSEARCH_PASSWORD:admin}

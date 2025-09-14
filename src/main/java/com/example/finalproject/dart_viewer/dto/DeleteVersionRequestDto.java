@@ -1,18 +1,17 @@
 package com.example.finalproject.dart_viewer.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
-public class UpdateModifiedSectionsRequestDto {
+@AllArgsConstructor
+public class DeleteVersionRequestDto {
     @JsonProperty("user_id")
     private Long userId;
     @JsonProperty("corp_code")
     private String corpCode;
-    private List<String> modifiedSections;
+    private String version;
 }

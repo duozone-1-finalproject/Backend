@@ -18,8 +18,8 @@ public class UserVersion {
     @JsonProperty("corp_code")
     private String corpCode;
 
-    @JsonProperty("corp_name")
-    private String corpName;
+    @JsonProperty("company_name")
+    private String companyName;
 
     // user_id
     @JsonProperty("user_id")

@@ -14,7 +14,8 @@ public class CreateVersionRequestDto {
     private Long userId;
     @JsonProperty("corp_code")
     private String corpCode;
-    private String corpName;
+    @JsonProperty("company_name")
+    private String companyName;
     private String version;
     private Long versionNumber;
     private String description; //null 가능

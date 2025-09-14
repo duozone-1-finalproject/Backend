@@ -12,8 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -58,9 +57,23 @@ public class UserVersionServiceImpl implements UserVersionService {
     }
 
     @Override
-    // 1. 모든 버전 조회
-    public Map<String, VersionResponseDto> getCompanyVersions(GetCompanyVersionsRequestDto request) throws IOException {
-        return userVersionRepository.findByUserIdAndCorpCode(request.getUserId(), request.getCorpCode()).stream()
+    public List<CompanyInfoDto> getUserCompanies(Long userId) throws IOException {
+        // 사용자가 작성중인 모든 회사 정보 조회 (중복 제거)
+        return userVersionRepository.findByUserId(userId)
+                .stream()
+                .collect(Collectors.toMap(
+                        UserVersion::getCorpCode,
+                        v -> new CompanyInfoDto(v.getCorpCode(), v.getCompanyName()),
+                        (existing, replacement) -> existing
+                ))
+                .values()
+                .stream()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CompanyVersionsDto getCompanyVersions(GetCompanyVersionsRequestDto request) throws IOException {
+        Map<String, VersionResponseDto> versions = userVersionRepository.findByUserIdAndCorpCode(request.getUserId(), request.getCorpCode()).stream()
                 .collect(Collectors.toMap(
                         UserVersion::getVersion,
                         v -> new VersionResponseDto(
@@ -76,6 +89,15 @@ public class UserVersionServiceImpl implements UserVersionService {
                         ),
                         (existing, replacement) -> existing
                 ));
+
+        // 회사명은 첫 번째 버전에서 가져오거나 request에서 가져옴
+        String companyName = userVersionRepository.findByUserIdAndCorpCode(request.getUserId(), request.getCorpCode())
+                .stream()
+                .findFirst()
+                .map(UserVersion::getCompanyName)
+                .orElse(null);
+
+        return new CompanyVersionsDto(request.getCorpCode(), companyName, versions);
     }
 
     @Override
@@ -83,7 +105,7 @@ public class UserVersionServiceImpl implements UserVersionService {
         UserVersion newEntry = new UserVersion();
         newEntry.setUserId(request.getUserId());
         newEntry.setCorpCode(request.getCorpCode());
-        newEntry.setCorpName(request.getCorpName());
+        newEntry.setCompanyName(request.getCompanyName());
         newEntry.setVersion(request.getVersion());
         newEntry.setVersionNumber(request.getVersionNumber());
         newEntry.setDescription(request.getDescription());
@@ -112,7 +134,7 @@ public class UserVersionServiceImpl implements UserVersionService {
                     u.setVersion("editing");
                     u.setUserId(request.getUserId());
                     u.setCorpCode(request.getCorpCode());
-                    u.setCorpName(request.getCorpName());
+                    u.setCompanyName(request.getCompanyName());
                     return u;
                 });
 
@@ -166,7 +188,7 @@ public class UserVersionServiceImpl implements UserVersionService {
         UserVersion newEntry = UserVersion.builder()
                 .userId(request.getUserId())
                 .corpCode(request.getCorpCode())
-                .corpName(request.getCorpName())
+                .companyName(editing.getCompanyName())
                 .version(newVersion)
                 .versionNumber((long) newNum)
                 .description(request.getDescription())
@@ -178,14 +200,36 @@ public class UserVersionServiceImpl implements UserVersionService {
                 .section5(editing.getSection5())
                 .section6(editing.getSection6())
                 .build();
-        userVersionRepository.delete(request.getUserId(), request.getCorpCode());
+        userVersionRepository.deleteVersion(request.getUserId(), request.getCorpCode(), "editing");
 
         return userVersionRepository.save(newEntry);
     }
 
     @Override
     @Transactional
-    public void deleteEditingVersion(DeleteEditingRequestDto request) throws IOException {
-        userVersionRepository.delete(request.getUserId(), request.getCorpCode());
+    public void deleteVersion(DeleteVersionRequestDto request) throws IOException {
+        // 특정 버전이 존재하는지 확인
+        Optional<UserVersion> version = userVersionRepository.findByUserIdAndCorpCodeAndVersion(
+                request.getUserId(), request.getCorpCode(), request.getVersion());
+
+        if (version.isEmpty()) {
+            throw new RuntimeException("삭제할 버전이 존재하지 않습니다.");
+        }
+
+        userVersionRepository.deleteVersion(request.getUserId(), request.getCorpCode(), request.getVersion());
+    }
+
+    @Override
+    @Transactional
+    public void deleteCompany(DeleteCompanyRequestDto request) throws IOException {
+        // 해당 회사의 버전이 존재하는지 확인
+        List<UserVersion> versions = userVersionRepository.findByUserIdAndCorpCode(
+                request.getUserId(), request.getCorpCode());
+
+        if (versions.isEmpty()) {
+            throw new RuntimeException("삭제할 회사 데이터가 존재하지 않습니다.");
+        }
+
+        userVersionRepository.deleteCompany(request.getUserId(), request.getCorpCode());
     }
 }
