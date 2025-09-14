@@ -1,4 +1,4 @@
-package com.example.finalproject.ai_backend.dto;
+package com.example.finalproject.ai_backend.dto.validation;
 
 import lombok.Data;
 
