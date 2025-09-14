@@ -43,24 +43,21 @@ public class SecurityConfig {
     @Order(1)
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> {
-            log.info("🔧 WebSecurityCustomizer 설정 - 정적 리소스 + AI API 제외");
+            log.info("🔧 WebSecurityCustomizer 설정 - 정적 리소스 + AI API만 제외");
             web.ignoring()
                     .requestMatchers(
                             "/css/**",
                             "/js/**",
                             "/images/**",
                             "/favicon.ico",
-                            // ⭐ AI API 경로를 완전히 Security에서 제외
-                            "/api/v1/ai-reports/**",
-                            "/api/v1/**",
-                            "/api/**"
+                            // ⭐ AI API만 제외하고 /api/versions는 JWT 인증이 필요하므로 제거
+                            "/api/v1/ai-reports/**"
+                            // "/api/v1/**", // 이것도 제거
+                            // "/api/**"     // 이것도 제거
                     );
         };
     }
 
-    /**
-     * ✅ 메인 Security 필터 체인
-     */
     @Bean
     @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http, OAuthHandler oAuthHandler) throws Exception {
@@ -76,6 +73,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/kafka-test/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+
                         // ⭐ 공개 API
                         .requestMatchers(
                                 "/",
@@ -87,9 +85,21 @@ public class SecurityConfig {
                                 "/home",
                                 "/main",
                                 "/api/companies",
+                                "/api/companies/**",
                                 "/companies",
+                                "/api/securities/**",
+                                "/api/dart/**",              // ✅ 추가
+                                "/api/v1/variables/**",      // ✅ 추가
+                                "/api/ai/**",
+                                "/initialTemplate/**",
                                 "/error"
                         ).permitAll()
+
+                        // ⭐ AI API는 여전히 공개 (또는 필요에 따라 인증 필요로 변경)
+                        .requestMatchers("/api/v1/ai-reports/**").permitAll()
+
+                        // ⭐ 버전 관리 API는 인증 필요
+                        .requestMatchers("/api/versions/**").authenticated()
 
                         // ⭐ 인증 필요한 API
                         .requestMatchers("/auth/status").authenticated()

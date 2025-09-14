@@ -41,8 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/error",
             "/favicon.ico",
             "/api/companies",
-            "/companies",
-            "/api/**"
+            "/companies"
             // ⭐ AI API 경로는 WebSecurityCustomizer에서 완전 제외하므로 여기서 제거
             // "/api/v1/ai-reports/**",
             // "/api/v1/**"
