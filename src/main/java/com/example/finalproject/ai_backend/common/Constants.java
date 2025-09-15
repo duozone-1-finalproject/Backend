@@ -1,21 +1,33 @@
-// src/main/java/com/example/ai_backend/common/Constants.java
+// 6. Constants.java 수정 (환경변수 기반으로)
 package com.example.finalproject.ai_backend.common;
 
-public final class Constants {
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-    // Kafka Topics
-    public static final String AI_REQUEST_TOPIC = "ai-report-request";
-    public static final String AI_RESPONSE_TOPIC = "ai-report-response";
-    public static final String VALIDATION_REQUEST_TOPIC = "ai-validation-request";
-    public static final String VALIDATION_RESPONSE_TOPIC = "ai-validation-response";
-    public static final String REVISION_REQUEST_TOPIC = "ai-revision-request";
-    public static final String REVISION_RESPONSE_TOPIC = "ai-revision-response";
+@Component
+public class Constants {
+
+    // Kafka Topics - 환경변수에서 주입받도록 변경
+    @Value("${kafka.topics.ai-request:ai-report-request}")
+    public String AI_REQUEST_TOPIC;
+
+    @Value("${kafka.topics.ai-response:ai-report-response}")
+    public String AI_RESPONSE_TOPIC;
+
+    @Value("${kafka.topics.fastapi-request:fastapi-equity-request}")
+    public String FASTAPI_REQUEST_TOPIC;
+
+    @Value("${kafka.topics.fastapi-response:fastapi-equity-response}")
+    public String FASTAPI_RESPONSE_TOPIC;
 
     // OpenSearch Indices
-    public static final String REPORT_INDEX = "ai-generated-reports";
-    public static final String COMPANY_INDEX = "company-data";
+    @Value("${opensearch.indices.report:ai-generated-reports}")
+    public String REPORT_INDEX;
 
-    // Report Types
+    @Value("${opensearch.indices.company:company-data}")
+    public String COMPANY_INDEX;
+
+    // Report Types - 이건 고정값으로 유지
     public static final String SECURITIES_REGISTRATION = "증권신고서";
     public static final String BUSINESS_REPORT = "사업보고서";
     public static final String QUARTERLY_REPORT = "분기보고서";
@@ -29,8 +41,4 @@ public final class Constants {
     public static final String MSG_SUCCESS = "요청이 성공적으로 처리되었습니다.";
     public static final String MSG_PROCESSING = "요청이 처리 중입니다.";
     public static final String MSG_FAILED = "요청 처리에 실패했습니다.";
-
-    private Constants() {
-        // Utility class
-    }
 }

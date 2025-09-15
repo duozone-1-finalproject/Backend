@@ -6,6 +6,7 @@ import com.example.finalproject.login_auth.security.JwtTokenProvider;
 import com.example.finalproject.login_auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -36,6 +38,12 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
+    @Value("${cors.allowed-origins:${frontend.url}}")
+    private String[] allowedOrigins;
+
     /**
      * ✅ 정적 리소스 + AI API 완전 제외
      */
@@ -43,24 +51,21 @@ public class SecurityConfig {
     @Order(1)
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> {
-            log.info("🔧 WebSecurityCustomizer 설정 - 정적 리소스 + AI API 제외");
+            log.info("🔧 WebSecurityCustomizer 설정 - 정적 리소스 + AI API만 제외");
             web.ignoring()
                     .requestMatchers(
                             "/css/**",
                             "/js/**",
                             "/images/**",
                             "/favicon.ico",
-                            // ⭐ AI API 경로를 완전히 Security에서 제외
-                            "/api/v1/ai-reports/**",
-                            "/api/v1/**",
-                            "/api/**"
+                            // ⭐ AI API만 제외하고 /api/versions는 JWT 인증이 필요하므로 제거
+                            "/api/v1/ai-reports/**"
+                            // "/api/v1/**", // 이것도 제거
+                            // "/api/**"     // 이것도 제거
                     );
         };
     }
 
-    /**
-     * ✅ 메인 Security 필터 체인
-     */
     @Bean
     @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http, OAuthHandler oAuthHandler) throws Exception {
@@ -76,6 +81,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/kafka-test/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+
                         // ⭐ 공개 API
                         .requestMatchers(
                                 "/",
@@ -87,9 +93,21 @@ public class SecurityConfig {
                                 "/home",
                                 "/main",
                                 "/api/companies",
+                                "/api/companies/**",
                                 "/companies",
+                                "/api/securities/**",
+                                "/api/dart/**",              // ✅ 추가
+                                "/api/v1/variables/**",      // ✅ 추가
+                                "/api/ai/**",
+                                "/initialTemplate/**",
                                 "/error"
                         ).permitAll()
+
+                        // ⭐ AI API는 여전히 공개 (또는 필요에 따라 인증 필요로 변경)
+                        .requestMatchers("/api/v1/ai-reports/**").permitAll()
+
+                        // ⭐ 버전 관리 API는 인증 필요
+                        .requestMatchers("/api/versions/**").authenticated()
 
                         // ⭐ 인증 필요한 API
                         .requestMatchers("/auth/status").authenticated()
@@ -129,14 +147,24 @@ public class SecurityConfig {
     }
 
     /**
-     * ✅ CORS 설정
+     * ✅ CORS 설정 - 환경변수 기반으로 동적 설정
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        log.info("🔧 CORS 설정");
+        log.info("🔧 CORS 설정 - Frontend URL: {}", frontendUrl);
+        log.info("🔧 CORS 설정 - Allowed Origins: {}", Arrays.toString(allowedOrigins));
+
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+
+        // 환경변수로부터 동적으로 설정
+        if (allowedOrigins.length > 0) {
+            config.setAllowedOriginPatterns(Arrays.asList(allowedOrigins));
+        } else {
+            // fallback으로 frontend.url 사용
+            config.setAllowedOriginPatterns(List.of(frontendUrl));
+        }
+
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization"));
