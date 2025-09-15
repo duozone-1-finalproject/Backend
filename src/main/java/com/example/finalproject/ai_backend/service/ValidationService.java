@@ -1,11 +1,13 @@
 package com.example.finalproject.ai_backend.service;
 
+import com.example.finalproject.ai_backend.common.Constants;
 import com.example.finalproject.ai_backend.dto.validation.RevisionRequestDto;
 import com.example.finalproject.ai_backend.dto.validation.RevisionResponseDto;
 import com.example.finalproject.ai_backend.dto.validation.ValidationRequestDto;
 import com.example.finalproject.ai_backend.dto.validation.ValidationResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -15,24 +17,27 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static com.example.finalproject.ai_backend.common.Constants.*;
-
 @Slf4j
 @Service
 public class ValidationService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
+    private final Constants constants;
 
-    private final int timeoutSeconds = 600;
+    @Value("${ai.timeout.seconds:600}")
+    private int timeoutSeconds;
 
     // 요청-응답 매핑
     private final Map<String, CompletableFuture<ValidationResponseDto>> pendingValidationRequests = new ConcurrentHashMap<>();
     private final Map<String, CompletableFuture<RevisionResponseDto>> pendingRevisionRequests = new ConcurrentHashMap<>();
 
-    public ValidationService(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
+    public ValidationService(KafkaTemplate<String, String> kafkaTemplate,
+                             ObjectMapper objectMapper,
+                             Constants constants) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
+        this.constants = constants;
     }
 
     /**
@@ -54,14 +59,14 @@ public class ValidationService {
                     });
 
             String jsonRequest = objectMapper.writeValueAsString(request);
-            kafkaTemplate.send(VALIDATION_REQUEST_TOPIC, requestId, jsonRequest)
+            kafkaTemplate.send(constants.VALIDATION_REQUEST_TOPIC, requestId, jsonRequest)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
                             log.error("Kafka 검증 메시지 전송 실패: {}", requestId, ex);
                             future.completeExceptionally(ex);
                             pendingValidationRequests.remove(requestId);
                         } else {
-                            log.info("Kafka 검증 메시지 전송 성공: {}", requestId);
+                            log.info("Kafka 검증 메시지 전송 성공: {} -> {}", requestId, constants.VALIDATION_REQUEST_TOPIC);
                         }
                     });
 
@@ -94,14 +99,14 @@ public class ValidationService {
                     });
 
             String jsonRequest = objectMapper.writeValueAsString(request);
-            kafkaTemplate.send(REVISION_REQUEST_TOPIC, requestId, jsonRequest)
+            kafkaTemplate.send(constants.REVISION_REQUEST_TOPIC, requestId, jsonRequest)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
                             log.error("Kafka 재생성 메시지 전송 실패: {}", requestId, ex);
                             future.completeExceptionally(ex);
                             pendingRevisionRequests.remove(requestId);
                         } else {
-                            log.info("Kafka 재생성 메시지 전송 성공: {}", requestId);
+                            log.info("Kafka 재생성 메시지 전송 성공: {} -> {}", requestId, constants.REVISION_REQUEST_TOPIC);
                         }
                     });
 
@@ -118,7 +123,7 @@ public class ValidationService {
     /**
      * AI 검증 응답 수신
      */
-    @KafkaListener(topics = VALIDATION_RESPONSE_TOPIC, groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "#{constants.VALIDATION_RESPONSE_TOPIC}", groupId = "${spring.kafka.consumer.group-id}")
     public void handleValidationResponse(String message) {
         handleValidationResponseInternal(message);
     }
@@ -132,6 +137,7 @@ public class ValidationService {
 
             if (pendingRequest != null && !pendingRequest.isDone()) {
                 pendingRequest.complete(response);
+                log.info("AI 검증 응답 처리 완료: {} <- {}", requestId, constants.VALIDATION_RESPONSE_TOPIC);
             } else {
                 log.warn("매칭되는 검증 요청을 찾을 수 없음: {}", requestId);
             }
@@ -144,7 +150,7 @@ public class ValidationService {
     /**
      * AI 재생성 응답 수신
      */
-    @KafkaListener(topics = REVISION_RESPONSE_TOPIC, groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "#{constants.REVISION_RESPONSE_TOPIC}", groupId = "${spring.kafka.consumer.group-id}")
     public void handleRevisionResponse(String message) {
         handleRevisionResponseInternal(message);
     }
@@ -158,7 +164,7 @@ public class ValidationService {
 
             if (pendingRequest != null && !pendingRequest.isDone()) {
                 pendingRequest.complete(response);
-                log.info("AI 재생성 응답 처리 완료: {}", requestId);
+                log.info("AI 재생성 응답 처리 완료: {} <- {}", requestId, constants.REVISION_RESPONSE_TOPIC);
             } else {
                 log.warn("매칭되는 재생성 요청을 찾을 수 없음: {}", requestId);
             }
