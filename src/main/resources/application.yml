@@ -141,15 +141,7 @@ dart:
 frontend:
   url: ${FRONTEND_URL}
 
-# ===== 모니터링 설정 =====
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "configprops,env,health,info"
-  endpoint:
-    health:
-      show-details: when-authorized
+
 
 # ===== 로깅 설정 =====
 logging:
@@ -212,11 +204,4 @@ ai:
   timeout:
     seconds: 600
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health # 'health' 엔드포인트를 HTTP로 노출
-  endpoint:
-    health:
-      show-details: when_authorized # 인증된 사용자에게만 상세 정보 표시
+
