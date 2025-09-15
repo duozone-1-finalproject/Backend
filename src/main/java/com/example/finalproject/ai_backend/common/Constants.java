@@ -20,6 +20,18 @@ public class Constants {
     @Value("${kafka.topics.fastapi-response:fastapi-equity-response}")
     public String FASTAPI_RESPONSE_TOPIC;
 
+    @Value("${kafka.topics.validation-request:ai-validation-request}")
+    public String VALIDATION_REQUEST_TOPIC;
+
+    @Value("${kafka.topics.validation-response:ai-validation-response}")
+    public String VALIDATION_RESPONSE_TOPIC;
+
+    @Value("${kafka.topics.revision-request:ai-revision-request}")
+    public String REVISION_REQUEST_TOPIC;
+
+    @Value("${kafka.topics.revision-response:ai-revision-response}")
+    public String REVISION_RESPONSE_TOPIC;
+
     // OpenSearch Indices
     @Value("${opensearch.indices.report:ai-generated-reports}")
     public String REPORT_INDEX;
