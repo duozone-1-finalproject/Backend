@@ -19,15 +19,9 @@ public class OpenSearchConfigV2 {
     // Low-level RestClient를 별도 빈으로 등록 (종료 시 close)
     @Bean(name = "osRestClientV2", destroyMethod = "close")
     public RestClient restClientV2() {
-<<<<<<< HEAD
         // 포트 없이 HttpHost 생성
         HttpHost targetHost = HttpHost.create(openSearchUri);
         return RestClient.builder(targetHost)
-=======
-        return RestClient.builder(new HttpHost("192.168.0.77", 9200, "http"))
-                // 필요시 타임아웃/프록시 등 설정
-                //.setRequestConfigCallback(b -> b.setConnectTimeout(5000).setSocketTimeout(60000))
->>>>>>> 137fbe8 (작업 임시 저장)
                 .build();
     }
 

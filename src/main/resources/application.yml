@@ -25,7 +25,7 @@ spring:
     open-in-view: false
 
   opensearch:
-    uris: ${OPENSEARCH_URIS}
+    uris: ${OPENSEARCH_URI}
     connection-timeout: 5s     # connect timeout
     socket-timeout: 60s        # read timeout
     max-conn-total: 100
