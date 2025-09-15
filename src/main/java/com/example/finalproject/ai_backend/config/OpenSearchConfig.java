@@ -12,28 +12,42 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 public class OpenSearchConfig {
-    //@Value("${opensearch.uris:http://192.168.0.77:9200}")
-    @Value("${opensearch.uris:localhost:9200}")
+
+    // 환경변수로 변경
+    @Value("${spring.opensearch.uris}")
     private String openSearchUri;
+
+    @Value("${spring.opensearch.connection-timeout}")
+    private String connectionTimeout;
+
+    @Value("${spring.opensearch.socket-timeout}")
+    private String socketTimeout;
 
     @Bean(name = "openSearchClient")
     public RestHighLevelClient openSearchClient() {
         try {
-            // URI parsing
+            // URI parsing - http:// 또는 https:// 제거
             String cleanUri = openSearchUri.replace("http://", "").replace("https://", "");
             String[] hostAndPort = cleanUri.split(":");
             String host = hostAndPort[0];
             int port = hostAndPort.length > 1 ? Integer.parseInt(hostAndPort[1]) : 9200;
 
-            log.info("OpenSearch connection setup: {}:{}", host, port);
+            // HTTPS 지원을 위한 스키마 감지
+            String scheme = openSearchUri.startsWith("https://") ? "https" : "http";
+
+            log.info("OpenSearch connection setup: {}://{}:{}", scheme, host, port);
+
+            // 타임아웃 값 파싱 (예: "10s" -> 10000ms)
+            int connectTimeoutMs = parseTimeoutToMillis(connectionTimeout, 10000);
+            int socketTimeoutMs = parseTimeoutToMillis(socketTimeout, 60000);
 
             // Create RestClientBuilder first
             RestClientBuilder builder = RestClient.builder(
-                    new HttpHost(host, port, "http")
+                    new HttpHost(host, port, scheme)
             ).setRequestConfigCallback(requestConfigBuilder ->
                     requestConfigBuilder
-                            .setConnectTimeout(10000)  // 10 seconds
-                            .setSocketTimeout(60000)   // 60 seconds
+                            .setConnectTimeout(connectTimeoutMs)
+                            .setSocketTimeout(socketTimeoutMs)
             );
 
             // Create RestHighLevelClient using the builder
@@ -55,6 +69,24 @@ public class OpenSearchConfig {
         } catch (Exception e) {
             log.error("OpenSearch client setup failed: {}", e.getMessage(), e);
             throw new RuntimeException("Cannot initialize OpenSearch client: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 타임아웃 문자열을 밀리초로 변환 (예: "10s" -> 10000)
+     */
+    private int parseTimeoutToMillis(String timeout, int defaultValue) {
+        try {
+            if (timeout.endsWith("s")) {
+                return Integer.parseInt(timeout.substring(0, timeout.length() - 1)) * 1000;
+            } else if (timeout.endsWith("ms")) {
+                return Integer.parseInt(timeout.substring(0, timeout.length() - 2));
+            } else {
+                return Integer.parseInt(timeout);
+            }
+        } catch (Exception e) {
+            log.warn("타임아웃 파싱 실패, 기본값 사용: {} -> {}ms", timeout, defaultValue);
+            return defaultValue;
         }
     }
 }
