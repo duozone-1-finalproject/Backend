@@ -6,11 +6,11 @@ spring:
     import: "optional:file:.env[.properties]"
   mvc:
     async:
-      request-timeout: 6200000   # 3분 (ms)
+      request-timeout: 180000   # 3분 (ms)
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}  # .env에서 덮어쓰기 가능 (기본 dev)
   datasource:
-    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
@@ -116,6 +116,11 @@ dart:
 frontend:
   url: ${FRONTEND_URL}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "configprops,env"
 
 logging:
   level:
