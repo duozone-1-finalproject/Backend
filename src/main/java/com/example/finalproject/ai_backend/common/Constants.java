@@ -1,4 +1,3 @@
-// 6. Constants.java 수정 (환경변수 기반으로)
 package com.example.finalproject.ai_backend.common;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +19,7 @@ public class Constants {
     @Value("${kafka.topics.fastapi-response:fastapi-equity-response}")
     public String FASTAPI_RESPONSE_TOPIC;
 
+    // 추가된 Validation 및 Revision 토픽들
     @Value("${kafka.topics.validation-request:ai-validation-request}")
     public String VALIDATION_REQUEST_TOPIC;
 
