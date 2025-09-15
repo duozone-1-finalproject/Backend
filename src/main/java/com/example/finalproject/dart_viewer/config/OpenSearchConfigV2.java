@@ -13,15 +13,21 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class OpenSearchConfigV2 {
 
-    @Value("${spring.opensearch.uris}")
+    @Value("${spring.opensearch.uris:http://localhost:9200}")
     private String openSearchUri;
 
     // Low-level RestClient를 별도 빈으로 등록 (종료 시 close)
     @Bean(name = "osRestClientV2", destroyMethod = "close")
     public RestClient restClientV2() {
-        // 포트 없이 HttpHost 생성
-        HttpHost targetHost = HttpHost.create(openSearchUri);
-        return RestClient.builder(targetHost)
+        // 쉼표로 구분된 URI들을 처리
+        String[] uriTokens = openSearchUri.split(",");
+        HttpHost[] hosts = java.util.Arrays.stream(uriTokens)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(HttpHost::create)
+                .toArray(HttpHost[]::new);
+
+        return RestClient.builder(hosts)
                 .build();
     }
 
