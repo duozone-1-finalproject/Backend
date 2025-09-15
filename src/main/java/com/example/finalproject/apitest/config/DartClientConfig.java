@@ -25,7 +25,7 @@ public class DartClientConfig {
 
 
 
-    @Bean(name = "dartApiClient")
+    @Bean
     public RestClient dartApiClient() {
 
         // 1. 타임아웃 설정을 위한 RequestFactory 생성

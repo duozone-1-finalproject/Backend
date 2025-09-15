@@ -1,4 +1,4 @@
-// 2. VariableMappingController.java 수정
+// src/main/java/com/example/finalproject/ai_backend/controller/VariableMappingController.java
 package com.example.finalproject.ai_backend.controller;
 
 import com.example.finalproject.ai_backend.dto.ApiResponseDto2;
@@ -15,11 +15,15 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api/v1/variables")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${frontend.url}", allowCredentials = "true") // 환경변수로 변경
+@CrossOrigin(origins = {"${frontend.url}"}, allowCredentials = "true")
 public class VariableMappingController {
 
     private final MainVariableMappingService mainVariableMappingService;
 
+    /**
+     * 회사 코드로 변수 매핑 요청
+     * GET /api/v1/variables/mapping/{corpCode}
+     */
     @GetMapping("/mapping/{corpCode}")
     public CompletableFuture<ResponseEntity<ApiResponseDto2<FrontendVariableResponseDto>>> getVariableMapping(
             @PathVariable String corpCode) {
@@ -45,6 +49,10 @@ public class VariableMappingController {
                 });
     }
 
+    /**
+     * 시스템 상태 확인
+     * GET /api/v1/variables/health
+     */
     @GetMapping("/health")
     public CompletableFuture<ResponseEntity<ApiResponseDto2<String>>> checkHealth() {
 
@@ -68,6 +76,10 @@ public class VariableMappingController {
                 });
     }
 
+    /**
+     * 요청 상태 확인 (필요시)
+     * GET /api/v1/variables/status/{requestId}
+     */
     @GetMapping("/status/{requestId}")
     public CompletableFuture<ResponseEntity<ApiResponseDto2<String>>> getRequestStatus(
             @PathVariable String requestId) {

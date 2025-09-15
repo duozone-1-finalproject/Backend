@@ -16,12 +16,18 @@ import static com.example.finalproject.login_auth.constant.SecurityConstants.OAU
 @Slf4j
 public class OAuth2Utils {
 
+    private final SecurityConstants securityConstants;
+
+    public OAuth2Utils(SecurityConstants securityConstants) {
+        this.securityConstants = securityConstants;
+    }
+
     /**
      * OAuth2 성공 후 프론트엔드 리다이렉트
      * (OAuthHandler에서 사용)
      */
-    public static void redirectToFrontend(HttpServletResponse response) throws IOException {
-        String redirectUrl = SecurityConstants.FRONTEND_URL + SecurityConstants.OAUTH_SUCCESS_PATH;
+    public void redirectToFrontend(HttpServletResponse response) throws IOException {
+        String redirectUrl = securityConstants.FRONTEND_URL + SecurityConstants.OAUTH_SUCCESS_PATH;
         log.info("🚀 프론트엔드 리다이렉트: {}", redirectUrl);
         response.sendRedirect(redirectUrl);
     }

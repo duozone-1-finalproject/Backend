@@ -6,7 +6,6 @@ import com.example.finalproject.login_auth.security.JwtTokenProvider;
 import com.example.finalproject.login_auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -25,8 +24,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -37,12 +36,6 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
-
-    @Value("${frontend.url}")
-    private String frontendUrl;
-
-    @Value("${cors.allowed-origins:${frontend.url}}")
-    private String[] allowedOrigins;
 
     /**
      * ✅ 정적 리소스 + AI API 완전 제외
@@ -147,25 +140,18 @@ public class SecurityConfig {
     }
 
     /**
-     * ✅ CORS 설정 - 환경변수 기반으로 동적 설정
+     * ✅ CORS 설정
      */
+    @Value("${frontend.url}")
+    private String frontendUrl; // 환경변수 주입
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        log.info("🔧 CORS 설정 - Frontend URL: {}", frontendUrl);
-        log.info("🔧 CORS 설정 - Allowed Origins: {}", Arrays.toString(allowedOrigins));
-
+        log.info("🔧 CORS 설정, 프론트엔드 URL: {}", frontendUrl);
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-
-        // 환경변수로부터 동적으로 설정
-        if (allowedOrigins.length > 0) {
-            config.setAllowedOriginPatterns(Arrays.asList(allowedOrigins));
-        } else {
-            // fallback으로 frontend.url 사용
-            config.setAllowedOriginPatterns(List.of(frontendUrl));
-        }
-
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedOriginPatterns(List.of(frontendUrl)); // ✅ 실제 URL 사용
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization"));
 

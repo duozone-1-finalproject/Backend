@@ -1,5 +1,6 @@
 package com.example.finalproject.ai_backend.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.opensearch.client.RestClient;
 import org.opensearch.client.RestClientBuilder;
@@ -7,60 +8,58 @@ import org.opensearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
 public class OpenSearchConfig {
 
-    // 환경변수로 변경
-    @Value("${spring.opensearch.uris}")
+    // 환경변수로 변경 (기본값 추가)
+    @Value("${spring.opensearch.uris:http://localhost:9200}")
     private String openSearchUri;
 
-    @Value("${spring.opensearch.connection-timeout}")
+    @Value("${spring.opensearch.connection-timeout:5s}")
     private String connectionTimeout;
 
-    @Value("${spring.opensearch.socket-timeout}")
+    @Value("${spring.opensearch.socket-timeout:60s}")
     private String socketTimeout;
 
     @Bean(name = "openSearchClient")
     public RestHighLevelClient openSearchClient() {
         try {
-            // URI parsing - http:// 또는 https:// 제거
-            String cleanUri = openSearchUri.replace("http://", "").replace("https://", "");
-            String[] hostAndPort = cleanUri.split(":");
-            String host = hostAndPort[0];
-            int port = hostAndPort.length > 1 ? Integer.parseInt(hostAndPort[1]) : 9200;
+            // 쉼표로 구분된 URI들을 그대로 사용 (포트 기본값 지정/강제 없음)
+            // 예: https://<ngrok-subdomain>.ngrok-free.app 또는 http://host:port
+            String[] uriTokens = openSearchUri.split(",");
+            HttpHost[] hosts = java.util.Arrays.stream(uriTokens)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(HttpHost::create) // 스킴/호스트/포트를 URI에서 그대로 해석
+                    .toArray(HttpHost[]::new);
 
-            // HTTPS 지원을 위한 스키마 감지
-            String scheme = openSearchUri.startsWith("https://") ? "https" : "http";
-
-            log.info("OpenSearch connection setup: {}://{}:{}", scheme, host, port);
+            log.info("OpenSearch connection setup with URIs: {}", openSearchUri);
 
             // 타임아웃 값 파싱 (예: "10s" -> 10000ms)
             int connectTimeoutMs = parseTimeoutToMillis(connectionTimeout, 10000);
             int socketTimeoutMs = parseTimeoutToMillis(socketTimeout, 60000);
 
-            // Create RestClientBuilder first
-            RestClientBuilder builder = RestClient.builder(
-                    new HttpHost(host, port, scheme)
-            ).setRequestConfigCallback(requestConfigBuilder ->
-                    requestConfigBuilder
-                            .setConnectTimeout(connectTimeoutMs)
-                            .setSocketTimeout(socketTimeoutMs)
-            );
+            // RestClientBuilder 생성
+            RestClientBuilder builder = RestClient.builder(hosts)
+                    .setRequestConfigCallback(requestConfigBuilder ->
+                            requestConfigBuilder
+                                    .setConnectTimeout(connectTimeoutMs)
+                                    .setSocketTimeout(socketTimeoutMs)
+                    );
 
-            // Create RestHighLevelClient using the builder
+            // RestHighLevelClient 생성
             RestHighLevelClient client = new RestHighLevelClient(builder);
 
-            // Connection test
+            // 연결 테스트
             try {
                 var info = client.info(org.opensearch.client.RequestOptions.DEFAULT);
                 log.info("OpenSearch connection successful: cluster={}, version={}",
                         info.getClusterName(), info.getVersion().getNumber());
             } catch (Exception e) {
                 log.error("OpenSearch connection test failed: {}", e.getMessage());
-                // Even if connection fails, create the bean (for runtime retry)
+                // 실패하더라도 빈은 생성 (실행 중 재시도 가능)
                 log.warn("OpenSearch connection failed but client will be created. Runtime retry possible.");
             }
 

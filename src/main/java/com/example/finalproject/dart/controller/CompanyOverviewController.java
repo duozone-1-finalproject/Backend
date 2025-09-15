@@ -5,23 +5,25 @@ import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListRequ
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListResponseDto;
 import com.example.finalproject.dart.entity.CompanyOverview;
 import com.example.finalproject.dart.service.DbService;
+import com.example.finalproject.dart.dto.common.MyApiResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import com.example.finalproject.dart.dto.common.MyApiResponseDto;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/companies")
-@CrossOrigin(origins = "${frontend.url}", allowCredentials = "true")
+// @CrossOrigin 제거 (글로벌 CORS 설정으로 대체)
 public class CompanyOverviewController {
-    private final DbService dbService; // ✅ 여기서 생성자 주입 받기
 
-    // 기업 정보 넣기 C
+    private final DbService dbService;
+
+    /**
+     * 기업 정보 저장 (Create)
+     */
     @PostMapping
     public MyApiResponseDto<String> saveCompanies(@RequestBody CompanyOverviewListRequestDto dto) {
         try {
@@ -33,26 +35,27 @@ public class CompanyOverviewController {
         }
     }
 
-    // 테스트
+    /**
+     * 테스트용 엔드포인트
+     */
     @GetMapping("/test")
     public List<CompanyOverview> test(@RequestParam String word){
         return dbService.test(word);
     }
 
-
-    // 기업 정보 전부 가져오기
-    // http://localhost:8080/api/companies
-    @GetMapping()
-    public CompanyOverviewListResponseDto getAllCompanies(){
+    /**
+     * 모든 기업 정보 가져오기
+     */
+    @GetMapping
+    public CompanyOverviewListResponseDto getAllCompanies() {
         return dbService.getAllCompanyOverviews();
     }
 
-
-    // 기업 정보 키워드로 100개 가져오기
+    /**
+     * 키워드 기반 상위 100개 기업 정보 가져오기
+     */
     @GetMapping("/search")
-    public CompanyOverviewListResponseDto get100Companies(@RequestParam String keyword){
+    public CompanyOverviewListResponseDto get100Companies(@RequestParam String keyword) {
         return dbService.get100CorpCode(keyword);
     }
-
-
 }
