@@ -115,12 +115,30 @@ dart:
 frontend:
   url: ${FRONTEND_URL}
 
+kafka:
+  topics:
+    ai-request: ${KAFKA_TOPIC_AI_REQUEST:ai-report-request}
+    ai-response: ${KAFKA_TOPIC_AI_RESPONSE:ai-report-response}
+    fastapi-request: ${KAFKA_TOPIC_FASTAPI_REQUEST:fastapi-equity-request}
+    fastapi-response: ${KAFKA_TOPIC_FASTAPI_RESPONSE:fastapi-equity-response}
+    validation-request: ${KAFKA_TOPIC_VALIDATION_REQUEST:ai-validation-request}
+    validation-response: ${KAFKA_TOPIC_VALIDATION_RESPONSE:ai-validation-response}
+    revision-request: ${KAFKA_TOPIC_REVISION_REQUEST:ai-revision-request}
+    revision-response: ${KAFKA_TOPIC_REVISION_RESPONSE:ai-revision-response}
+
+# ===== OpenSearch 인덱스 설정 =====
+opensearch:
+  indices:
+    report: ${OPENSEARCH_INDEX_REPORT:ai-generated-reports}
+    company: ${OPENSEARCH_INDEX_COMPANY:company-data}
 
 logging:
   level:
-    org.springframework.security: DEBUG
-    org.springframework.boot.autoconfigure.security: DEBUG
-    org.springframework.data.opensearch: DEBUG
+    root: ${LOG_LEVEL:INFO}
+    org.springframework.security: ${SECURITY_LOG_LEVEL:DEBUG}
+    org.springframework.boot.autoconfigure.security: ${SECURITY_LOG_LEVEL:DEBUG}
+    org.springframework.data.opensearch: ${OPENSEARCH_LOG_LEVEL:DEBUG}
+    com.example.finalproject: ${APP_LOG_LEVEL:DEBUG}
     # org.springframework.data.elasticsearch: DEBUG
     # org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG  # (매핑 확인시 켜기)
 
