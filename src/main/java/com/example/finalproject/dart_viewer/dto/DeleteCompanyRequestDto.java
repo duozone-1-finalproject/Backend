@@ -1,16 +1,16 @@
 package com.example.finalproject.dart_viewer.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class FinalizeVersionRequestDto {
+@AllArgsConstructor
+public class DeleteCompanyRequestDto {
     @JsonProperty("user_id")
     private Long userId;
     @JsonProperty("corp_code")
     private String corpCode;
-    private String description; //null 가능
-    private String createdAt;
 }

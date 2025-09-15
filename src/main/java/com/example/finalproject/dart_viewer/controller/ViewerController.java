@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,9 +18,14 @@ import java.util.Map;
 public class ViewerController {
     private final UserVersionService userVersionService;
 
-    @GetMapping
-    public ResponseEntity<Map<String, VersionResponseDto>> getVersions(@RequestParam Long userId) throws IOException {
-        return ResponseEntity.ok(userVersionService.getVersions(userId));
+    @GetMapping("/companies")
+    public ResponseEntity<List<CompanyInfoDto>> getUserCompanies(@RequestParam Long userId) throws IOException {
+        return ResponseEntity.ok(userVersionService.getUserCompanies(userId));
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<CompanyVersionsDto> getCompanyVersions(@RequestBody GetCompanyVersionsRequestDto request) throws IOException {
+        return ResponseEntity.ok(userVersionService.getCompanyVersions(request));
     }
 
     // 2. 초기 버전 생성 (v0 등)
@@ -50,10 +56,16 @@ public class ViewerController {
         ));
     }
 
-    @DeleteMapping("/editing")
-    public ResponseEntity<String> deleteEditingVersion(@RequestBody DeleteEditingRequestDto request) throws IOException {
-        userVersionService.deleteEditingVersion(request);
-        return ResponseEntity.ok("편집중인 버전이 삭제되었습니다.");
+    @DeleteMapping
+    public ResponseEntity<String> deleteVersion(@RequestBody DeleteVersionRequestDto request) throws IOException {
+        userVersionService.deleteVersion(request);
+        return ResponseEntity.ok("버전이 삭제되었습니다.");
+    }
+
+    @DeleteMapping("/company")
+    public ResponseEntity<String> deleteCompany(@RequestBody DeleteCompanyRequestDto request) throws IOException {
+        userVersionService.deleteCompany(request);
+        return ResponseEntity.ok("회사의 모든 증권신고서가 삭제되었습니다.");
     }
 
 }
