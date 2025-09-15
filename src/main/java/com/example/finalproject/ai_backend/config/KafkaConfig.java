@@ -1,3 +1,4 @@
+// 3. KafkaConfig.java 수정 (토픽명도 환경변수로)
 package com.example.finalproject.ai_backend.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
@@ -11,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -28,7 +27,19 @@ public class KafkaConfig {
     @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
 
-    // Producer Configuration: String으로 통일
+    // 토픽명도 환경변수로 설정 가능하게
+    @Value("${kafka.topics.ai-request:ai-report-request}")
+    private String aiRequestTopic;
+
+    @Value("${kafka.topics.ai-response:ai-report-response}")
+    private String aiResponseTopic;
+
+    @Value("${kafka.topics.fastapi-request:fastapi-equity-request}")
+    private String fastapiRequestTopic;
+
+    @Value("${kafka.topics.fastapi-response:fastapi-equity-response}")
+    private String fastapiResponseTopic;
+
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -48,7 +59,6 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    // Consumer Configuration: String으로 받아서 수동 파싱
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -70,31 +80,45 @@ public class KafkaConfig {
         return factory;
     }
 
-    // --- Topic Configuration ---
-
-    // 💡 1. Java AI 보고서 서버 연동용 토픽 (기존)
+    // 토픽 생성 - 환경변수 기반
     @Bean
-    public NewTopic aiRequestTopic() {
-        log.info("Creating Kafka topic: ai-report-request");
-        return TopicBuilder.name("ai-report-request").partitions(3).replicas(1).build();
+    public NewTopic aiRequestTopicBean() {
+        log.info("Creating Kafka topic: {}", aiRequestTopic);
+        return TopicBuilder.name(aiRequestTopic).partitions(3).replicas(1).build();
     }
 
     @Bean
-    public NewTopic aiResponseTopic() {
-        log.info("Creating Kafka topic: ai-report-response");
-        return TopicBuilder.name("ai-report-response").partitions(3).replicas(1).build();
-    }
-
-    // 💡 2. FastAPI(Python) 주석 생성 서버 연동용 토픽 (신규 추가)
-    @Bean
-    public NewTopic fastApiEquityRequestTopic() {
-        log.info("Creating Kafka topic for FastAPI: fastapi-equity-request");
-        return TopicBuilder.name("fastapi-equity-request").partitions(1).replicas(1).build();
+    public NewTopic aiResponseTopicBean() {
+        log.info("Creating Kafka topic: {}", aiResponseTopic);
+        return TopicBuilder.name(aiResponseTopic).partitions(3).replicas(1).build();
     }
 
     @Bean
-    public NewTopic fastApiEquityResponseTopic() {
-        log.info("Creating Kafka topic for FastAPI: fastapi-equity-response");
-        return TopicBuilder.name("fastapi-equity-response").partitions(1).replicas(1).build();
+    public NewTopic fastApiEquityRequestTopicBean() {
+        log.info("Creating Kafka topic for FastAPI: {}", fastapiRequestTopic);
+        return TopicBuilder.name(fastapiRequestTopic).partitions(1).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic fastApiEquityResponseTopicBean() {
+        log.info("Creating Kafka topic for FastAPI: {}", fastapiResponseTopic);
+        return TopicBuilder.name(fastapiResponseTopic).partitions(1).replicas(1).build();
+    }
+
+    // Getter 메소드들 (서비스에서 토픽명 사용할 수 있도록)
+    public String getAiRequestTopic() {
+        return aiRequestTopic;
+    }
+
+    public String getAiResponseTopic() {
+        return aiResponseTopic;
+    }
+
+    public String getFastapiRequestTopic() {
+        return fastapiRequestTopic;
+    }
+
+    public String getFastapiResponseTopic() {
+        return fastapiResponseTopic;
     }
 }

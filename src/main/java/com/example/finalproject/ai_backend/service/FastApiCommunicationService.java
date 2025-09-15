@@ -1,5 +1,7 @@
+// 4. FastApiCommunicationService.java 수정
 package com.example.finalproject.ai_backend.service;
 
+import com.example.finalproject.ai_backend.config.KafkaConfig;
 import com.example.finalproject.ai_backend.dto.FastApiRequestDto;
 import com.example.finalproject.ai_backend.dto.FastApiResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +24,7 @@ public class FastApiCommunicationService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
+    private final KafkaConfig kafkaConfig;
 
     @Value("${fastapi.kafka.timeout.seconds}")
     private int timeoutSeconds;
@@ -29,16 +32,14 @@ public class FastApiCommunicationService {
     // 요청-응답 매핑
     private final Map<String, CompletableFuture<FastApiResponseDto>> pendingRequests = new ConcurrentHashMap<>();
 
-    // FastAPI 전용 Kafka 토픽
-    private static final String FASTAPI_REQUEST_TOPIC = "fastapi-equity-request";
-    private static final String FASTAPI_RESPONSE_TOPIC = "fastapi-equity-response";
-
     public FastApiCommunicationService(
             KafkaTemplate<String, String> kafkaTemplate,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            KafkaConfig kafkaConfig
     ) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
+        this.kafkaConfig = kafkaConfig;
     }
 
     /**
@@ -47,8 +48,10 @@ public class FastApiCommunicationService {
     public CompletableFuture<FastApiResponseDto> requestEquityAnnotation(FastApiRequestDto request) {
         try {
             String requestId = request.getRequestId();
-            log.info("FastAPI에게 주식 공모 주석 생성 요청 전송: {}, company={}",
-                    requestId, request.getCompanyName());
+            String topicName = kafkaConfig.getFastapiRequestTopic();
+
+            log.info("FastAPI에게 주식 공모 주석 생성 요청 전송: {}, company={}, topic={}",
+                    requestId, request.getCompanyName(), topicName);
 
             CompletableFuture<FastApiResponseDto> future = new CompletableFuture<>();
             pendingRequests.put(requestId, future);
@@ -67,7 +70,7 @@ public class FastApiCommunicationService {
 
             // Kafka로 요청 전송
             String jsonRequest = objectMapper.writeValueAsString(request);
-            kafkaTemplate.send(FASTAPI_REQUEST_TOPIC, requestId, jsonRequest)
+            kafkaTemplate.send(topicName, requestId, jsonRequest)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
                             log.error("Kafka 메시지 전송 실패: {}", requestId, ex);
@@ -76,7 +79,7 @@ public class FastApiCommunicationService {
                             }
                             pendingRequests.remove(requestId);
                         } else {
-                            log.info("Kafka 메시지 전송 성공: {}", requestId);
+                            log.info("Kafka 메시지 전송 성공: {} -> {}", requestId, topicName);
                         }
                     });
 
@@ -91,16 +94,17 @@ public class FastApiCommunicationService {
     }
 
     /**
-     * FastAPI 응답 수신 - 수정된 시그니처
+     * FastAPI 응답 수신 - 동적 토픽명 지원
      */
-    @KafkaListener(topics = FASTAPI_RESPONSE_TOPIC, groupId = "${spring.kafka.consumer.fastapi-group-id}")
+    @KafkaListener(topics = "#{kafkaConfig.fastapiResponseTopic}", groupId = "${spring.kafka.consumer.fastapi-group-id}")
     public void handleFastApiResponse(ConsumerRecord<String, String> record) {
         try {
             String requestId = record.key();
             String message = record.value();
+            String topic = record.topic();
 
-            log.info("FastAPI 서버 응답 수신: {}",
-                    message.length() > 200 ? message.substring(0, 200) + "..." : message);
+            log.info("FastAPI 서버 응답 수신 from {}: {}",
+                    topic, message.length() > 200 ? message.substring(0, 200) + "..." : message);
 
             handleFastApiResponseInternal(message);
 
@@ -109,9 +113,6 @@ public class FastApiCommunicationService {
         }
     }
 
-    /**
-     * 응답 처리 내부 로직
-     */
     private void handleFastApiResponseInternal(String message) {
         try {
             FastApiResponseDto response = objectMapper.readValue(message, FastApiResponseDto.class);
@@ -135,7 +136,6 @@ public class FastApiCommunicationService {
                 log.warn("매칭되는 대기 중인 요청을 찾을 수 없음: {} (총 대기 중: {})",
                         requestId, pendingRequests.size());
 
-                // 현재 대기 중인 요청 ID들을 로그로 출력 (디버깅용)
                 if (log.isDebugEnabled()) {
                     log.debug("현재 대기 중인 요청들: {}", pendingRequests.keySet());
                 }
@@ -147,13 +147,14 @@ public class FastApiCommunicationService {
     }
 
     /**
-     * Kafka 연결 상태 확인
+     * Kafka 연결 상태 확인 - 헬스체크 토픽 환경변수화
      */
     public CompletableFuture<Boolean> checkKafkaConnection() {
         return CompletableFuture.supplyAsync(() -> {
             try {
+                String healthTopic = "fastapi-health-check"; // 필요시 환경변수로 변경 가능
                 String testMessage = "fastapi-health-check-" + System.currentTimeMillis();
-                kafkaTemplate.send("fastapi-health-check", "test", testMessage).get(5, TimeUnit.SECONDS);
+                kafkaTemplate.send(healthTopic, "test", testMessage).get(5, TimeUnit.SECONDS);
                 log.info("FastAPI Kafka 연결 정상");
                 return true;
             } catch (Exception e) {
@@ -163,16 +164,10 @@ public class FastApiCommunicationService {
         });
     }
 
-    /**
-     * 대기 중인 요청 수 조회
-     */
     public int getPendingRequestCount() {
         return pendingRequests.size();
     }
 
-    /**
-     * 요청 취소
-     */
     public boolean cancelRequest(String requestId) {
         CompletableFuture<FastApiResponseDto> pendingRequest = pendingRequests.remove(requestId);
         if (pendingRequest != null && !pendingRequest.isDone()) {
@@ -183,9 +178,6 @@ public class FastApiCommunicationService {
         return false;
     }
 
-    /**
-     * 모든 대기 중인 요청 취소
-     */
     public void cancelAllRequests() {
         log.info("모든 대기 중인 FastAPI 요청 취소 시작: {}개", pendingRequests.size());
 
@@ -204,14 +196,13 @@ public class FastApiCommunicationService {
         log.info("모든 FastAPI 요청 취소 완료");
     }
 
-    /**
-     * 서비스 상태 모니터링
-     */
     public Map<String, Object> getServiceStatus() {
         return Map.of(
                 "pendingRequestCount", pendingRequests.size(),
                 "timeoutSeconds", timeoutSeconds,
-                "pendingRequestIds", pendingRequests.keySet()
+                "pendingRequestIds", pendingRequests.keySet(),
+                "fastapiRequestTopic", kafkaConfig.getFastapiRequestTopic(),
+                "fastapiResponseTopic", kafkaConfig.getFastapiResponseTopic()
         );
     }
 }
