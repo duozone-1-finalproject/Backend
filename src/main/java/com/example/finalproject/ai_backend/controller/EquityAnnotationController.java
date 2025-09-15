@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
-
 @Slf4j
 @RestController
 @RequestMapping("/api/ai")

@@ -1,5 +1,6 @@
 package com.example.finalproject.dart.controller;
 
+
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListRequestDto;
 import com.example.finalproject.dart.dto.CompanyOverview.CompanyOverviewListResponseDto;
 import com.example.finalproject.dart.entity.CompanyOverview;
@@ -38,7 +39,7 @@ public class CompanyOverviewController {
      * 테스트용 엔드포인트
      */
     @GetMapping("/test")
-    public List<CompanyOverview> test(@RequestParam String word) {
+    public List<CompanyOverview> test(@RequestParam String word){
         return dbService.test(word);
     }
 
