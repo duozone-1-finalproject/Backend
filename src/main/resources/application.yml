@@ -24,13 +24,13 @@ spring:
     dialect: org.hibernate.dialect.MariaDBDialect
     open-in-view: false
 
-  opensearch:
-    uris: ${OPENSEARCH_URIS}
-    connection-timeout: 5s     # connect timeout
-    socket-timeout: 60s        # read timeout
-    max-conn-total: 100
-    max-conn-per-route: 100
-    sniff-enabled: false
+#  opensearch:
+#    uris: ${OPENSEARCH_URIS}
+#    connection-timeout: 5s     # connect timeout
+#    socket-timeout: 60s        # read timeout
+#    max-conn-total: 100
+#    max-conn-per-route: 100
+#    sniff-enabled: false
 
 #  kafka:
 #    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
@@ -119,10 +119,10 @@ cors:
 #      revision-response: ${KAFKA_TOPIC_REVISION_RESPONSE:ai-revision-response}
 
 # ===== OpenSearch 인덱스 설정 =====
-opensearch:
-  indices:
-    report: ${OPENSEARCH_INDEX_REPORT:ai-generated-reports}
-    company: ${OPENSEARCH_INDEX_COMPANY:company-data}
+#opensearch:
+#  indices:
+#    report: ${OPENSEARCH_INDEX_REPORT:ai-generated-reports}
+#    company: ${OPENSEARCH_INDEX_COMPANY:company-data}
 
 # ===== JWT 설정 =====
 jwt:
@@ -131,77 +131,77 @@ jwt:
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 # ===== DART API 설정 =====
-dart:
-  api:
-    key: ${DART_API_KEY}
-    obj: ${DART_API_OBJ_KEY}
-    ljh: ${DART_API_LJH_KEY}
-    base-url: https://opendart.fss.or.kr/api
+#dart:
+#  api:
+#    key: ${DART_API_KEY}
+#    obj: ${DART_API_OBJ_KEY}
+#    ljh: ${DART_API_LJH_KEY}
+#    base-url: https://opendart.fss.or.kr/api
 
 frontend:
   url: ${FRONTEND_URL}
-
-
-
-# ===== 로깅 설정 =====
-#logging:
-#  level:
-#    root: ${LOG_LEVEL:INFO}
-#    org.springframework.security: ${SECURITY_LOG_LEVEL:INFO}
-#    org.springframework.boot.autoconfigure.security: ${SECURITY_LOG_LEVEL:INFO}
-#    org.springframework.data.opensearch: ${OPENSEARCH_LOG_LEVEL:INFO}
-#    com.example.finalproject: ${APP_LOG_LEVEL:INFO}
-    # org.springframework.data.elasticsearch: DEBUG
-    # org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG  # (매핑 확인시 켜기)
-
-# ===== AI 시스템 설정 =====
-ai:
-  system:
-    enabled: ${AI_SYSTEM_ENABLED:true}   # 실제 AI 서버 사용 여부
-  mock:
-    enabled: ${AI_MOCK_ENABLED:false}    # Mock 사용 여부(기본 false)
-  timeout:
-    seconds: ${AI_TIMEOUT_SECONDS:600}    # AI 응답 대기 시간(초)
-
-# ===== dev 프로필 =====
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-
-# dev에서도 실AI 연동 테스트가 가능하도록 mock 비활성 & 적당한 타임아웃
-ai:
-  mock:
-    enabled: false
-  timeout:
-    seconds: 600
-
-# ===== prod 프로필 =====
----
-spring:
-  config:
-    activate:
-      on-profile: prod
-  # 프로덕션 환경 최적화
-  jpa:
-    properties:
-      hibernate:
-        format_sql: false  # 프로덕션에서는 SQL 포맷팅 비활성화
-    show-sql: false
-
-#logging:
-#  level:
-#    root: INFO
-#    org.springframework.security: WARN
-#    org.springframework.boot.autoconfigure.security: WARN
-#    org.springframework.data.opensearch: INFO
-#    com.example.finalproject: INFO
-
-ai:
-  mock:
-    enabled: false
-  timeout:
-    seconds: 600
+#
+#
+#
+## ===== 로깅 설정 =====
+##logging:
+##  level:
+##    root: ${LOG_LEVEL:INFO}
+##    org.springframework.security: ${SECURITY_LOG_LEVEL:INFO}
+##    org.springframework.boot.autoconfigure.security: ${SECURITY_LOG_LEVEL:INFO}
+##    org.springframework.data.opensearch: ${OPENSEARCH_LOG_LEVEL:INFO}
+##    com.example.finalproject: ${APP_LOG_LEVEL:INFO}
+#    # org.springframework.data.elasticsearch: DEBUG
+#    # org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG  # (매핑 확인시 켜기)
+#
+## ===== AI 시스템 설정 =====
+#ai:
+#  system:
+#    enabled: ${AI_SYSTEM_ENABLED:true}   # 실제 AI 서버 사용 여부
+#  mock:
+#    enabled: ${AI_MOCK_ENABLED:false}    # Mock 사용 여부(기본 false)
+#  timeout:
+#    seconds: ${AI_TIMEOUT_SECONDS:600}    # AI 응답 대기 시간(초)
+#
+## ===== dev 프로필 =====
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: dev
+#
+## dev에서도 실AI 연동 테스트가 가능하도록 mock 비활성 & 적당한 타임아웃
+#ai:
+#  mock:
+#    enabled: false
+#  timeout:
+#    seconds: 600
+#
+## ===== prod 프로필 =====
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: prod
+#  # 프로덕션 환경 최적화
+#  jpa:
+#    properties:
+#      hibernate:
+#        format_sql: false  # 프로덕션에서는 SQL 포맷팅 비활성화
+#    show-sql: false
+#
+##logging:
+##  level:
+##    root: INFO
+##    org.springframework.security: WARN
+##    org.springframework.boot.autoconfigure.security: WARN
+##    org.springframework.data.opensearch: INFO
+##    com.example.finalproject: INFO
+#
+#ai:
+#  mock:
+#    enabled: false
+#  timeout:
+#    seconds: 600
 
 

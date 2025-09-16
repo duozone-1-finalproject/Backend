@@ -1,4 +1,0 @@
-equity는 지분증권
-overview는 기업개황
-periodic은 정기보고서
-material은 주요사항보고서
