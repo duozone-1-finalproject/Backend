@@ -100,6 +100,7 @@ public class SecurityConfig {
                                 "/api/v1/variables/**",      // ✅ 추가
                                 "/api/ai/**",
                                 "/initialTemplate/**",
+                                "/api/validation/**",
                                 "/error"
                         ).permitAll()
 
