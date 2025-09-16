@@ -1,6 +1,5 @@
 server:
   port: 8080
-  forward-headers-strategy: NATIVE
 
 spring:
   config:
@@ -148,10 +147,10 @@ frontend:
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
-    org.springframework.security: ${SECURITY_LOG_LEVEL:DEBUG}
-    org.springframework.boot.autoconfigure.security: ${SECURITY_LOG_LEVEL:DEBUG}
-    org.springframework.data.opensearch: ${OPENSEARCH_LOG_LEVEL:DEBUG}
-    com.example.finalproject: ${APP_LOG_LEVEL:DEBUG}
+    org.springframework.security: ${SECURITY_LOG_LEVEL:INFO}
+    org.springframework.boot.autoconfigure.security: ${SECURITY_LOG_LEVEL:INFO}
+    org.springframework.data.opensearch: ${OPENSEARCH_LOG_LEVEL:INFO}
+    com.example.finalproject: ${APP_LOG_LEVEL:INFO}
     # org.springframework.data.elasticsearch: DEBUG
     # org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG  # (매핑 확인시 켜기)
 
