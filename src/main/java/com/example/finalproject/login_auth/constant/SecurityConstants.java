@@ -9,7 +9,7 @@ public class SecurityConstants {
     public static final boolean COOKIE_SECURE = false; // 로컬 개발용
 
     // 프론트엔드 URL (환경변수)
-    public static final String FRONTEND_URL = System.getenv().getOrDefault("FRONTEND_URL", "http://localhost:3000");
+    public static final String FRONTEND_URL = System.getenv().getOrDefault("FRONTEND_URL", "http://k8s-default-frontend-770bd41637-61355deefa2c0980.elb.ap-northeast-2.amazonaws.com");
     public static final String OAUTH_SUCCESS_PATH = System.getenv().getOrDefault("OAUTH_SUCCESS_PATH", "/oauth-success");
 
     // 사용자 역할 및 제공자
