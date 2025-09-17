@@ -59,7 +59,7 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: "http://k8s-default-ingress-164f943143-1841556789.ap-northeast-2.elb.amazonaws.com/backend/login/oauth2/code/{registrationId}"
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: [ email, profile ]
           naver:
             client-id: ${NAVER_CLIENT_ID}
@@ -203,5 +203,4 @@ frontend:
 #    enabled: false
 #  timeout:
 #    seconds: 600
-
 
