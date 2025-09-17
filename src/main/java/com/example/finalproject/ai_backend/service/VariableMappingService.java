@@ -1,6 +1,7 @@
-// src/main/java/com/example/finalproject/ai_backend/service/VariableMappingService.java
+// 5. VariableMappingService.java 수정
 package com.example.finalproject.ai_backend.service;
 
+import com.example.finalproject.ai_backend.config.KafkaConfig;
 import com.example.finalproject.ai_backend.dto.VariableMappingRequestDto;
 import com.example.finalproject.ai_backend.dto.VariableMappingResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,7 @@ public class VariableMappingService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
+    private final KafkaConfig kafkaConfig;
 
     @Value("${ai.timeout.seconds:600}")
     private int timeoutSeconds;
@@ -28,15 +30,14 @@ public class VariableMappingService {
     // 요청-응답 매핑
     private final Map<String, CompletableFuture<VariableMappingResponseDto>> pendingRequests = new ConcurrentHashMap<>();
 
-    private static final String AI_REQUEST_TOPIC = "ai-report-request";
-    private static final String AI_RESPONSE_TOPIC = "ai-report-response";
-
     public VariableMappingService(
             KafkaTemplate<String, String> kafkaTemplate,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            KafkaConfig kafkaConfig
     ) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
+        this.kafkaConfig = kafkaConfig;
     }
 
     /**
@@ -45,7 +46,9 @@ public class VariableMappingService {
     public CompletableFuture<VariableMappingResponseDto> requestVariableMapping(VariableMappingRequestDto request) {
         try {
             String requestId = request.getRequestId();
-            log.info("AI에게 변수 매핑 요청 전송: {}", requestId);
+            String topicName = kafkaConfig.getAiRequestTopic();
+
+            log.info("AI에게 변수 매핑 요청 전송: {} -> {}", requestId, topicName);
 
             CompletableFuture<VariableMappingResponseDto> future = new CompletableFuture<>();
             pendingRequests.put(requestId, future);
@@ -59,14 +62,14 @@ public class VariableMappingService {
                     });
 
             String jsonRequest = objectMapper.writeValueAsString(request);
-            kafkaTemplate.send(AI_REQUEST_TOPIC, requestId, jsonRequest)
+            kafkaTemplate.send(topicName, requestId, jsonRequest)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
                             log.error("Kafka 메시지 전송 실패: {}", requestId, ex);
                             future.completeExceptionally(ex);
                             pendingRequests.remove(requestId);
                         } else {
-                            log.info("Kafka 메시지 전송 성공: {}", requestId);
+                            log.info("Kafka 메시지 전송 성공: {} -> {}", requestId, topicName);
                         }
                     });
 
@@ -81,9 +84,9 @@ public class VariableMappingService {
     }
 
     /**
-     * AI 응답 수신
+     * AI 응답 수신 - 동적 토픽명 지원
      */
-    @KafkaListener(topics = AI_RESPONSE_TOPIC, groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "#{kafkaConfig.aiResponseTopic}", groupId = "${spring.kafka.consumer.group-id}")
     public void handleAiResponse(String message) {
         log.info("AI 서버 응답 수신: {}", message.substring(0, Math.min(message.length(), 100)) + "...");
         handleAiResponseInternal(message);
@@ -111,8 +114,9 @@ public class VariableMappingService {
     public CompletableFuture<Boolean> checkKafkaConnection() {
         return CompletableFuture.supplyAsync(() -> {
             try {
+                String healthTopic = "health-check"; // 필요시 환경변수로 변경
                 String testMessage = "health-check-" + System.currentTimeMillis();
-                kafkaTemplate.send("health-check", "test", testMessage).get(5, TimeUnit.SECONDS);
+                kafkaTemplate.send(healthTopic, "test", testMessage).get(5, TimeUnit.SECONDS);
                 log.info("Kafka 연결 정상");
                 return true;
             } catch (Exception e) {
