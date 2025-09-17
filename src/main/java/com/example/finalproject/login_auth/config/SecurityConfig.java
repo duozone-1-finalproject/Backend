@@ -120,6 +120,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
 
+
                 // ✅ JWT 필터 적용
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider),
