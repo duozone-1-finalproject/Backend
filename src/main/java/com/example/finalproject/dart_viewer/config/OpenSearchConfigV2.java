@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class OpenSearchConfigV2 {
 
-    @Value("${spring.opensearch.uris:http://localhost:9200}")
+    @Value("${spring.opensearch.uris}")
     private String openSearchUri;
 
     // Low-level RestClient를 별도 빈으로 등록 (종료 시 close)

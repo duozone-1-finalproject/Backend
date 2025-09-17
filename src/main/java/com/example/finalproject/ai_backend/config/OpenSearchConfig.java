@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 public class OpenSearchConfig {
 
     // 환경변수로 변경 (기본값 추가)
-    @Value("${spring.opensearch.uris:http://localhost:9200}")
+    @Value("${spring.opensearch.uris}")
     private String openSearchUri;
 
     @Value("${spring.opensearch.connection-timeout:5s}")
