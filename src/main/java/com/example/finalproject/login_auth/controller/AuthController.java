@@ -1,5 +1,3 @@
-// src/main/java/com/example/finalproject/login_auth/controller/AuthController.java
-
 package com.example.finalproject.login_auth.controller;
 
 import com.example.finalproject.login_auth.dto.LoginRequestDto;
@@ -20,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin(origins = "*", allowCredentials = "true") // 추가적인 CORS 지원
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -28,8 +27,11 @@ public class AuthController {
     /**
      * 일반 로그인: POST /auth/login
      */
-    @PostMapping("/auth/login")
+    @PostMapping(value = "/auth/login", produces = "application/json") // JSON 응답 명시
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response) {
+        log.info("=== 로그인 요청 시작 ===");
+        log.info("Username: {}", loginRequest.getUsername());
+
         try {
             // 1. 사용자 인증
             Authentication authentication = authenticationManager.authenticate(
@@ -39,44 +41,56 @@ public class AuthController {
                     )
             );
 
+            log.info("인증 성공: {}", authentication.getName());
+
             // 2. 토큰 생성 + 쿠키 설정 + 응답
             LoginResponseDto loginResponse = tokenUtils.generateTokensAndResponse(
                     authentication.getName(), response);
 
+            log.info("토큰 생성 성공");
+            log.info("Access Token 앞 20자: {}", loginResponse.getAccessToken().substring(0, Math.min(20, loginResponse.getAccessToken().length())));
+
+            // 응답 헤더에 Content-Type 명시
+            response.setContentType("application/json;charset=UTF-8");
+
             return ResponseEntity.ok(loginResponse);
 
         } catch (Exception e) {
-            log.warn("🚨 로그인 실패: {}", e.getMessage());
-            return ResponseEntity.status(401).body("로그인 실패: " + e.getMessage());
+            log.error("로그인 실패: {}", e.getMessage(), e);
+            response.setContentType("application/json;charset=UTF-8");
+            return ResponseEntity.status(401).body("{\"error\":\"로그인 실패\",\"message\":\"" + e.getMessage() + "\"}");
         }
     }
 
     /**
      * Access Token 갱신: POST /auth/refresh
-     * - OAuth2 로그인 직후, 또는 Access Token 만료 시 호출되는 통합 엔드포인트
      */
-    @PostMapping("/auth/refresh")
+    @PostMapping(value = "/auth/refresh", produces = "application/json")
     public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        log.info("🌐 Access Token 갱신 요청");
+        log.info("Access Token 갱신 요청");
 
         try {
             // 1. 쿠키에서 리프레시 토큰 추출
             String refreshToken = CookieUtils.getRefreshTokenFromCookies(request);
 
             if (refreshToken == null) {
-                log.warn("🚨 Refresh Token 없음");
-                return ResponseEntity.status(401).body("Refresh Token 없음");
+                log.warn("Refresh Token 없음");
+                response.setContentType("application/json;charset=UTF-8");
+                return ResponseEntity.status(401).body("{\"error\":\"Refresh Token 없음\"}");
             }
 
             // 2. 새로운 Access Token 발급
             LoginResponseDto loginResponse = tokenUtils.refreshTokens(refreshToken, response);
+            response.setContentType("application/json;charset=UTF-8");
             return ResponseEntity.ok(loginResponse);
 
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(401).body(e.getMessage());
+            response.setContentType("application/json;charset=UTF-8");
+            return ResponseEntity.status(401).body("{\"error\":\"" + e.getMessage() + "\"}");
         } catch (Exception e) {
-            log.error("❌ 토큰 갱신 중 예상치 못한 오류: {}", e.getMessage());
-            return ResponseEntity.status(500).body("서버 오류");
+            log.error("토큰 갱신 중 예상치 못한 오류: {}", e.getMessage());
+            response.setContentType("application/json;charset=UTF-8");
+            return ResponseEntity.status(500).body("{\"error\":\"서버 오류\"}");
         }
     }
 }
