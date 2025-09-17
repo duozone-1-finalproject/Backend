@@ -27,16 +27,17 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/dart/test")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${frontend.url}", allowCredentials = "true") // ✅ 환경변수 적용
+@CrossOrigin(origins = "${frontend.url}", allowCredentials = "true")
 public class TestController {
 
     private final TestService testService;
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-    private final LocalDate today = LocalDate.now();
-    private final String todayString = today.format(formatter);
-    private final LocalDate oneYearAgo = today.minusYears(1);
-    private final String oneYearAgoString = oneYearAgo.format(formatter);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    LocalDate today = LocalDate.now();
+    String todayString = today.format(formatter);
+
+    LocalDate oneYearAgo = today.minusYears(1);
+    String oneYearAgoString = oneYearAgo.format(formatter);
 
     // [추가] 모든 데이터를 한 번에 가져오는 통합 엔드포인트
     // 테스트 URL: http://localhost:8080/api/dart/test/01571107/all-data
