@@ -16,7 +16,6 @@ import java.util.Map;
 @RequestMapping("/api/versions")
 @CrossOrigin(origins = "${frontend.url}", allowCredentials = "true")
 public class ViewerController {
-
     private final UserVersionService userVersionService;
 
     @GetMapping("/companies")

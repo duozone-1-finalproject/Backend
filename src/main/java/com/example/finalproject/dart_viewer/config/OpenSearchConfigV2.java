@@ -16,18 +16,18 @@ public class OpenSearchConfigV2 {
     @Value("${spring.opensearch.uris}")
     private String openSearchUri;
 
+
     // Low-level RestClient를 별도 빈으로 등록 (종료 시 close)
     @Bean(name = "osRestClientV2", destroyMethod = "close")
     public RestClient restClientV2() {
-        // 쉼표로 구분된 URI들을 처리
-        String[] uriTokens = openSearchUri.split(",");
-        HttpHost[] hosts = java.util.Arrays.stream(uriTokens)
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .map(HttpHost::create)
-                .toArray(HttpHost[]::new);
+        String cleanUri = openSearchUri.replace("http://", "").replace("https://", "");
+        String[] hostAndPort = cleanUri.split(":");
+        String host = hostAndPort[0];
+        int port = hostAndPort.length > 1 ? Integer.parseInt(hostAndPort[1]) : 9200;
 
-        return RestClient.builder(hosts)
+        return RestClient.builder(new HttpHost(host, port, "http"))
+                // 필요시 타임아웃/프록시 등 설정
+                //.setRequestConfigCallback(b -> b.setConnectTimeout(5000).setSocketTimeout(60000))
                 .build();
     }
 
@@ -37,7 +37,7 @@ public class OpenSearchConfigV2 {
         return new RestClientTransport(osRestClientV2, new JacksonJsonpMapper());
     }
 
-    // 기본 주입 대상 OpenSearchClient
+    // ★ 이름을 바꾸고(=중복 제거) 기본 주입 대상으로 지정
     @Primary
     @Bean(name = "openSearchClientV2")
     public OpenSearchClient openSearchClientV2(RestClientTransport osTransportV2) {
