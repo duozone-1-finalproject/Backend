@@ -1,0 +1,12 @@
+도커 MariaDB 설치 OR CMD
+
+docker pull mariadb
+
+CMD에서 도커 컨테이너 설치 및 실행
+
+docker run --name mariadb-container -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_DATABASE=testdb -e MYSQL_USER=testuser -e MYSQL_PASSWORD=pass1234 -p 3311:3306 -d mariadb:latest
+
+접속
+docker exec -it mariadb-container mariadb -u testuser -ppass1234 testdb
+
+DBeavdr에서 연동
