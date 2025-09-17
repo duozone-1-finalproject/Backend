@@ -65,6 +65,34 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
+  opensearch:
+    uris: ${OPENSEARCH_URIS:https://5e656a35bd8d.ngrok-free.app}
+    connection-timeout: ${OPENSEARCH_CONNECTION_TIMEOUT:5s}
+    socket-timeout: 60s
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:ai-backend-group}
+      fastapi-group-id: ${KAFKA_FASTAPI_CONSUMER_GROUP:fastapi-backend-group}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+    topics:
+      ai-request: ${KAFKA_TOPIC_AI_REQUEST:ai-report-request}
+      ai-response: ${KAFKA_TOPIC_AI_RESPONSE:ai-report-response}
+      fastapi-request: ${KAFKA_TOPIC_FASTAPI_REQUEST:fastapi-equity-request}
+      fastapi-response: ${KAFKA_TOPIC_FASTAPI_RESPONSE:fastapi-equity-response}
+      validation-request: ${KAFKA_TOPIC_VALIDATION_REQUEST:ai-validation-request}
+      validation-response: ${KAFKA_TOPIC_VALIDATION_RESPONSE:ai-validation-response}
+      revision-request: ${KAFKA_TOPIC_REVISION_REQUEST:ai-revision-request}
+      revision-response: ${KAFKA_TOPIC_REVISION_RESPONSE:ai-revision-response}
+
 frontend:
   url: "http://k8s-default-ingress-164f943143-1841556789.ap-northeast-2.elb.amazonaws.com"
 
@@ -72,7 +100,6 @@ cors:
   # allowed-origins도 FRONTEND_URL과 동일하게 고정
   allowed-origins: "http://k8s-default-ingress-164f943143-1841556789.ap-northeast-2.elb.amazonaws.com"
 
-# 나머지 설정 그대로
 opensearch:
   uris: ${OPENSEARCH_URIS:https://5e656a35bd8d.ngrok-free.app}
   connection-timeout: ${OPENSEARCH_CONNECTION_TIMEOUT:5s}
@@ -83,12 +110,6 @@ opensearch:
   indices:
     report: ${OPENSEARCH_INDEX_REPORT:ai-generated-reports}
     company: ${OPENSEARCH_INDEX_COMPANY:company-data}
-
-spring:
-  opensearch:
-    uris: ${OPENSEARCH_URIS:https://5e656a35bd8d.ngrok-free.app}
-    connection-timeout: ${OPENSEARCH_CONNECTION_TIMEOUT:5s}
-    socket-timeout: 60s
 
 kafka:
   bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
