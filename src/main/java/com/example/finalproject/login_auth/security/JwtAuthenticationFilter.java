@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    // ⭐ JWT 필터를 건너뛸 경로 목록 - AI API 경로 제외!
+    // JWT 필터를 건너뛸 경로 목록 - 공개 API 경로들 추가
     private static final List<String> EXCLUDE_URLS = Arrays.asList(
             "/",
             "/login",
@@ -40,11 +40,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/main",
             "/error",
             "/favicon.ico",
-            "/api/companies",
-            "/companies"
-            // ⭐ AI API 경로는 WebSecurityCustomizer에서 완전 제외하므로 여기서 제거
-            // "/api/v1/ai-reports/**",
-            // "/api/v1/**"
+            "/api/companies/**",      // 와일드카드 추가
+            "/api/securities/**",     // 추가
+            "/api/dart/**",           // 추가
+            "/api/v1/variables/**",   // 추가
+            "/api/ai/**",            // 추가
+            "/initialTemplate/**",    // 추가
+            "/companies",
+            "/actuator/**",          // 추가
+            "/health"                // 추가
     );
 
     @Override
