@@ -100,11 +100,11 @@ spring:
 # [IMPROVEMENT] Group all custom application properties under a unique namespace 'app'
 app:
   frontend:
-    # [FIX] Provide a default URL for local development to prevent CORS errors
-    url: ${FRONTEND_URL}
+    url: ${FRONTEND_URL:http://k8s-default-ingress-164f943143-1716141576.ap-northeast-2.elb.amazonaws.com}
+
   cors:
     # [FIX] Use the same default URL for allowed origins
-    allowed-origins: ${FRONTEND_URL}
+    allowed-origins: ${CORS_ALLOWED_ORIGIN:http://k8s-default-ingress-164f943143-1716141576.ap-northeast-2.elb.amazonaws.com}
   opensearch:
     sniff-enabled: false
     indices:
@@ -112,7 +112,7 @@ app:
       company: ${OPENSEARCH_INDEX_COMPANY:company-data}
 
   fastapi:
-    url: ${fastapi.urls}
+    url: ${FASTAPI_URL}
     kafka:
       timeout:
         seconds: ${app.fastapi.kafka.timeout.seconds}
