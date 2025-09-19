@@ -94,14 +94,14 @@ spring:
       revision-response: ${KAFKA_TOPIC_REVISION_RESPONSE:ai-revision-response}
 
 frontend:
-  url: "http://k8s-default-ingress-164f943143-1716141576.ap-northeast-2.elb.amazonaws.com"
+  url: ${FRONTEND_URL}
 
 cors:
   # allowed-origins도 FRONTEND_URL과 동일하게 고정
-  allowed-origins: "http://k8s-default-ingress-164f943143-1716141576.ap-northeast-2.elb.amazonaws.com"
+  allowed-origins: ${CORS_ALLOWED_ORIGIN}
 
 opensearch:
-  uris: ${OPENSEARCH_URIS:https://5e656a35bd8d.ngrok-free.app}
+  uris: ${OPENSEARCH_URIS}
   connection-timeout: ${OPENSEARCH_CONNECTION_TIMEOUT:5s}
   socket-timeout: 60s
   max-conn-total: 100
