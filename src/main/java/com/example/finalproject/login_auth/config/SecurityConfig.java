@@ -136,10 +136,11 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Value("${app.frontend.url}")
+    // Kubernetes 환경변수명에 맞춰 수정
+    @Value("${FRONTEND_URL}")
     private String frontendUrl;
 
-    @Value("${app.cors.allowed-origins}")
+    @Value("${CORS_ALLOWED_ORIGIN}")  // 단수형 주의!
     private String allowedOrigins;
 
     @Bean
