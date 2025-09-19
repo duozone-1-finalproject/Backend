@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class DartWebController {
 
-    @GetMapping({"/", "/dart"})
+    @GetMapping({"/dart"})
     public String index() {
         return "dart-data"; // resources/templates/dart-data.html
     }

@@ -1,5 +1,6 @@
 package com.example.finalproject;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -12,6 +13,7 @@ import com.example.finalproject.login_auth.security.JwtProperties;
 @ComponentScan(basePackages = {"com.example.finalproject.apitest", "com.example.finalproject.login_auth", "com.example.finalproject.dart","com.example.finalproject.dart_viewer","com.example.finalproject.ai_backend"})
 @EnableConfigurationProperties(JwtProperties.class)
 public class Test02Application {
+
 	public static void main(String[] args) {
 		SpringApplication.run(Test02Application.class, args);
 	}
