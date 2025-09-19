@@ -115,7 +115,7 @@ app:
     url: ${fastapi.urls}
     kafka:
       timeout:
-        seconds: ${FASTAPI_KAFKA_TIMEOUT:600}
+        seconds: ${app.fastapi.kafka.timeout.seconds}
 
   jwt:
     secret: ${JWT_SECRET}
