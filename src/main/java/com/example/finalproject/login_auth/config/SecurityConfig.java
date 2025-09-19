@@ -4,6 +4,7 @@ import com.example.finalproject.login_auth.handler.OAuthHandler;
 import com.example.finalproject.login_auth.security.JwtAuthenticationFilter;
 import com.example.finalproject.login_auth.security.JwtTokenProvider;
 import com.example.finalproject.login_auth.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -38,23 +39,23 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
 
     /**
-     * ✅ 정적 리소스 + AI API 완전 제외
+     * 완전히 Spring Security에서 제외할 경로들
      */
     @Bean
     @Order(1)
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> {
-            log.info("🔧 WebSecurityCustomizer 설정 - 정적 리소스 + AI API만 제외");
+            log.info("🔧 WebSecurityCustomizer 설정 - 완전 제외 경로");
             web.ignoring()
                     .requestMatchers(
                             "/css/**",
                             "/js/**",
                             "/images/**",
                             "/favicon.ico",
-                            // ⭐ AI API만 제외하고 /api/versions는 JWT 인증이 필요하므로 제거
+                            "/health",
+                            "/actuator/**",
+                            // AI API만 완전 제외
                             "/api/v1/ai-reports/**"
-                            // "/api/v1/**", // 이것도 제거
-                            // "/api/**"     // 이것도 제거
                     );
         };
     }
@@ -70,13 +71,20 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .authorizeHttpRequests(auth -> auth
-                        // ⭐ OPTIONS 요청은 항상 허용
+                        // OPTIONS 요청은 항상 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/v1/kafka-test/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/health").permitAll()
 
-                        // ⭐ 공개 API
+                        // 🚨 공개 API - 순서가 중요! 구체적인 경로를 먼저 배치
+                        .requestMatchers(HttpMethod.GET, "/api/companies").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/companies").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/companies/**").permitAll()
+                        .requestMatchers("/api/securities/**").permitAll()
+                        .requestMatchers("/api/dart/**").permitAll()
+                        .requestMatchers("/api/v1/variables/**").permitAll()
+                        .requestMatchers("/api/ai/**").permitAll()
+
+                        // 기본 페이지 및 인증 관련
                         .requestMatchers(
                                 "/",
                                 "/login",
@@ -86,28 +94,38 @@ public class SecurityConfig {
                                 "/auth/refresh",
                                 "/home",
                                 "/main",
-                                "/api/companies",
-                                "/api/companies/**",
-                                "/companies",
-                                "/api/securities/**",
-                                "/api/dart/**",              // ✅ 추가
-                                "/api/v1/variables/**",      // ✅ 추가
-                                "/api/ai/**",
                                 "/initialTemplate/**",
                                 "/error"
                         ).permitAll()
 
-                        // ⭐ AI API는 여전히 공개 (또는 필요에 따라 인증 필요로 변경)
+                        // Kafka 테스트 (개발용)
+                        .requestMatchers("/api/v1/kafka-test/**").permitAll()
+
+                        // AI API 공개
                         .requestMatchers("/api/v1/ai-reports/**").permitAll()
 
-                        // ⭐ 버전 관리 API는 인증 필요
+                        // 인증 필요한 API
                         .requestMatchers("/api/versions/**").authenticated()
-
-                        // ⭐ 인증 필요한 API
                         .requestMatchers("/auth/status").authenticated()
 
-                        // ⭐ 나머지는 모두 인증 필요
+                        // 나머지는 모두 인증 필요
                         .anyRequest().authenticated()
+                )
+
+                // 인증 실패 시 401 응답 (리다이렉트 방지)
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            log.warn("🚨 인증 실패: {} {}", request.getMethod(), request.getRequestURI());
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"error\":\"Authentication required\",\"path\":\"" + request.getRequestURI() + "\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            log.warn("🚨 접근 거부: {} {}", request.getMethod(), request.getRequestURI());
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"error\":\"Access denied\",\"path\":\"" + request.getRequestURI() + "\"}");
+                        })
                 )
 
                 .oauth2Login(oauth -> oauth
@@ -120,7 +138,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
 
-                // ✅ JWT 필터 적용
+                // JWT 필터 적용
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class
@@ -140,18 +158,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * ✅ CORS 설정
-     */
     @Value("${frontend.url}")
-    private String frontendUrl; // 환경변수 주입
+    private String frontendUrl;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         log.info("🔧 CORS 설정, 프론트엔드 URL: {}", frontendUrl);
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of(frontendUrl)); // ✅ 실제 URL 사용
+        config.setAllowedOriginPatterns(List.of(frontendUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization"));
