@@ -112,7 +112,7 @@ app:
       company: ${OPENSEARCH_INDEX_COMPANY:company-data}
 
   fastapi:
-    url: ${FastAPI_URL}
+    url: ${fastapi.urls}
     kafka:
       timeout:
         seconds: ${FASTAPI_KAFKA_TIMEOUT:600}
