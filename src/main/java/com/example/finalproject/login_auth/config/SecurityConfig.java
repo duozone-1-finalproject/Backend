@@ -136,10 +136,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Value("${frontend.url}")
+    @Value("${app.frontend.url}")
     private String frontendUrl;
 
-    @Value("${cors.allowed-origins}")
+    @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
 
     @Bean
