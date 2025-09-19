@@ -139,12 +139,15 @@ public class SecurityConfig {
     @Value("${frontend.url}")
     private String frontendUrl;
 
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        log.info("🔧 CORS 설정, 프론트엔드 URL: {}", frontendUrl);
+        log.info("🔧 CORS 설정, 프론트엔드 URL: {}, 허용된 오리진: {}", frontendUrl, allowedOrigins);
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of(frontendUrl, "*")); // 개발용으로 * 추가
+        config.setAllowedOrigins(List.of(allowedOrigins)); // 와일드카드 대신 구체적인 URL 사용
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));

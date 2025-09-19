@@ -44,7 +44,7 @@ spring:
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
-            redirect-uri: "http://k8s-default-ingress-164f943143-1716141576.ap-northeast-2.elb.amazonaws.com/backend/login/oauth2/code/{registrationId}"
+            redirect-uri: "http://k8s-default-ingress-164f943143-1716141576.ap-northeast-2.elb.amazonaws.com//backend/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             scope: [profile_nickname, account_email, profile_image]
@@ -94,11 +94,11 @@ spring:
       revision-response: ${KAFKA_TOPIC_REVISION_RESPONSE:ai-revision-response}
 
 frontend:
-  url: ${FRONTEND_URL}
+  url: "${FRONTEND_URL}"
 
 cors:
-  # allowed-origins도 FRONTEND_URL과 동일하게 고정
-  allowed-origins: ${CORS_ALLOWED_ORIGIN}
+  # allowed-origins도 FRONTEND_URL과 동일하게 환경 변수 지원
+  allowed-origins: "${FRONTEND_URL}"
 
 opensearch:
   uris: ${OPENSEARCH_URIS}
